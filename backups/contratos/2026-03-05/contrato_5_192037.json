@@ -1,0 +1,41 @@
+{
+    "id": 5,
+    "numero_contrato": "71/2020",
+    "numero_protocolo": "71/2020",
+    "processo_administrativo": "",
+    "numero_pregao": "",
+    "secretario": "RODRIGO FLORENCIO",
+    "numero_nota_empenho": "",
+    "numero_ficha": "",
+    "empresa": "PREFEITURA",
+    "objeto": "ALUGEL",
+    "data_inicio": "2024-12-31",
+    "vigencia": 12,
+    "data_vencimento": "2025-12-31",
+    "status": "ativo",
+    "responsavel": "GABINETE",
+    "arquivo": "",
+    "dias_restantes": -64,
+    "alerta": "vencido",
+    "itens": [
+        {
+            "id": 7,
+            "tipo_item": "ALUGUEL",
+            "descricao": "ALUGUEL",
+            "unidade": "VEÍCULOS",
+            "proprietario": "ISABEL CRISTINA PESSANHA DA SILVA GOMES",
+            "cpf": "007.021.547-25",
+            "localidade": "ATAFONA",
+            "tipo_cobranca": "MENSAL",
+            "quantidade": 1,
+            "quantidade_meses": 12,
+            "valor_unitario": "1310.00",
+            "data_viagem": "",
+            "taxa_servico": "0.00",
+            "desconto": "0.00",
+            "caixa_atual": "",
+            "valor_total": "15720.00"
+        }
+    ],
+    "backup_timestamp": "2026-03-05T19:20:37.674927"
+}

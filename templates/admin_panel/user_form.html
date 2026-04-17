@@ -1,0 +1,289 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Hiden Systems{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <a href="{% url 'admin_panel:user_list' %}" class="btn btn-light rounded-circle p-2">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h5 class="fw-bold mb-0">{{ title }}</h5>
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">{{ form.secretaria.label }}</label>
+                            <div class="secretaria-selector-wrapper">
+                                <i class="bi bi-building secretaria-icon"></i>
+                                {{ form.secretaria }}
+                            </div>
+                            {% if form.secretaria.errors %}<div class="text-danger small mt-1">{{ form.secretaria.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">{{ form.username.label }}</label>
+                            {{ form.username }}
+                            {% if form.username.errors %}<div class="text-danger small mt-1">{{ form.username.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">{{ form.email.label }}</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}<div class="text-danger small mt-1">{{ form.email.errors }}</div>{% endif %}
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">{{ form.first_name.label }}</label>
+                            {{ form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">{{ form.last_name.label }}</label>
+                            {{ form.last_name }}
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">{{ form.password.label }}</label>
+                            {{ form.password }}
+                            <div class="form-text small">Deixe em branco para manter a senha atual.</div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">{{ form.confirm_password.label }}</label>
+                            {{ form.confirm_password }}
+                        </div>
+
+                        <hr class="my-4">
+
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">{{ profile_form.cargo.label }}</label>
+                            {{ profile_form.cargo }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold text-muted">{{ profile_form.telefone.label }}</label>
+                            {{ profile_form.telefone }}
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label small fw-bold text-muted">Níveis de Acesso</label>
+                            <div class="access-levels-grid mt-2">
+                                {% for group in form.groups.field.queryset %}
+                                <div class="access-level-item">
+                                    <input type="checkbox" name="groups" value="{{ group.id }}" id="group_{{ group.id }}" 
+                                           class="access-level-check" {% if group in form.groups.value or group.id in form.groups.value %}checked{% endif %}>
+                                    <label for="group_{{ group.id }}" class="access-level-card">
+                                        <div class="access-level-icon">
+                                            {% if group.name == 'administrador' %}
+                                                <i class="bi bi-shield-lock-fill"></i>
+                                            {% elif group.name == 'gestor' %}
+                                                <i class="bi bi-briefcase-fill"></i>
+                                            {% elif group.name == 'moderador' %}
+                                                <i class="bi bi-person-badge-fill"></i>
+                                            {% elif group.name == 'editor' %}
+                                                <i class="bi bi-pencil-square"></i>
+                                            {% elif group.name == 'visualizador' %}
+                                                <i class="bi bi-eye-fill"></i>
+                                            {% else %}
+                                                <i class="bi bi-person-fill"></i>
+                                            {% endif %}
+                                        </div>
+                                        <div class="access-level-info">
+                                            <span class="access-level-name">{{ group.name|title }}</span>
+                                            <small class="access-level-desc">
+                                                {% if group.name|lower == 'administrador' %}
+                                                    Acesso total ao sistema
+                                                {% elif group.name|lower == 'gestor' %}
+                                                    Gestão completa de contratos
+                                                {% elif group.name|lower == 'moderador' %}
+                                                    Gerencia e visualiza logs
+                                                {% elif group.name|lower == 'editor' %}
+                                                    Cria e edita contratos
+                                                {% elif group.name|lower == 'visualizador' %}
+                                                    Apenas visualização
+                                                {% else %}
+                                                    Acesso básico ao sistema
+                                                {% endif %}
+                                            </small>
+                                        </div>
+                                        <div class="access-level-badge">
+                                            <i class="bi bi-check-lg"></i>
+                                        </div>
+                                    </label>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 d-flex gap-3 mt-4">
+                            <div class="form-check form-switch">
+                                {{ form.is_active }}
+                                <label class="form-check-label small fw-bold text-muted">Conta Ativa</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary rounded-pill py-3 fw-bold shadow-sm">
+                            <i class="bi bi-check2-circle me-2"></i>Salvar Usuário
+                        </button>
+                        <a href="{% url 'admin_panel:user_list' %}" class="btn btn-light rounded-pill py-3 fw-bold">
+                            Cancelar
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+<style>
+    .secretaria-selector-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+    .secretaria-icon {
+        position: absolute;
+        left: 1.25rem;
+        color: #6c757d;
+        font-size: 1.2rem;
+        pointer-events: none;
+        z-index: 5;
+    }
+    .secretaria-selector-wrapper select {
+        padding-left: 3.5rem !important;
+        height: 60px !important;
+        border: 2px solid #e9ecef !important;
+        font-weight: 600 !important;
+        color: #2d3436 !important;
+        cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+        background-repeat: no-repeat !important;
+        background-position: right 1.25rem center !important;
+        background-size: 16px 12px !important;
+    }
+    .secretaria-selector-wrapper select:focus {
+        border-color: #0d6efd !important;
+        background-color: #fff !important;
+        box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1) !important;
+    }
+    input, select {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #212529;
+        background-color: #f8f9fa;
+        background-clip: padding-box;
+        border: 0px solid #ced4da;
+        appearance: none;
+        border-radius: 12px;
+        transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    }
+    input:focus {
+        background-color: #fff;
+        outline: 0;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .1);
+    }
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    /* Níveis de Acesso Grid */
+    .access-levels-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 15px;
+    }
+    .access-level-item {
+        position: relative;
+    }
+    .access-level-check {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        height: 0;
+        width: 0;
+    }
+    .access-level-card {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 15px 20px;
+        background-color: #f8f9fa;
+        border: 2px solid transparent;
+        border-radius: 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        height: 100%;
+    }
+    .access-level-card:hover {
+        background-color: #f1f3f5;
+        transform: translateY(-2px);
+    }
+    .access-level-check:checked + .access-level-card {
+        background-color: #fff;
+        border-color: #0d6efd;
+        box-shadow: 0 10px 20px rgba(13, 110, 253, 0.1);
+    }
+    .access-level-icon {
+        width: 45px;
+        height: 45px;
+        background-color: #e9ecef;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        color: #6c757d;
+        transition: all 0.2s ease;
+    }
+    .access-level-check:checked + .access-level-card .access-level-icon {
+        background-color: #0d6efd;
+        color: #fff;
+    }
+    .access-level-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+    .access-level-name {
+        font-weight: 700;
+        color: #212529;
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+    }
+    .access-level-desc {
+        font-size: 0.75rem;
+        color: #6c757d;
+        line-height: 1.2;
+    }
+    .access-level-badge {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 24px;
+        height: 24px;
+        background-color: #0d6efd;
+        color: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.8rem;
+        opacity: 0;
+        transform: scale(0.5);
+        transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 3px solid #fff;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .access-level-check:checked + .access-level-card .access-level-badge {
+        opacity: 1;
+        transform: scale(1);
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,350 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Relatórios | Central de Contratos{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --bi-navy: #06233f;
+        --bi-blue: #0b4f86;
+        --bi-cyan: #32b7d4;
+        --bi-green: #0f9f6e;
+        --bi-amber: #d88914;
+        --bi-red: #d94b4b;
+        --bi-ink: #142033;
+        --bi-muted: #687789;
+        --bi-line: #dfe8f1;
+        --bi-bg: #eef4f7;
+        --bi-card: #ffffff;
+        --bi-shadow: 0 18px 50px rgba(6, 35, 63, 0.1);
+    }
+
+    body {
+        background:
+            radial-gradient(circle at 8% 0%, rgba(50,183,212,0.18), transparent 28rem),
+            radial-gradient(circle at 92% 4%, rgba(15,159,110,0.12), transparent 24rem),
+            linear-gradient(180deg, #f7fbfd 0%, var(--bi-bg) 100%);
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .bi-page {
+        color: var(--bi-ink);
+        display: grid;
+        gap: 24px;
+    }
+
+    .bi-hero {
+        background:
+            linear-gradient(135deg, rgba(6,35,63,0.98), rgba(11,79,134,0.9)),
+            radial-gradient(circle at 82% 20%, rgba(50,183,212,0.28), transparent 22rem);
+        border-radius: 30px;
+        box-shadow: var(--bi-shadow);
+        color: #ffffff;
+        display: grid;
+        gap: 24px;
+        grid-template-columns: minmax(0, 1fr) auto;
+        overflow: hidden;
+        padding: clamp(24px, 4vw, 42px);
+        position: relative;
+    }
+
+    .bi-hero::after {
+        background: linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px), linear-gradient(0deg, rgba(255,255,255,0.07) 1px, transparent 1px);
+        background-size: 38px 38px;
+        content: "";
+        inset: 0;
+        opacity: 0.38;
+        position: absolute;
+    }
+
+    .bi-hero > * { position: relative; z-index: 1; }
+    .bi-kicker { color: #9cf2ff; font-size: 0.74rem; font-weight: 950; letter-spacing: 0.14em; margin-bottom: 12px; text-transform: uppercase; }
+    .bi-title { font-size: clamp(2.2rem, 5vw, 4.4rem); font-weight: 950; letter-spacing: -0.06em; line-height: 0.95; margin: 0; max-width: 850px; }
+    .bi-copy { color: rgba(255,255,255,0.76); font-size: 1.02rem; font-weight: 650; line-height: 1.65; margin: 16px 0 0; max-width: 720px; }
+    .bi-actions { align-content: start; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
+    .bi-btn { align-items: center; border-radius: 16px; display: inline-flex; font-weight: 900; gap: 9px; justify-content: center; min-height: 46px; padding: 12px 18px; text-decoration: none; }
+    .bi-btn-light { background: #ffffff; color: var(--bi-navy); }
+    .bi-btn-light:hover { color: var(--bi-blue); }
+    .bi-btn-ghost { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #ffffff; }
+    .bi-btn-ghost:hover { background: rgba(255,255,255,0.16); color: #ffffff; }
+
+    .filter-panel-bi {
+        background: rgba(255,255,255,0.94);
+        border: 1px solid var(--bi-line);
+        border-radius: 26px;
+        box-shadow: 0 14px 36px rgba(6,35,63,0.07);
+        padding: 22px;
+    }
+    .field-label { color: var(--bi-muted); font-size: 0.68rem; font-weight: 950; letter-spacing: 0.09em; margin-bottom: 8px; text-transform: uppercase; }
+    .form-control-bi,
+    .form-select.form-control-bi { background-color: #f6fafc !important; border: 1px solid var(--bi-line) !important; border-radius: 15px !important; color: var(--bi-ink) !important; font-weight: 750 !important; min-height: 48px; padding: 0.72rem 0.95rem !important; }
+    .form-control-bi:focus { background: #ffffff !important; border-color: var(--bi-blue) !important; box-shadow: 0 0 0 4px rgba(11,79,134,0.1) !important; }
+
+    .bi-kpis { display: grid; gap: 16px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
+    .bi-kpi { background: var(--bi-card); border: 1px solid var(--bi-line); border-radius: 24px; box-shadow: 0 12px 32px rgba(6,35,63,0.07); min-height: 154px; overflow: hidden; padding: 20px; position: relative; }
+    .bi-kpi::before { background: var(--tone, var(--bi-blue)); content: ""; height: 5px; inset: 0 0 auto 0; position: absolute; }
+    .bi-kpi.small { grid-column: span 2; }
+    .bi-kpi.wide { background: linear-gradient(135deg, var(--bi-navy), var(--bi-blue)); color: #ffffff; grid-column: span 4; }
+    .bi-kpi i { align-items: center; background: color-mix(in srgb, var(--tone, var(--bi-blue)) 12%, white); border-radius: 16px; color: var(--tone, var(--bi-blue)); display: inline-flex; font-size: 1.25rem; height: 46px; justify-content: center; margin-bottom: 18px; width: 46px; }
+    .bi-kpi.wide i { background: rgba(255,255,255,0.13); color: #ffffff; }
+    .bi-kpi span { color: var(--bi-muted); display: block; font-size: 0.68rem; font-weight: 950; letter-spacing: 0.09em; text-transform: uppercase; }
+    .bi-kpi.wide span { color: rgba(255,255,255,0.68); }
+    .bi-kpi strong { display: block; font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 950; letter-spacing: -0.05em; line-height: 1; margin-top: 4px; overflow-wrap: anywhere; }
+    .bi-kpi.wide strong { font-size: clamp(1.8rem, 4vw, 2.4rem); }
+    .bi-kpi p { color: var(--bi-muted); font-size: 0.8rem; font-weight: 800; margin: 14px 0 0; text-transform: uppercase; }
+    .bi-kpi.wide p { color: rgba(255,255,255,0.72); }
+    .risk-value-box { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; margin-top: 16px; padding: 12px; }
+
+    .bi-grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.55fr); }
+    .bi-grid-2 { display: grid; gap: 24px; grid-template-columns: minmax(340px, 0.55fr) minmax(0, 1.45fr); }
+    .bi-card { background: rgba(255,255,255,0.94); border: 1px solid var(--bi-line); border-radius: 28px; box-shadow: 0 14px 36px rgba(6,35,63,0.07); overflow: hidden; }
+    .bi-card-head { align-items: center; border-bottom: 1px solid var(--bi-line); display: flex; gap: 16px; justify-content: space-between; padding: 20px 22px; }
+    .bi-card-head h2 { font-size: 1.05rem; font-weight: 950; margin: 0; }
+    .bi-card-head p { color: var(--bi-muted); font-size: 0.86rem; font-weight: 650; margin: 4px 0 0; }
+    .bi-card-body { padding: 22px; }
+    .chart-box { height: 320px; position: relative; }
+    .chart-box.short { height: 286px; }
+
+    .report-table-wrap { max-height: 620px; overflow: auto; }
+    .table-bi { border-collapse: collapse; margin: 0; width: 100%; }
+    .table-bi thead th { background: var(--bi-navy) !important; border: 0; color: #ffffff !important; font-size: 0.66rem; font-weight: 950; letter-spacing: 0.1em; padding: 16px 14px; text-transform: uppercase; white-space: nowrap; }
+    .table-bi tbody td { border-bottom: 1px solid var(--bi-line); color: #2a3a4f; font-size: 0.88rem; padding: 15px 14px; vertical-align: middle; }
+    .table-bi tbody tr:hover { background: #f7fbfd; }
+    .table-bi a { color: var(--bi-blue); font-weight: 950; text-decoration: none; }
+    .alert-mini { align-items: center; border: 1px solid var(--bi-line); border-radius: 99px; display: inline-flex; font-size: 0.68rem; font-weight: 900; gap: 7px; padding: 6px 9px; white-space: nowrap; }
+    .alert-mini i { border-radius: 99px; display: inline-block; height: 9px; width: 9px; }
+    .owner-mini { align-items: center; display: inline-flex; gap: 8px; font-weight: 800; }
+    .owner-mini span { align-items: center; background: #eaf5f9; border-radius: 10px; color: var(--bi-blue); display: inline-flex; font-size: 0.7rem; font-weight: 950; height: 28px; justify-content: center; width: 28px; }
+    .legend-panel { background: #f6fafc; border-top: 1px solid var(--bi-line); padding: 18px 22px; }
+    .legend-panel h3 { color: var(--bi-muted); font-size: 0.72rem; font-weight: 950; letter-spacing: 0.1em; margin-bottom: 12px; text-transform: uppercase; }
+    .legend-row { display: flex; flex-wrap: wrap; gap: 16px; }
+    .legend-item { align-items: center; color: var(--bi-muted); display: inline-flex; font-size: 0.8rem; font-weight: 700; gap: 8px; }
+    .legend-item i { border-radius: 99px; display: inline-block; height: 11px; width: 11px; }
+
+    @media (max-width: 1180px) {
+        .bi-hero, .bi-grid, .bi-grid-2 { grid-template-columns: 1fr; }
+        .bi-actions { justify-content: flex-start; }
+        .bi-kpi.small { grid-column: span 3; }
+        .bi-kpi.wide { grid-column: span 12; }
+    }
+
+    @media (max-width: 760px) {
+        .bi-hero { border-radius: 22px; }
+        .bi-actions { display: grid; }
+        .bi-btn { width: 100%; }
+        .bi-kpis { grid-template-columns: 1fr; }
+        .bi-kpi.small, .bi-kpi.wide { grid-column: auto; }
+        .bi-card-head { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media print {
+        .no-print, .navbar-elite, .footer-elite { display: none !important; }
+        body { background: #fff !important; }
+        .bi-card, .bi-kpi, .bi-hero { box-shadow: none !important; }
+        .report-table-wrap { max-height: none !important; overflow: visible !important; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="bi-page">
+    <section class="bi-hero no-print">
+        <div>
+            <div class="bi-kicker">Business intelligence</div>
+            <h1 class="bi-title">Relatórios que mostram onde agir primeiro.</h1>
+            <p class="bi-copy">Acompanhe vencimentos, valor em risco, distribuição por status e responsáveis técnicos sem precisar garimpar informação em planilhas.</p>
+        </div>
+        <div class="bi-actions">
+            <button class="bi-btn bi-btn-ghost" type="button" data-bs-toggle="collapse" data-bs-target="#filterPanel"><i class="bi bi-funnel"></i> Refinar</button>
+            <button onclick="window.print()" class="bi-btn bi-btn-ghost" type="button"><i class="bi bi-printer"></i> Imprimir</button>
+            <button type="button" class="bi-btn bi-btn-light" data-bs-toggle="modal" data-bs-target="#exportModal"><i class="bi bi-download"></i> Exportar CSV</button>
+        </div>
+    </section>
+
+    <div class="collapse no-print" id="filterPanel">
+        <div class="filter-panel-bi">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-lg-3 col-md-6"><label class="field-label">Início do período</label><input type="date" name="data_inicio" class="form-control form-control-bi" value="{{ filtros.data_inicio|default:'' }}"></div>
+                <div class="col-lg-3 col-md-6"><label class="field-label">Fim do período</label><input type="date" name="data_fim" class="form-control form-control-bi" value="{{ filtros.data_fim|default:'' }}"></div>
+                <div class="col-lg-3 col-md-6"><label class="field-label">Status</label><select name="status" class="form-select form-control-bi"><option value="">Todos os status</option>{% for key, value in status_choices %}<option value="{{ key }}" {% if filtros.status == key %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></div>
+                <div class="col-lg-3 col-md-6 d-flex gap-2"><button type="submit" class="bi-btn bi-btn-light border-0 flex-fill" style="background: var(--bi-navy); color: #fff;">Aplicar</button><a href="{% url 'contratos:relatorios' %}" class="bi-btn flex-fill" style="background:#f6fafc;border:1px solid var(--bi-line);color:var(--bi-ink);">Limpar</a></div>
+            </form>
+        </div>
+    </div>
+
+    <section class="bi-kpis">
+        <article class="bi-kpi small" style="--tone: var(--bi-blue);"><i class="bi bi-stack"></i><span>Base total</span><strong>{{ kpi_total }}</strong><p>Contratos</p></article>
+        <article class="bi-kpi small" style="--tone: var(--bi-green);"><i class="bi bi-check-all"></i><span>Em execução</span><strong>{{ kpi_ativos }}</strong><p>Ativos</p></article>
+        <article class="bi-kpi small" style="--tone: var(--bi-red);"><i class="bi bi-shield-x"></i><span>Expirados</span><strong>{{ kpi_vencidos }}</strong><p>Crítico</p></article>
+        <article class="bi-kpi small" style="--tone: var(--bi-amber);"><i class="bi bi-alarm"></i><span>Vencimento 30d</span><strong>{{ kpi_vencendo_30d }}</strong><p>Urgente</p></article>
+        <article class="bi-kpi wide"><div class="d-flex justify-content-between gap-3"><div><span>Patrimônio gerido</span><strong>R$ {{ kpi_valor|floatformat:0|intcomma }}</strong><p>Valor total consolidado</p></div><i class="bi bi-currency-dollar"></i></div><div class="risk-value-box"><span>Capital em risco nos próximos 30 dias</span><strong class="fs-5 mt-1">R$ {{ kpi_valor_vencendo_30d|floatformat:2|intcomma }}</strong></div></article>
+    </section>
+
+    <section class="bi-grid">
+        <div class="bi-card">
+            <div class="bi-card-head"><div><h2>Dispersão de vigências</h2><p>Volume de contratos por mês de vencimento.</p></div><span class="badge bg-light text-dark border rounded-pill px-3 py-2 fw-bold">Próximos ciclos</span></div>
+            <div class="bi-card-body"><div class="chart-box"><canvas id="timelineChart"></canvas></div></div>
+        </div>
+        <div class="bi-card">
+            <div class="bi-card-head"><div><h2>Status operacional</h2><p>Distribuição da base filtrada.</p></div></div>
+            <div class="bi-card-body"><div class="chart-box"><canvas id="statusChart"></canvas></div></div>
+        </div>
+    </section>
+
+    <section class="bi-grid-2">
+        <div class="bi-card">
+            <div class="bi-card-head"><div><h2>Criticidade</h2><p>Alertas por faixa de prazo.</p></div></div>
+            <div class="bi-card-body"><div class="chart-box short"><canvas id="alertasChart"></canvas></div></div>
+        </div>
+        <div class="bi-card">
+            <div class="bi-card-head"><div><h2>Responsáveis técnicos</h2><p>Distribuição dos contratos por responsável.</p></div></div>
+            <div class="bi-card-body"><div class="chart-box short"><canvas id="responsavelChart"></canvas></div></div>
+        </div>
+    </section>
+
+    <section class="bi-card">
+        <div class="bi-card-head">
+            <div><h2>Detalhamento analítico</h2><p>Contratos ordenados por vencimento para conferência.</p></div>
+            <span class="badge bg-primary bg-opacity-10 text-primary px-4 py-2 rounded-pill fw-bold">{{ contratos|length }} contratos analisados</span>
+        </div>
+        <div class="report-table-wrap">
+            <table class="table-bi">
+                <thead class="sticky-top">
+                    <tr>
+                        <th class="ps-4">Contrato</th>
+                        <th>Vigência final</th>
+                        <th>Responsável</th>
+                        <th>Investimento</th>
+                        <th class="text-end pe-4">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for contrato in contratos %}
+                    <tr>
+                        <td class="ps-4"><a href="{% url 'contratos:detalhe' contrato.id %}">{{ contrato.numero_contrato }}</a></td>
+                        <td><div class="d-flex align-items-center gap-2"><strong>{{ contrato.data_vencimento|date:"d/m/Y" }}</strong><span class="alert-mini" title="{{ contrato.alerta_info.description }}"><i style="background: {{ contrato.alerta_info.color }};"></i>{{ contrato.alerta_info.label }}</span></div></td>
+                        <td><span class="owner-mini"><span>{{ contrato.responsavel|slice:":1"|upper }}</span>{{ contrato.responsavel|default:"Não atribuído" }}</span></td>
+                        <td class="fw-bold text-dark">R$ {{ contrato.valor_contrato|floatformat:2|intcomma }}</td>
+                        <td class="text-end pe-4"><span class="badge bg-light text-muted border px-3 py-2 rounded-pill fw-bold text-uppercase" style="font-size: 0.65rem;">{{ contrato.get_status_display }}</span></td>
+                    </tr>
+                    {% empty %}
+                    <tr><td colspan="5" class="text-center py-5 text-muted fw-bold">Não foram encontrados dados para o período selecionado.</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="legend-panel">
+            <h3>Legenda de alertas</h3>
+            <div class="legend-row">
+                {% for config in alertas_config %}
+                <span class="legend-item"><i style="background: {{ config.color }};"></i><strong>{{ config.label }}:</strong> {{ config.desc }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 28px;">
+            <div class="modal-header border-bottom-0 p-4">
+                <h5 class="modal-title fw-bold text-dark" id="exportModalLabel">Configurar exportação</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body p-4 pt-0">
+                <p class="text-muted small mb-4">Selecione as colunas que deseja incluir no relatório CSV.</p>
+                <form id="exportForm" method="get">
+                    <input type="hidden" name="export" value="csv">
+                    <input type="hidden" name="data_inicio" value="{{ filtros.data_inicio|default:'' }}">
+                    <input type="hidden" name="data_fim" value="{{ filtros.data_fim|default:'' }}">
+                    <input type="hidden" name="status" value="{{ filtros.status|default:'' }}">
+                    <div class="mb-3 d-flex justify-content-between align-items-center"><span class="small fw-bold text-muted text-uppercase">Colunas disponíveis</span><div class="form-check small"><input class="form-check-input" type="checkbox" id="checkAll" checked><label class="form-check-label fw-bold" for="checkAll">Todas</label></div></div>
+                    <div class="row g-2 mb-4">
+                        <div class="col-6">
+                            <div class="form-check mb-2"><input class="form-check-input column-check" type="checkbox" name="columns" value="numero_contrato" id="col_numero" checked><label class="form-check-label small" for="col_numero">Número do contrato</label></div>
+                            <div class="form-check mb-2"><input class="form-check-input column-check" type="checkbox" name="columns" value="numero_protocolo" id="col_protocolo" checked><label class="form-check-label small" for="col_protocolo">Protocolo</label></div>
+                            <div class="form-check mb-2"><input class="form-check-input column-check" type="checkbox" name="columns" value="objeto" id="col_objeto" checked><label class="form-check-label small" for="col_objeto">Objeto</label></div>
+                            <div class="form-check mb-2"><input class="form-check-input column-check" type="checkbox" name="columns" value="valor" id="col_valor" checked><label class="form-check-label small" for="col_valor">Valor total</label></div>
+                            <div class="form-check mb-2"><input class="form-check-input column-check" type="checkbox" name="columns" value="responsavel" id="col_resp" checked><label class="form-check-label small" for="col_resp">Responsável</label></div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-check mb-2"><input class="form-check-input column-check" type="checkbox" name="columns" value="data_inicio" id="col_inicio" checked><label class="form-check-label small" for="col_inicio">Data início</label></div>
+                            <div class="form-check mb-2"><input class="form-check-input column-check" type="checkbox" name="columns" value="data_vencimento" id="col_venc" checked><label class="form-check-label small" for="col_venc">Vencimento</label></div>
+                            <div class="form-check mb-2"><input class="form-check-input column-check" type="checkbox" name="columns" value="status" id="col_status" checked><label class="form-check-label small" for="col_status">Status</label></div>
+                            <div class="form-check mb-2"><input class="form-check-input column-check" type="checkbox" name="columns" value="alerta" id="col_alerta" checked><label class="form-check-label small" for="col_alerta">Alerta</label></div>
+                            <div class="form-check mb-2"><input class="form-check-input column-check" type="checkbox" name="columns" value="secretario" id="col_secretario" checked><label class="form-check-label small" for="col_secretario">Secretário(a)</label></div>
+                        </div>
+                    </div>
+                    <div class="d-grid"><button type="submit" class="btn btn-primary fw-bold rounded-pill py-2 shadow-premium"><i class="bi bi-file-earmark-spreadsheet me-2"></i>Gerar CSV</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{ vencimentos_data|json_script:"vencimentos-data" }}
+{{ status_data|json_script:"status-data" }}
+{{ alertas_data|json_script:"alertas-data" }}
+{{ responsavel_data|json_script:"responsavel-data" }}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    if (typeof Chart !== 'undefined') {
+        Chart.defaults.font.family = "Outfit, sans-serif";
+        Chart.defaults.color = '#687789';
+        Chart.defaults.scale.grid.color = '#e9f0f5';
+    }
+
+    const colors = { navy: '#06233f', blue: '#0b4f86', cyan: '#32b7d4', green: '#0f9f6e', amber: '#d88914', red: '#d94b4b', gray: '#a8b5c3' };
+    const money = value => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value || 0);
+    const parse = id => {
+        const el = document.getElementById(id);
+        if (!el) return [];
+        try { return JSON.parse(el.textContent || '[]'); } catch { return []; }
+    };
+
+    if (typeof Chart !== 'undefined') {
+        const timelineData = parse('vencimentos-data');
+        const timelineCanvas = document.getElementById('timelineChart');
+        if (timelineCanvas && timelineData.length) {
+            new Chart(timelineCanvas, {
+                type: 'bar',
+                data: { labels: timelineData.map(d => d.mes), datasets: [{ label: 'Contratos', data: timelineData.map(d => d.total), backgroundColor: colors.blue, borderRadius: 12, barThickness: 42, extraData: timelineData.map(d => d.valor) }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { afterLabel: ctx => 'Valor estimado: ' + money(ctx.dataset.extraData[ctx.dataIndex]) } } }, scales: { y: { beginAtZero: true }, x: { grid: { display: false } } } }
+            });
+        }
+
+        const statusData = parse('status-data');
+        const statusCanvas = document.getElementById('statusChart');
+        if (statusCanvas && statusData.length) {
+            const statusColors = { ativo: colors.green, suspenso: colors.amber, encerrado: colors.gray };
+            new Chart(statusCanvas, { type: 'doughnut', data: { labels: statusData.map(d => d.label), datasets: [{ data: statusData.map(d => d.value), backgroundColor: statusData.map(d => statusColors[d.status] || colors.blue), borderWidth: 0, cutout: '72%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { size: 12, weight: '700' } } } } } });
+        }
+
+        const alertasData = parse('alertas-data');
+        const alertasCanvas = document.getElementById('alertasChart');
+        if (alertasCanvas && alertasData.length) {
+            const alertColors = { normal: colors.green, amarelo: '#e4bd22', laranja: colors.amber, vermelho: colors.red, vencido: '#111827' };
+            new Chart(alertasCanvas, { type: 'doughnut', data: { labels: alertasData.map(d => d.label), datasets: [{ data: alertasData.map(d => d.value), backgroundColor: alertasData.map(d => alertColors[d.type] || colors.gray), borderWidth: 0, cutout: '72%' }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { usePointStyle: true, padding: 18, font: { size: 12, weight: '700' } } } } } });
+        }
+
+        const respData = parse('responsavel-data');
+        const respCanvas = document.getElementById('responsavelChart');
+        if (respCanvas && respData.length) {
+            new Chart(respCanvas, { type: 'bar', data: { labels: respData.map(d => d.label), datasets: [{ data: respData.map(d => d.value), backgroundColor: colors.cyan, borderRadius: 9, barThickness: 24 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true }, y: { grid: { display: false } } } } });
+        }
+    }
+
+    const checkAll = document.getElementById('checkAll');
+    if (checkAll) {
+        const checks = document.querySelectorAll('.column-check');
+        checkAll.addEventListener('change', function() { checks.forEach(cb => cb.checked = this.checked); });
+        checks.forEach(cb => cb.addEventListener('change', function() { checkAll.checked = Array.from(checks).every(c => c.checked); }));
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Acesso Restrito | SJB{% endblock %}
+
+{% block navbar %}{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-sjb: #003B70;
+        --secondary-sjb: #0056a3;
+        --accent-sjb: #2563eb;
+        --text-dark: #1e293b;
+        --text-muted: #64748b;
+        --glass-white: rgba(255, 255, 255, 0.95);
+    }
+
+    body {
+        background: #f1f5f9 !important;
+        background-image: 
+            radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.1) 0, transparent 50%),
+            radial-gradient(at 50% 0%, rgba(0, 59, 112, 0.05) 0, transparent 50%),
+            radial-gradient(at 100% 0%, rgba(37, 99, 235, 0.1) 0, transparent 50%) !important;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    }
+
+    .login-container-elite {
+        width: 100%;
+        max-width: 1000px;
+        background: white;
+        border-radius: 24px;
+        display: grid;
+        grid-template-columns: 1.1fr 1fr;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        min-height: 650px;
+    }
+
+    /* Lado Esquerdo - Brand */
+    .login-brand-side {
+        background: linear-gradient(165deg, #001f3b 0%, #003B70 100%);
+        padding: 3rem;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        color: white;
+        overflow: hidden;
+    }
+
+    .brand-glow {
+        position: absolute;
+        top: 20%;
+        left: 20%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.3) 0%, transparent 70%);
+        filter: blur(40px);
+        pointer-events: none;
+    }
+
+    .btn-back-elite {
+        position: relative;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: white;
+        padding: 8px 20px;
+        border-radius: 100px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s ease;
+        align-self: flex-start;
+    }
+
+    .btn-back-elite:hover {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        transform: translateX(-4px);
+    }
+
+    .brand-content {
+        position: relative;
+        z-index: 10;
+        text-align: center;
+    }
+
+    .login-main-logo {
+        width: 280px;
+        height: auto;
+        margin-bottom: 3rem;
+        filter: drop-shadow(0 20px 30px rgba(0,0,0,0.3));
+        animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+
+    .brand-text-content {
+        text-align: left;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+
+    .brand-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.75rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #60a5fa;
+        margin-bottom: 1rem;
+    }
+
+    .brand-title-elite {
+        font-size: 2.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+        letter-spacing: -0.02em;
+    }
+
+    .brand-description-elite {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        color: rgba(255, 255, 255, 0.7);
+        font-weight: 400;
+    }
+
+    .brand-footer {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.5);
+        font-weight: 600;
+    }
+
+    /* Lado Direito - Form */
+    .login-form-side {
+        padding: 4rem 3.5rem;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: white;
+    }
+
+    .form-header-elite {
+        margin-bottom: 3rem;
+    }
+
+    .form-header-elite h2 {
+        color: var(--text-dark);
+        font-size: 1.75rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+    }
+
+    .form-header-elite p {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+        font-weight: 500;
+    }
+
+    .form-group-elite {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label-elite {
+        display: block;
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        margin-bottom: 0.75rem;
+        padding-left: 4px;
+    }
+
+    .input-wrapper-elite {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .input-icon-elite {
+        position: absolute;
+        left: 1.25rem;
+        color: var(--text-muted);
+        font-size: 1.1rem;
+    }
+
+    .form-control-elite {
+        width: 100%;
+        height: 58px;
+        background: #f8fafc !important;
+        border: 2px solid #e2e8f0 !important;
+        border-radius: 14px !important;
+        padding: 0 1.25rem 0 3.25rem !important;
+        font-weight: 600;
+        color: var(--text-dark);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 0.95rem;
+    }
+
+    .form-control-elite:focus {
+        background: white !important;
+        border-color: var(--accent-sjb) !important;
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1) !important;
+        outline: none;
+    }
+
+    .form-select-elite {
+        appearance: none;
+        cursor: pointer;
+    }
+
+    .btn-submit-elite {
+        width: 100%;
+        height: 58px;
+        background: var(--accent-sjb) !important;
+        color: white !important;
+        border: none;
+        border-radius: 14px;
+        font-weight: 700;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 2rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
+    }
+
+    .btn-submit-elite:hover {
+        background: var(--secondary-sjb) !important;
+        transform: translateY(-2px);
+        box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.5);
+    }
+
+    .form-footer-elite {
+        margin-top: 2.5rem;
+        text-align: center;
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        font-weight: 600;
+    }
+
+    @media (max-width: 992px) {
+        .login-container-elite {
+            grid-template-columns: 1fr;
+            max-width: 500px;
+        }
+        .login-brand-side {
+            display: none;
+        }
+        .login-form-side {
+            padding: 3rem 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container-elite">
+    <!-- Lado Esquerdo - Visual -->
+    <div class="login-brand-side">
+        <div class="brand-glow"></div>
+        
+        <a href="{% url 'contratos:landing' %}" class="btn-back-elite">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+
+        <div class="brand-content">
+            <img src="{% static 'img/logo.png' %}" alt="Logo SJB" class="login-main-logo">
+            
+            <div class="brand-text-content">
+                <div class="brand-badge">
+                    <i class="bi bi-shield-lock-fill"></i> Acesso Restrito
+                </div>
+                <h1 class="brand-title-elite">Sistema de Protocolo</h1>
+                <p class="brand-description-elite">
+                    Plataforma oficial para gestão ágil, transparente e rastreável de todos os processos e demandas da administração pública municipal.
+                </p>
+            </div>
+        </div>
+
+        <div class="brand-footer">
+            <span>Versão 2.5.0</span>
+            <span style="display: flex; align-items: center; gap: 6px;">
+                <i class="bi bi-hexagon-fill text-info"></i> Hiden Systems
+            </span>
+        </div>
+    </div>
+
+    <!-- Lado Direito - Formulário -->
+    <div class="login-form-side">
+        <div class="form-header-elite">
+            <h2>Bem-vindo de volta</h2>
+            <p>Insira suas credenciais para acessar o painel.</p>
+        </div>
+
+        <form method="post" autocomplete="off">
+            {% csrf_token %}
+
+            {% if form.errors or messages %}
+                <div class="alert alert-danger border-0 rounded-4 p-3 small fw-bold mb-4 d-flex align-items-center gap-3" style="background: #fef2f2; color: #991b1b;">
+                    <i class="bi bi-exclamation-circle-fill"></i>
+                    <div>
+                        {% if form.errors %}
+                            Credenciais inválidas. Tente novamente.
+                        {% endif %}
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+
+            <div class="form-group-elite">
+                <label class="form-label-elite">Usuário</label>
+                <div class="input-wrapper-elite">
+                    <i class="bi bi-person input-icon-elite"></i>
+                    <input type="text" name="username" class="form-control-elite" required placeholder="Digite seu usuário">
+                </div>
+            </div>
+
+            <div class="form-group-elite">
+                <label class="form-label-elite">Senha</label>
+                <div class="input-wrapper-elite">
+                    <i class="bi bi-lock input-icon-elite"></i>
+                    <input type="password" name="password" class="form-control-elite" required placeholder="Digite sua senha">
+                </div>
+            </div>
+
+            <div class="form-group-elite">
+                <label class="form-label-elite">Setor de Atuação</label>
+                <div class="input-wrapper-elite">
+                    <i id="sector-icon" class="bi bi-building input-icon-elite"></i>
+                    <select class="form-control-elite form-select-elite" name="secretaria" required onchange="updateSectorIcon(this)">
+                        <option value="" selected disabled>Selecione seu departamento</option>
+                        
+                        <optgroup label="Acesso Especial">
+                            <option value="admin" style="font-weight: 800; color: #003B70;">ADMINISTRADOR GERAL</option>
+                        </optgroup>
+                        
+                        <optgroup label="Departamentos / Secretarias">
+                            {% for secretaria in secretarias %}
+                                <option value="{{ secretaria.id }}">{{ secretaria.nome }}</option>
+                            {% endfor %}
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+
+            <script>
+                function updateSectorIcon(select) {
+                    const icon = document.getElementById('sector-icon');
+                    if (select.value === 'admin') {
+                        icon.className = 'bi bi-shield-lock-fill input-icon-elite text-primary';
+                    } else {
+                        icon.className = 'bi bi-building input-icon-elite';
+                    }
+                }
+            </script>
+
+            <button type="submit" class="btn-submit-elite">
+                Entrar no Sistema <i class="bi bi-arrow-right-short fs-4"></i>
+            </button>
+        </form>
+
+        <div class="form-footer-elite">
+            © 2026 Desenvolvido por <strong style="color: var(--primary-sjb)">Hiden Systems</strong>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block footer %}{% endblock %}

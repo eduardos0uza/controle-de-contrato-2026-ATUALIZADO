@@ -1,0 +1,41 @@
+{
+    "id": 7,
+    "numero_contrato": "361/2021",
+    "numero_protocolo": "361/2021",
+    "processo_administrativo": "",
+    "numero_pregao": "",
+    "secretario": "RODRIGO FLORENCIO",
+    "numero_nota_empenho": "",
+    "numero_ficha": "",
+    "empresa": "",
+    "objeto": "ALUGUEL SOCIAL",
+    "data_inicio": "2024-12-31",
+    "vigencia": 12,
+    "data_vencimento": "2025-12-31",
+    "status": "ativo",
+    "responsavel": "GABINETE",
+    "arquivo": null,
+    "dias_restantes": -57,
+    "alerta": "vencido",
+    "itens": [
+        {
+            "id": 21,
+            "tipo_item": "ALUGUEL",
+            "descricao": "ALUGUEL SOCIAL",
+            "unidade": "",
+            "proprietario": "ALMIRA NOGUEIRA PINTO",
+            "cpf": "62381970720",
+            "localidade": "ATAFONA",
+            "tipo_cobranca": "UNIDADE",
+            "quantidade": 1,
+            "quantidade_meses": "",
+            "valor_unitario": "1205.00",
+            "data_viagem": "",
+            "taxa_servico": "0.00",
+            "desconto": "0.00",
+            "caixa_atual": "",
+            "valor_total": "1205.00"
+        }
+    ],
+    "backup_timestamp": "2026-02-26T16:00:13.688040"
+}

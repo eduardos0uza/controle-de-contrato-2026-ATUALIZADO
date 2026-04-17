@@ -1,0 +1,522 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Contratos Criados - Hiden Systems AI{% endblock %}
+
+{% block admin_content %}
+<style>
+    :root {
+        --hiden-primary: #003B70;
+        --hiden-accent: #38bdf8;
+        --hiden-success: #10b981;
+        --hiden-warning: #f59e0b;
+        --hiden-danger: #ef4444;
+        --hiden-bg: #f8fafc;
+        --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .main-content-wrapper {
+        padding: 2rem;
+        animation: slideUp 0.4s ease-out;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Page Header */
+    .page-header {
+        background: white;
+        padding: 1.5rem 2rem;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border: 1px solid #f1f5f9;
+    }
+
+    .page-title h2 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--hiden-primary);
+        margin: 0;
+    }
+
+    .page-title p {
+        color: #64748b;
+        margin: 0.2rem 0 0 0;
+        font-size: 1rem;
+    }
+
+    /* Stat Cards */
+    .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .hiden-stat-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #f1f5f9;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hiden-stat-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--hiden-accent);
+    }
+
+    .stat-icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .stat-info h3 {
+        font-size: 1.75rem;
+        font-weight: 800;
+        margin: 0;
+        color: #1e293b;
+    }
+
+    .stat-info span {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #64748b;
+    }
+
+    /* Content Layout */
+    .content-grid {
+        display: grid;
+        grid-template-columns: 300px 1fr;
+        gap: 1.5rem;
+        align-items: start;
+    }
+
+    /* Sidebar Filters */
+    .filter-card {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #f1f5f9;
+        position: sticky;
+        top: 2rem;
+    }
+
+    .filter-group {
+        margin-bottom: 1.25rem;
+    }
+
+    .filter-label {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .hiden-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        background: #f8fafc;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+
+    .hiden-input:focus {
+        border-color: var(--hiden-accent);
+        background: white;
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
+    }
+
+    /* Modern Table */
+    .table-card {
+        background: white;
+        border-radius: 16px;
+        box-shadow: var(--card-shadow);
+        border: 1px solid #f1f5f9;
+        overflow: hidden;
+    }
+
+    .hiden-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .hiden-table thead th {
+        background: #f8fafc;
+        padding: 1.25rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #475569;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .hiden-table tbody td {
+        padding: 1.25rem 1rem;
+        border-bottom: 1px solid #f1f5f9;
+        vertical-align: middle;
+        font-size: 1rem;
+    }
+
+    .hiden-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    .hiden-table tbody tr:hover {
+        background: #f1f5f9;
+    }
+
+    /* Custom Badges */
+    .hiden-badge {
+        padding: 0.5rem 1rem;
+        border-radius: 50px;
+        font-weight: 700;
+        font-size: 0.8rem;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: uppercase;
+    }
+
+    .badge-active { background: #dcfce7; color: #166534; }
+    .badge-expired { background: #fee2e2; color: #991b1b; }
+    .badge-warning { background: #fef3c7; color: #92400e; }
+
+    /* Action Buttons */
+    .btn-action {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #64748b;
+        transition: all 0.2s;
+        text-decoration: none;
+    }
+
+    .btn-action:hover {
+        background: var(--hiden-primary);
+        color: white;
+        border-color: var(--hiden-primary);
+        transform: translateY(-2px);
+    }
+
+    .btn-secondary-hiden {
+        background: white;
+        color: var(--hiden-primary);
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        border: 1px solid #e2e8f0;
+    }
+
+    .btn-secondary-hiden:hover {
+        background: #f8fafc;
+        transform: translateY(-2px);
+        color: var(--hiden-primary);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-primary-hiden {
+        background: var(--hiden-primary);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+        border: none;
+    }
+
+    .btn-primary-hiden:hover {
+        background: #002b50;
+        transform: translateY(-2px);
+        color: white;
+        box-shadow: 0 4px 12px rgba(0, 59, 112, 0.2);
+    }
+
+    /* Responsive */
+    @media (max-width: 1200px) {
+        .content-grid {
+            grid-template-columns: 1fr;
+        }
+        .filter-card {
+            position: static;
+        }
+    }
+</style>
+
+<div class="main-content-wrapper">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="page-title">
+            <h2>Gestão de Contratos</h2>
+            <p>Monitoramento e controle administrativo completo</p>
+        </div>
+        <div class="header-actions d-flex gap-2">
+            <a href="{% url 'admin_panel:dashboard' %}" class="btn-secondary-hiden">
+                <i class="bi bi-arrow-left"></i>
+                Voltar
+            </a>
+            <a href="{% url 'contratos:criar' %}" class="btn-primary-hiden">
+                <i class="bi bi-plus-circle-fill"></i>
+                Novo Contrato
+            </a>
+        </div>
+    </div>
+
+    <!-- Quick Stats Section -->
+    <div class="stat-grid">
+        <div class="hiden-stat-card">
+            <div class="stat-icon-box" style="background: rgba(0, 59, 112, 0.1); color: var(--hiden-primary);">
+                <i class="bi bi-files"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.total }}</h3>
+                <span>Total de Contratos</span>
+            </div>
+        </div>
+        <div class="hiden-stat-card">
+            <div class="stat-icon-box" style="background: rgba(16, 185, 129, 0.1); color: var(--hiden-success);">
+                <i class="bi bi-check2-circle"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.ativos }}</h3>
+                <span>Contratos Ativos</span>
+            </div>
+        </div>
+        <div class="hiden-stat-card">
+            <div class="stat-icon-box" style="background: rgba(245, 158, 11, 0.1); color: var(--hiden-warning);">
+                <i class="bi bi-clock-history"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.vencendo_30 }}</h3>
+                <span>Vencendo em 30 dias</span>
+            </div>
+        </div>
+        <div class="hiden-stat-card">
+            <div class="stat-icon-box" style="background: rgba(239, 68, 68, 0.1); color: var(--hiden-danger);">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+            <div class="stat-info">
+                <h3>{{ stats.vencidos }}</h3>
+                <span>Contratos Vencidos</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="content-grid">
+        <!-- Sidebar Filters -->
+        <aside class="filter-card">
+            <h5 class="fw-bold mb-4" style="color: var(--hiden-primary);"><i class="bi bi-funnel-fill me-2"></i>Filtros Avançados</h5>
+            <form method="get">
+                <div class="filter-group">
+                    <label class="filter-label">Buscar Termo</label>
+                    <input type="text" name="q" class="hiden-input" placeholder="Nº Contrato, Empresa..." value="{{ query|default:'' }}">
+                </div>
+                
+                <div class="filter-group">
+                    <label class="filter-label">Secretaria</label>
+                    <select name="secretaria" class="hiden-input">
+                        <option value="">Todas as Secretarias</option>
+                        {% for sec in secretarias %}
+                        <option value="{{ sec.id }}" {% if selected_secretaria == sec.id|stringformat:"i" %}selected{% endif %}>{{ sec.nome }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select name="status" class="hiden-input">
+                        <option value="">Todos os Status</option>
+                        <option value="ativo" {% if selected_status == 'ativo' %}selected{% endif %}>Ativo</option>
+                        <option value="encerrado" {% if selected_status == 'encerrado' %}selected{% endif %}>Encerrado</option>
+                        <option value="suspenso" {% if selected_status == 'suspenso' %}selected{% endif %}>Suspenso</option>
+                    </select>
+                </div>
+
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn-primary-hiden justify-content-center">
+                        <i class="bi bi-search"></i> Aplicar Filtros
+                    </button>
+                    <a href="{% url 'admin_panel:contratos_list' %}" class="btn btn-light rounded-pill fw-bold text-muted border py-2">
+                        Limpar Filtros
+                    </a>
+                </div>
+            </form>
+
+            <div class="mt-5 pt-4 border-top">
+                <h6 class="fw-bold mb-3 small text-muted text-uppercase">Legenda de Alertas</h6>
+                <div class="d-flex flex-column gap-2">
+                    <div class="d-flex align-items-center gap-2 small">
+                        <span class="rounded-circle" style="width: 10px; height: 10px; background: var(--hiden-success);"></span>
+                        <span class="text-muted"><b>Regular:</b> Mais de 90 dias</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 small">
+                        <span class="rounded-circle" style="width: 10px; height: 10px; background: #ffc107;"></span>
+                        <span class="text-muted"><b>Atenção:</b> Até 90 dias</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 small">
+                        <span class="rounded-circle" style="width: 10px; height: 10px; background: var(--hiden-warning);"></span>
+                        <span class="text-muted"><b>Urgente:</b> Até 30 dias</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 small">
+                        <span class="rounded-circle" style="width: 10px; height: 10px; background: var(--hiden-danger);"></span>
+                        <span class="text-muted"><b>Crítico:</b> Até 7 dias</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 small">
+                        <span class="rounded-circle" style="width: 10px; height: 10px; background: #000;"></span>
+                        <span class="text-muted"><b>Expirado:</b> Contrato Vencido</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Contracts Table -->
+        <main class="table-card">
+            <div class="table-responsive">
+                <table class="hiden-table">
+                    <thead>
+                        <tr>
+                            <th>Contrato & Fornecedor</th>
+                            <th>Status & Alerta</th>
+                            <th>Valor Total</th>
+                            <th>Vencimento</th>
+                            <th class="text-end">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for contrato in contratos %}
+                        <tr>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold text-dark fs-6">{{ contrato.numero_contrato }}</span>
+                                    <span class="text-primary fw-semibold small">{{ contrato.empresa|default:"Fornecedor não informado" }}</span>
+                                    <span class="text-muted small text-truncate" style="max-width: 250px;">{{ contrato.objeto|truncatechars:60 }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column gap-2">
+                                    <span class="hiden-badge {% if contrato.status == 'ativo' %}badge-active{% else %}badge-expired{% endif %}">
+                                        <i class="bi bi-circle-fill" style="font-size: 0.5rem;"></i>
+                                        {{ contrato.get_status_display|upper }}
+                                    </span>
+                                    <div class="d-flex align-items-center gap-2 small fw-bold" title="{{ contrato.alerta_info.description }}">
+                                        <span class="rounded-circle" style="width: 10px; height: 10px; background: {{ contrato.alerta_info.color }};"></span>
+                                        <span class="text-muted">{{ contrato.alerta_info.label }}</span>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold text-dark">R$ {{ contrato.valor|floatformat:2|intcomma }}</span>
+                                    <span class="text-muted small">{{ contrato.secretaria.nome|default:"Secretaria Geral" }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-column">
+                                    <span class="fw-bold {% if contrato.dias_restantes <= 30 %}text-danger{% elif contrato.dias_restantes <= 90 %}text-warning{% else %}text-dark{% endif %}">
+                                        {{ contrato.data_vencimento|date:"d/m/Y" }}
+                                    </span>
+                                    <span class="text-muted small">
+                                        {% if contrato.dias_restantes > 0 %}
+                                            Faltam {{ contrato.dias_restantes }} dias
+                                        {% elif contrato.dias_restantes == 0 %}
+                                            Vence Hoje
+                                        {% else %}
+                                            Vencido há {{ contrato.dias_restantes|stringformat:"i"|slice:"1:" }} dias
+                                        {% endif %}
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <div class="d-flex justify-content-end gap-2">
+                                    <a href="{% url 'contratos:detalhe' contrato.pk %}" class="btn-action" title="Ver Detalhes">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                                    <a href="{% url 'contratos:editar' contrato.pk %}" class="btn-action" title="Editar">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="py-5 text-center">
+                                <div class="py-5">
+                                    <i class="bi bi-folder-x fs-1 text-muted"></i>
+                                    <h4 class="mt-3 fw-bold text-muted">Nenhum contrato encontrado</h4>
+                                    <p class="text-muted">Tente ajustar seus filtros para encontrar o que procura.</p>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if is_paginated %}
+            <div class="card-footer bg-white border-0 py-4">
+                <nav aria-label="Navegação de páginas">
+                    <ul class="pagination justify-content-center gap-2">
+                        {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link rounded-pill px-4 border-0 bg-light text-primary fw-bold" href="?page={{ page_obj.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_secretaria %}&secretaria={{ selected_secretaria }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">Anterior</a>
+                        </li>
+                        {% endif %}
+                        
+                        <li class="page-item active">
+                            <span class="page-link rounded-pill px-4 border-0 bg-primary fw-bold">{{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+                        </li>
+
+                        {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link rounded-pill px-4 border-0 bg-light text-primary fw-bold" href="?page={{ page_obj.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if selected_secretaria %}&secretaria={{ selected_secretaria }}{% endif %}{% if selected_status %}&status={{ selected_status }}{% endif %}">Próxima</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+            {% endif %}
+        </main>
+    </div>
+</div>
+
+{% endblock %}

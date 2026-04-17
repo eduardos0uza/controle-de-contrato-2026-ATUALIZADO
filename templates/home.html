@@ -1,0 +1,693 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Central de Protocolo - SJB{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+    :root {
+        --nav-bg: rgba(255, 255, 255, 0.95);
+        --hero-bg: #ffffff;
+        --section-bg-alt: #f8fafc;
+        --primary-navy: #003B70;
+        --primary-blue: #0056D2;
+        --primary-glow: rgba(0, 86, 210, 0.1);
+        --light-blue: #e0f2fe;
+        --text-dark: #0f172a;
+        --text-light: #1e293b;
+        --text-muted: #64748b;
+        --border-subtle: rgba(0, 0, 0, 0.05);
+        --glass-white: rgba(255, 255, 255, 0.95);
+        
+        /* Cores da linha superior */
+        --line-blue: #004494;
+        --line-green: #009541;
+        --line-yellow: #ffcc00;
+        --line-red: #e30613;
+    }
+
+    /* Navbar Estilo Elite */
+    .navbar-elite {
+        background: var(--glass-white);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(0, 59, 112, 0.08);
+        padding: 0.8rem 0;
+        transition: all 0.3s ease;
+        position: fixed;
+        top: 4px;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+    }
+
+    .navbar-brand-logo {
+        height: 42px;
+        width: auto;
+        border-radius: 8px;
+        padding: 4px;
+        background: white;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    .nav-link-elite {
+        font-weight: 600;
+        color: #64748b;
+        padding: 0.6rem 1.25rem !important;
+        border-radius: 12px;
+        margin: 0 4px;
+        transition: all 0.2s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.9rem;
+        text-decoration: none;
+    }
+
+    .nav-link-elite:hover {
+        color: var(--primary-navy);
+        background: rgba(0, 59, 112, 0.04);
+    }
+
+    .btn-auth-elite {
+        background: var(--primary-navy);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 50px;
+        font-weight: 700;
+        text-decoration: none;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.3s;
+        box-shadow: 0 10px 20px rgba(0, 59, 112, 0.15);
+        border: none;
+    }
+
+    .btn-auth-elite:hover {
+        background: #002d5a;
+        transform: translateY(-2px);
+        box-shadow: 0 12px 25px rgba(0, 59, 112, 0.25);
+        color: white;
+    }
+
+    body {
+        margin: 0;
+        font-family: 'Inter', sans-serif;
+        background-color: var(--hero-bg);
+        color: var(--text-light);
+        -webkit-font-smoothing: antialiased;
+        overflow-x: hidden;
+        padding-top: 4px; /* Compensar a linha fixa */
+    }
+
+    .top-color-line {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        display: flex;
+        z-index: 9999;
+    }
+    .line-segment { height: 100%; flex: 1; }
+    .seg-blue { background-color: var(--line-blue); }
+    .seg-green { background-color: var(--line-green); }
+    .seg-yellow { background-color: var(--line-yellow); }
+    .seg-red { background-color: var(--line-red); }
+
+    /* =========================================
+       ANIMAÇÕES GLOBAIS (KEYFRAMES)
+       ========================================= */
+    @keyframes fadeInUp {
+        0% { opacity: 0; transform: translateY(30px); }
+        100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes float { 
+        0% { transform: translateY(0px); } 
+        50% { transform: translateY(-10px); } 
+        100% { transform: translateY(0px); } 
+    }
+
+    @keyframes scroll {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+
+    @keyframes dashMove {
+        to { stroke-dashoffset: -20; }
+    }
+
+    .animate-up {
+        opacity: 0;
+        animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+    .delay-5 { animation-delay: 0.5s; }
+
+    /* =========================================
+       Hero Section (Tema Claro)
+       ========================================= */
+    .hero-section { 
+        position: relative; 
+        padding: 160px 24px 80px; /* Aumentado padding top para compensar navbar fixa */
+        display: flex; 
+        align-items: center; 
+        min-height: 90vh; 
+        background: radial-gradient(circle at top right, #f0f9ff 0%, #ffffff 50%); 
+    }
+    
+    .hero-glow-1 { position: absolute; top: -10%; left: 0; width: 600px; height: 600px; background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, transparent 60%); filter: blur(80px); z-index: 1; pointer-events: none;}
+    
+    .hero-container { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items: center; position: relative; z-index: 10; }
+    
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569; padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 28px; }
+    .hero-badge .dot { width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);}
+    
+    .hero-title { 
+        font-size: clamp(3rem, 5vw, 4.5rem); 
+        font-weight: 800; 
+        line-height: 1.05; 
+        margin-bottom: 24px; 
+        color: var(--text-dark); 
+        letter-spacing: -0.03em; 
+    }
+    .hero-title span { 
+        background: linear-gradient(to right, var(--primary-navy), #2563eb); 
+        -webkit-background-clip: text; 
+        -webkit-text-fill-color: transparent; 
+    }
+    
+    .hero-subtitle { font-size: 1.15rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 40px; max-width: 520px; font-weight: 400; }
+    
+    .hero-buttons { display: flex; gap: 16px; margin-bottom: 50px; }
+    .btn-hero-primary { 
+        background: var(--primary-navy); 
+        color: #ffffff; 
+        padding: 16px 36px; 
+        border-radius: 50px; 
+        font-weight: 700; 
+        text-decoration: none; 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+        transition: all 0.3s; 
+        font-size: 1.05rem;
+        box-shadow: 0 10px 20px rgba(0, 59, 112, 0.2);
+    }
+    .btn-hero-primary:hover { 
+        background: #002d5a;
+        transform: translateY(-3px); 
+        box-shadow: 0 15px 30px rgba(0, 59, 112, 0.3); 
+        color: white;
+    }
+    
+    .btn-outline-light { 
+        background: transparent; 
+        color: var(--text-dark); 
+        border: 2px solid #e2e8f0; 
+        padding: 16px 32px; 
+        border-radius: 50px; 
+        font-weight: 700; 
+        text-decoration: none; 
+        display: flex; 
+        align-items: center; 
+        gap: 8px; 
+        transition: all 0.3s; 
+    }
+    .btn-outline-light:hover { 
+        background: #f8fafc; 
+        border-color: var(--primary-navy); 
+        color: var(--primary-navy);
+        transform: translateY(-3px);
+    }
+
+    /* Mockup Visual 3D (Ajustado) */
+    .mockup-wrapper { position: relative; perspective: 1000px; }
+    .mockup-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120%; height: 120%; background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 60%); filter: blur(60px); z-index: -1; }
+    
+    .mockup-window { background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.02); overflow: hidden; color: var(--text-light); transform: rotateY(-5deg) rotateX(5deg); transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    .mockup-wrapper:hover .mockup-window { transform: rotateY(0deg) rotateX(0deg); }
+
+    .mockup-header { background: #f8fafc; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
+    .mockup-header-title { font-weight: 600; color: var(--text-dark); display: flex; align-items: center; gap: 8px;}
+    .mockup-tabs { display: flex; gap: 16px; font-size: 0.85rem; font-weight: 500;}
+    .mockup-tab.active { background: #2563eb; padding: 6px 14px; border-radius: 6px; color: #fff; box-shadow: 0 4px 10px rgba(37,99,235,0.2);}
+    .mockup-tab:not(.active) { padding: 6px 0; color: var(--text-muted); }
+    .mockup-body { padding: 24px; }
+    .mockup-stat-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; color: var(--text-dark); }
+    .mockup-item { background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 12px;}
+    .m-id { color: var(--text-muted); font-weight: 600;}
+    .m-badges span { padding: 3px 8px; border-radius: 4px; margin-left: 6px; font-size: 0.7rem; font-weight: 600;}
+    .bg-blue-subtle { background: #eff6ff; color: #2563eb;}
+    .bg-green-subtle { background: #ecfdf5; color: #059669;}
+
+    /* =========================================
+       Social Proof (Carrossel Infinito)
+       ========================================= */
+    .integration-marquee { border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); background: rgba(255,255,255,0.01); padding: 30px 0; overflow: hidden; position: relative; display: flex; }
+    .integration-marquee::before, .integration-marquee::after { content: ''; position: absolute; top: 0; width: 150px; height: 100%; z-index: 2; }
+    .integration-marquee::before { left: 0; background: linear-gradient(to right, var(--hero-bg), transparent); }
+    .integration-marquee::after { right: 0; background: linear-gradient(to left, var(--hero-bg), transparent); }
+    .marquee-track { display: flex; gap: 60px; align-items: center; animation: scroll 30s linear infinite; white-space: nowrap; padding-left: 60px;}
+    .marquee-item { color: var(--text-muted); font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; gap: 12px; }
+    .marquee-item i { color: #2563eb; font-size: 1.3rem; }
+
+    /* =========================================
+       Benefícios (Features Grid)
+       ========================================= */
+    .section-padding { padding: 120px 24px; }
+    .section-title { font-size: clamp(2rem, 3vw, 2.8rem); font-weight: 800; color: var(--text-dark); margin-bottom: 20px; text-align: center; letter-spacing: -0.02em; }
+    .section-subtitle { font-size: 1.15rem; color: var(--text-muted); text-align: center; max-width: 650px; margin: 0 auto 64px; line-height: 1.6; }
+    .badge-section { display: inline-block; background: #eff6ff; border: 1px solid #dbeafe; color: #2563eb; padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    .features-section { background-color: var(--section-bg-alt); position: relative; overflow: hidden;}
+    .features-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; position: relative; z-index: 2;}
+    
+    .feature-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
+    /* Efeito de Borda Radiante no Hover */
+    .feature-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 100%; background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, -20%), rgba(37,99,235,0.05), transparent 40%); opacity: 0; transition: opacity 0.5s; z-index: 0; pointer-events: none;}
+    .feature-card:hover { transform: translateY(-5px); border-color: #2563eb; box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
+    .feature-card:hover::before { opacity: 1; }
+    
+    .feature-card > * { position: relative; z-index: 1; }
+    .feature-icon { 
+        width: 56px; 
+        height: 56px; 
+        background: #eff6ff; 
+        color: var(--primary-navy); 
+        border: 1px solid #dbeafe; 
+        border-radius: 16px; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        font-size: 24px; 
+        margin-bottom: 24px; 
+    }
+    .feature-card:hover .feature-icon {
+        background: var(--primary-navy);
+        color: white;
+        transform: rotate(-5deg) scale(1.1);
+        transition: all 0.3s ease;
+    }
+    .feature-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin-bottom: 12px; }
+    .feature-desc { color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; margin: 0; }
+
+    /* =========================================
+       Como Funciona (Workflow Animado)
+       ========================================= */
+    .workflow-container { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; position: relative; }
+    .workflow-step { text-align: center; padding: 0 20px; position: relative; z-index: 2; }
+    .step-number { 
+        width: 64px; 
+        height: 64px; 
+        background: #ffffff; 
+        border: 2px solid var(--primary-navy); 
+        color: var(--primary-navy); 
+        font-size: 1.5rem; 
+        font-weight: 800; 
+        border-radius: 50%; 
+        display: flex; 
+        align-items: center; 
+        justify-content: center; 
+        margin: 0 auto 24px; 
+        box-shadow: 0 0 20px rgba(0, 59, 112, 0.1); 
+        position: relative; 
+        z-index: 2;
+        transition: all 0.3s ease;
+    }
+    .workflow-step:hover .step-number {
+        background: var(--primary-navy);
+        color: white;
+        transform: scale(1.1);
+    }
+    .step-title { font-size: 1.2rem; font-weight: 700; color: var(--text-dark); margin-bottom: 12px; }
+    .step-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+    
+    /* Linha tracejada com animação */
+    .workflow-line-svg { position: absolute; top: 32px; left: 16%; width: 68%; height: 2px; z-index: 1; }
+    .workflow-line-svg line { stroke: #e2e8f0; stroke-width: 2; stroke-dasharray: 8 8; animation: dashMove 1s linear infinite; }
+
+    /* =========================================
+       CTA de Transparência (Banner Luxo)
+       ========================================= */
+    .cta-wrapper { max-width: 1300px; margin: 0 auto; }
+    .cta-banner { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 32px; padding: 80px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 30px 60px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative; overflow: hidden; }
+    .cta-banner::before { content: ''; position: absolute; top: -50%; right: -20%; width: 800px; height: 800px; background: radial-gradient(circle, rgba(37,99,235,0.03) 0%, transparent 60%); border-radius: 50%; pointer-events: none; }
+    .cta-text { position: relative; z-index: 2;}
+    .cta-text h3 { font-size: 2.8rem; font-weight: 800; color: var(--text-dark); margin: 0 0 16px 0; letter-spacing: -0.02em; }
+    .cta-text p { color: var(--text-muted); font-size: 1.15rem; margin: 0; max-width: 500px; line-height: 1.6; }
+    
+    /* Botão CTA Gigante */
+    .btn-cta-huge { 
+        position: relative; 
+        z-index: 2; 
+        background: var(--primary-navy); 
+        color: #ffffff; 
+        padding: 20px 40px; 
+        border-radius: 50px; 
+        font-size: 1.1rem; 
+        font-weight: 700; 
+        text-decoration: none; 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+        transition: all 0.3s; 
+        box-shadow: 0 20px 40px rgba(0, 59, 112, 0.2); 
+    }
+    .btn-cta-huge:hover { 
+        background: #002d5a;
+        transform: translateY(-5px) scale(1.02); 
+        box-shadow: 0 25px 50px rgba(0, 59, 112, 0.3); 
+        color: white;
+    }
+
+    /* =========================================
+       Rodapé (Footer)
+       ========================================= */
+    .footer { background-color: #ffffff; padding: 80px 24px 32px; border-top: 1px solid #e2e8f0; position: relative;}
+    .footer::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 50%; height: 1px; background: linear-gradient(90deg, transparent, rgba(37,99,235,0.2), transparent); }
+    .footer-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px; margin-bottom: 60px; }
+    .footer-brand p { color: var(--text-muted); font-size: 0.95rem; margin-top: 16px; max-width: 350px; line-height: 1.6; }
+    .footer-title { color: var(--text-dark); font-weight: 700; margin-bottom: 24px; font-size: 1.1rem; }
+    .footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px; }
+    .footer-links a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; font-size: 0.95rem; }
+    .footer-links a:hover { color: var(--primary-navy); }
+    .footer-bottom { max-width: 1300px; margin: 0 auto; padding-top: 32px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.85rem; }
+
+    /* Estilo para links ativos na home */
+    .nav-link-elite.active {
+        color: var(--primary-navy) !important;
+        background: rgba(0, 59, 112, 0.08);
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    section {
+        scroll-margin-top: 100px;
+    }
+
+    .feature-card {
+        scroll-margin-top: 120px;
+    }
+
+    @media (max-width: 1024px) {
+        .hero-container { grid-template-columns: 1fr; }
+        .nav-links { display: none; }
+        .mockup-wrapper { margin-top: 40px; }
+        .workflow-container { grid-template-columns: 1fr; gap: 48px; }
+        .workflow-line-svg { display: none; }
+        .cta-banner { flex-direction: column; text-align: center; gap: 40px; padding: 40px 24px; }
+        .cta-text p { margin: 0 auto; }
+        .footer-grid { grid-template-columns: 1fr; gap: 40px; }
+        .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="top-color-line">
+    <div class="line-segment seg-blue"></div>
+    <div class="line-segment seg-green"></div>
+    <div class="line-segment seg-yellow"></div>
+    <div class="line-segment seg-red"></div>
+</div>
+
+<nav class="navbar-elite">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a class="nav-brand" href="/">
+            <img src="{% static 'img/logo.png' %}" alt="Logo SJB" class="navbar-brand-logo">
+            <div class="nav-brand-text">
+                <div class="nav-brand-title" style="color: var(--primary-navy); font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em;">São João da Barra</div>
+                <div class="nav-brand-subtitle" style="font-size: 0.55rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);">Monitoramento de Contratos</div>
+            </div>
+        </a>
+
+        <div class="nav-links d-none d-lg-flex">
+            <a href="#recursos" class="nav-link-elite">Recursos</a>
+            <a href="#como-funciona" class="nav-link-elite">Como Funciona</a>
+            <a href="#transparencia" class="nav-link-elite">Transparência</a>
+        </div>
+
+        <div class="nav-actions">
+            {% if user.is_authenticated %}
+                <a href="{% url 'contratos:dashboard' %}" class="btn-auth-elite">
+                    Dashboard <i class="bi bi-grid-1x2-fill"></i>
+                </a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn-auth-elite">
+                    Acesso Restrito <i class="bi bi-shield-lock-fill"></i>
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+<section class="hero-section">
+    <div class="hero-glow-1"></div>
+    <div class="hero-container">
+        
+        <div class="hero-content">
+            <div class="hero-badge animate-up delay-1">
+                <span class="dot"></span> Sistema Oficial · Prefeitura de São João da Barra
+            </div>
+            
+            <h1 class="hero-title animate-up delay-2">
+                Gestão de Protocolos<br>
+                <span>Inteligente e Transparente</span>
+            </h1>
+            
+            <p class="hero-subtitle animate-up delay-3">
+                A tecnologia governamental que elimina o papel e acelera as decisões. Acompanhe processos e garanta eficiência total para o cidadão e para o servidor.
+            </p>
+            
+            <div class="hero-buttons animate-up delay-4">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'contratos:dashboard' %}" class="btn-hero-primary">
+                        Acessar Dashboard <i class="bi bi-grid-1x2-fill"></i>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn-hero-primary">
+                        Acessar Sistema <i class="bi bi-arrow-right"></i>
+                    </a>
+                {% endif %}
+                <a href="#como-funciona" class="btn-outline-light">
+                    Como funciona
+                </a>
+            </div>
+        </div>
+
+        <div class="mockup-wrapper animate-up delay-5">
+            <div class="mockup-glow"></div>
+            
+            <div class="floating-icon icon-left">
+                <i class="bi bi-bar-chart-fill"></i>
+            </div>
+            <div class="floating-icon icon-right">
+                <i class="bi bi-shield-check"></i>
+            </div>
+
+            <div class="mockup-window">
+                <div class="mockup-header">
+                    <div class="mockup-header-title">
+                        <i class="bi bi-file-earmark-text"></i> Controle de Contratos
+                    </div>
+                    <div class="mockup-tabs">
+                        <span class="mockup-tab active">Dashboard</span>
+                        <span class="mockup-tab">Processos</span>
+                    </div>
+                </div>
+
+                <div class="mockup-body">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                        <div class="mockup-stat-card">
+                            <span><i class="bi bi-layers text-primary"></i> EM ANDAMENTO</span>
+                            <strong>1.284</strong>
+                        </div>
+                        <div class="mockup-stat-card">
+                            <span><i class="bi bi-exclamation-circle text-warning"></i> URGENTES</span>
+                            <strong>14</strong>
+                        </div>
+                    </div>
+
+                    <div class="mockup-item">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span class="m-id">#2026000001</span>
+                            <span class="m-badges bg-blue-subtle">Aberto</span>
+                        </div>
+                        <h5 style="margin: 0 0 8px; font-size: 0.9rem; color: var(--text-dark);">Licitação para Fornecimento de Escolar</h5>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Sec. de Educação · Há 2h</div>
+                    </div>
+                    
+                    <div class="mockup-item" style="margin-bottom: 0;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span class="m-id">#2026000002</span>
+                            <span class="m-badges bg-green-subtle">Deferido</span>
+                        </div>
+                        <h5 style="margin: 0 0 8px; font-size: 0.9rem; color: var(--text-dark);">Nova Unidade Hospitalar</h5>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Sec. de Saúde · Ontem</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<div class="integration-marquee">
+    <div class="marquee-track">
+        <div class="marquee-item"><i class="bi bi-building-check"></i> Gabinete da Prefeitura</div>
+        <div class="marquee-item"><i class="bi bi-book-half"></i> Secretaria de Educação</div>
+        <div class="marquee-item"><i class="bi bi-heart-pulse"></i> Secretaria de Saúde</div>
+        <div class="marquee-item"><i class="bi bi-cone-striped"></i> Secretaria de Obras</div>
+        <div class="marquee-item"><i class="bi bi-cash-coin"></i> Secretaria de Fazenda</div>
+        <div class="marquee-item"><i class="bi bi-shield-shaded"></i> Procuradoria Geral</div>
+        <div class="marquee-item"><i class="bi bi-building-check"></i> Gabinete da Prefeitura</div>
+        <div class="marquee-item"><i class="bi bi-book-half"></i> Secretaria de Educação</div>
+        <div class="marquee-item"><i class="bi bi-heart-pulse"></i> Secretaria de Saúde</div>
+        <div class="marquee-item"><i class="bi bi-cone-striped"></i> Secretaria de Obras</div>
+        <div class="marquee-item"><i class="bi bi-cash-coin"></i> Secretaria de Fazenda</div>
+        <div class="marquee-item"><i class="bi bi-shield-shaded"></i> Procuradoria Geral</div>
+    </div>
+</div>
+
+<section id="recursos" class="section-padding features-section">
+    <div style="text-align: center;">
+        <div class="badge-section">GovTech de Alto Desempenho</div>
+        <h2 class="section-title">A tecnologia ao serviço do município</h2>
+        <p class="section-subtitle">O nosso sistema elimina o papel, reduz custos operacionais e garante que absolutamente nenhum prazo se perca nos corredores da prefeitura.</p>
+    </div>
+
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+            <h3 class="feature-title">Tramitação Instantânea</h3>
+            <p class="feature-desc">Envie e receba despachos instantaneamente entre secretarias. Fim do transporte físico de processos de mesa em mesa.</p>
+        </div>
+        
+        <div class="feature-card">
+            <div class="feature-icon"><i class="bi bi-shield-lock-fill"></i></div>
+            <h3 class="feature-title">Segurança Jurídica Absoluta</h3>
+            <p class="feature-desc">Todos os acessos e alterações geram um rastro de auditoria inalterável na base de dados com assinatura eletrónica.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon"><i class="bi bi-tree-fill"></i></div>
+            <h3 class="feature-title">Sustentabilidade (Zero Papel)</h3>
+            <p class="feature-desc">Redução drástica no custo de impressões. Documentos digitalizados com validade legal plena e armazenamento na nuvem.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon"><i class="bi bi-bell-fill"></i></div>
+            <h3 class="feature-title">Motor de Notificações</h3>
+            <p class="feature-desc">Os servidores são alertados automaticamente sobre prazos de vencimento de contratos ou processos parados nas filas.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
+            <h3 class="feature-title">BI & Gestão de Dados</h3>
+            <p class="feature-desc">Painéis executivos (Dashboards) que permitem aos gestores identificar em tempo real os gargalos nos setores.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon"><i class="bi bi-patch-check-fill"></i></div>
+            <h3 class="feature-title">Conformidade Legal</h3>
+            <p class="feature-desc">Rastreamento completo de cada etapa do processo, garantindo conformidade total com as normas vigentes.</p>
+        </div>
+    </div>
+</section>
+
+<section id="transparencia" class="section-padding">
+    <div class="cta-wrapper">
+        <div class="cta-banner">
+            <div class="cta-text">
+                <div class="badge-section" style="background: rgba(0, 59, 112, 0.08); color: var(--primary-navy);">Transparência Municipal</div>
+                <h3>Compromisso com o Cidadão</h3>
+                <p>Nossa plataforma garante o cumprimento integral da Lei de Acesso à Informação (LAI), permitindo auditoria total e consulta pública simplificada.</p>
+            </div>
+            <a href="http://transparencia.sjb.rj.gov.br:8079/transparencia/" target="_blank" class="btn-cta-huge">
+                Portal da Transparência <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<section id="como-funciona" class="section-padding" style="background-color: var(--hero-bg);">
+    <div style="text-align: center;">
+        <div class="badge-section">Fluxo Digital Inteligente</div>
+        <h2 class="section-title">O fim da burocracia.</h2>
+        <p class="section-subtitle">Um fluxo desenhado por especialistas em usabilidade para ser o mais intuitivo possível. Do pedido do cidadão ao despacho final em tempo recorde.</p>
+    </div>
+
+    <div class="workflow-container">
+        <svg class="workflow-line-svg" preserveAspectRatio="none">
+            <line x1="0" y1="1" x2="100%" y2="1"></line>
+        </svg>
+        
+        <div class="workflow-step">
+            <div class="step-number">1</div>
+            <h3 class="step-title">Geração e Anexos</h3>
+            <p class="step-desc">O processo nasce digital. Documentos são anexados com metadados estruturados, nível de urgência e secretaria de destino pré-definida.</p>
+        </div>
+
+        <div class="workflow-step">
+            <div class="step-number">2</div>
+            <h3 class="step-title">Análise de Fila</h3>
+            <p class="step-desc">O processo cai instantaneamente na caixa do responsável. Pareceres são redigidos e assinados digitalmente dentro do próprio sistema.</p>
+        </div>
+
+        <div class="workflow-step">
+            <div class="step-number">3</div>
+            <h3 class="step-title">Deferimento e Arquivo</h3>
+            <p class="step-desc">Processo concluído. O cidadão é notificado da decisão e o processo é arquivado em segurança, eternamente pesquisável pela matrícula.</p>
+        </div>
+    </div>
+</section>
+
+<footer class="footer">
+    <div class="footer-grid">
+        <div class="footer-brand">
+            <div class="nav-brand">
+                <img src="{% static 'img/logo.png' %}" alt="Logo SJB" style="height: 40px; width: auto; border-radius: 8px;">
+                <div class="nav-brand-text">
+                    <div class="nav-brand-title" style="color: var(--text-dark); font-size: 1rem;">Central de Protocolo</div>
+                    <div class="nav-brand-subtitle">São João da Barra</div>
+                </div>
+            </div>
+            <p>A plataforma definitiva de governo digital. Otimização de fluxos físicos para processos eletrónicos estruturados, garantindo conformidade e transparência cívica.</p>
+        </div>
+
+        <div>
+            <h4 class="footer-title">Plataforma</h4>
+            <ul class="footer-links">
+                <li><a href="#"><i class="bi bi-arrow-right-short"></i> Painel do Servidor</a></li>
+                <li><a href="#"><i class="bi bi-arrow-right-short"></i> Portal do Cidadão</a></li>
+                <li><a href="#"><i class="bi bi-arrow-right-short"></i> Validação de Documentos</a></li>
+                <li><a href="#"><i class="bi bi-arrow-right-short"></i> Termos de Uso (LGPD)</a></li>
+            </ul>
+        </div>
+
+        <div>
+            <h4 class="footer-title">Ligações Oficiais</h4>
+            <ul class="footer-links">
+                <li><a href="#"><i class="bi bi-box-arrow-up-right me-2"></i> Portal da Prefeitura</a></li>
+                <li><a href="#"><i class="bi bi-box-arrow-up-right me-2"></i> Diário Oficial (DO)</a></li>
+                <li><a href="#"><i class="bi bi-box-arrow-up-right me-2"></i> Portal da Transparência</a></li>
+                <li><a href="#"><i class="bi bi-box-arrow-up-right me-2"></i> Ouvidoria do Município</a></li>
+            </ul>
+        </div>
+    </div>
+</footer>
+{% endblock %}
+
+{% block footer %}{% endblock %}

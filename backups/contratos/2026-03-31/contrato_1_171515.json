@@ -1,0 +1,22 @@
+{
+    "id": 1,
+    "numero_contrato": "CACHE-001",
+    "numero_protocolo": "",
+    "processo_administrativo": "",
+    "numero_pregao": "",
+    "secretario": "",
+    "numero_nota_empenho": "",
+    "numero_ficha": "",
+    "empresa": "",
+    "objeto": "",
+    "data_inicio": "2026-01-01",
+    "vigencia": 12,
+    "data_vencimento": "2026-01-10",
+    "status": "ATIVO",
+    "responsavel": "Admin",
+    "arquivo": null,
+    "dias_restantes": -80,
+    "alerta": "vencido",
+    "itens": [],
+    "backup_timestamp": "2026-03-31T17:15:15.891166"
+}

@@ -1,0 +1,41 @@
+{
+    "id": 9,
+    "numero_contrato": "3429/2022",
+    "numero_protocolo": "3429/2022",
+    "processo_administrativo": "",
+    "numero_pregao": "",
+    "secretario": "",
+    "numero_nota_empenho": "",
+    "numero_ficha": "",
+    "empresa": "PREFEITURA",
+    "objeto": "ALUGUEL SOCIAL",
+    "data_inicio": "2024-12-31",
+    "vigencia": 12,
+    "data_vencimento": "2025-12-31",
+    "status": "ativo",
+    "responsavel": "GABINETE",
+    "arquivo": null,
+    "dias_restantes": -57,
+    "alerta": "vencido",
+    "itens": [
+        {
+            "id": 23,
+            "tipo_item": "ALUGUEL",
+            "descricao": "ALUGUEL SOCIAL",
+            "unidade": "",
+            "proprietario": "JOSÉ CARLOS ABREU ALVES",
+            "cpf": "951.657.707-53",
+            "localidade": "GRUSSAÍ",
+            "tipo_cobranca": "UNIDADE",
+            "quantidade": 1,
+            "quantidade_meses": 12,
+            "valor_unitario": "1677.00",
+            "data_viagem": "",
+            "taxa_servico": "0.00",
+            "desconto": "0.00",
+            "caixa_atual": "",
+            "valor_total": "20124.00"
+        }
+    ],
+    "backup_timestamp": "2026-02-26T16:22:45.817649"
+}

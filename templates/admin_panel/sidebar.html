@@ -1,0 +1,53 @@
+<nav class="admin-nav-shell" aria-label="Navegação administrativa">
+    <div class="admin-nav-group">
+        <p class="admin-nav-heading">Geral</p>
+        <a href="{% url 'admin_panel:dashboard' %}" class="admin-nav-item {% if active_menu == 'dashboard' or 'dashboard' in request.path %}active{% endif %}">
+            <i class="bi bi-grid-1x2-fill"></i>
+            <span>Dashboard</span>
+        </a>
+        <a href="{% url 'admin_panel:contratos_list' %}" class="admin-nav-item {% if active_menu == 'contratos_criados' or 'contratos' in request.path %}active{% endif %}">
+            <i class="bi bi-file-earmark-text-fill"></i>
+            <span>Contratos</span>
+        </a>
+    </div>
+
+    <div class="admin-nav-group">
+        <p class="admin-nav-heading">Acesso</p>
+        <a href="{% url 'admin_panel:user_list' %}" class="admin-nav-item {% if active_menu == 'usuarios' or 'usuarios' in request.path %}active{% endif %}">
+            <i class="bi bi-people-fill"></i>
+            <span>Usuários</span>
+        </a>
+        <a href="{% url 'admin_panel:audit_log_list' %}" class="admin-nav-item {% if active_menu == 'audit' or 'audit' in request.path %}active{% endif %}">
+            <i class="bi bi-shield-check"></i>
+            <span>Auditoria</span>
+        </a>
+    </div>
+
+    <div class="admin-nav-group">
+        <p class="admin-nav-heading">Conteúdo</p>
+        <a href="{% url 'admin_panel:post_list' %}" class="admin-nav-item {% if 'posts' in request.path %}active{% endif %}">
+            <i class="bi bi-newspaper"></i>
+            <span>Posts</span>
+        </a>
+        <a href="{% url 'admin_panel:page_list' %}" class="admin-nav-item {% if 'paginas' in request.path %}active{% endif %}">
+            <i class="bi bi-file-earmark-richtext-fill"></i>
+            <span>Páginas</span>
+        </a>
+        <a href="{% url 'admin_panel:media_list' %}" class="admin-nav-item {% if 'midias' in request.path %}active{% endif %}">
+            <i class="bi bi-images"></i>
+            <span>Mídias</span>
+        </a>
+    </div>
+
+    <div class="admin-nav-group">
+        <p class="admin-nav-heading">Sistema</p>
+        <a href="{% url 'admin_panel:system_settings' %}" class="admin-nav-item {% if active_menu == 'config' or 'configuracoes' in request.path %}active{% endif %}">
+            <i class="bi bi-sliders2"></i>
+            <span>Configurações</span>
+        </a>
+        <a href="{% url 'admin_panel:backup_restore' %}" class="admin-nav-item {% if active_menu == 'backup' or 'backup' in request.path %}active{% endif %}">
+            <i class="bi bi-database-check"></i>
+            <span>Backup</span>
+        </a>
+    </div>
+</nav>

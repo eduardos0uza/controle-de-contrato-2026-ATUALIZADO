@@ -1,0 +1,372 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Painel Administrativo | Hiden Systems{% endblock %}</title>
+    <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    {% block extra_css %}
+    <style>
+        :root {
+            --admin-bg: #f3f6f8;
+            --admin-card: #ffffff;
+            --admin-ink: #172033;
+            --admin-muted: #65748a;
+            --admin-line: #dfe7ef;
+            --admin-teal: #0f766e;
+            --admin-teal-strong: #0b5f59;
+            --admin-soft: #f4f7fb;
+            --admin-shadow: 0 16px 42px rgba(32, 42, 58, 0.09);
+        }
+
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        html {
+            min-height: 100%;
+        }
+
+        body {
+            background:
+                linear-gradient(90deg, rgba(15, 118, 110, 0.055) 1px, transparent 1px),
+                linear-gradient(0deg, rgba(23, 32, 51, 0.04) 1px, transparent 1px),
+                var(--admin-bg);
+            background-size: 46px 46px;
+            color: var(--admin-ink);
+            font-family: "Segoe UI", "Aptos", "Trebuchet MS", sans-serif;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        a {
+            text-underline-offset: 3px;
+        }
+
+        .admin-layout {
+            display: grid;
+            grid-template-columns: 292px minmax(0, 1fr);
+            min-height: 100vh;
+        }
+
+        .admin-layout-sidebar {
+            background: rgba(255, 255, 255, 0.94);
+            border-right: 1px solid var(--admin-line);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 22px 0;
+            position: sticky;
+            top: 0;
+        }
+
+        .admin-layout-brand {
+            align-items: center;
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 46px 1fr;
+            padding: 0 22px 18px;
+        }
+
+        .admin-layout-mark,
+        .admin-layout-avatar {
+            align-items: center;
+            border-radius: 8px;
+            display: inline-flex;
+            justify-content: center;
+        }
+
+        .admin-layout-mark {
+            background: var(--admin-teal);
+            color: #ffffff;
+            font-size: 1.25rem;
+            height: 46px;
+            width: 46px;
+        }
+
+        .admin-layout-brand strong,
+        .admin-layout-brand span,
+        .admin-layout-user strong,
+        .admin-layout-user span {
+            display: block;
+        }
+
+        .admin-layout-brand strong {
+            color: var(--admin-ink);
+            font-size: 1rem;
+            line-height: 1.1;
+        }
+
+        .admin-layout-brand span {
+            color: var(--admin-muted);
+            font-size: 0.72rem;
+            font-weight: 900;
+            letter-spacing: 0.09em;
+            margin-top: 3px;
+            text-transform: uppercase;
+        }
+
+        .admin-layout-footer {
+            border-top: 1px solid var(--admin-line);
+            margin-top: auto;
+            padding: 18px 22px 0;
+        }
+
+        .admin-layout-user {
+            align-items: center;
+            background: #f5f8fb;
+            border: 1px solid var(--admin-line);
+            border-radius: 8px;
+            display: grid;
+            gap: 10px;
+            grid-template-columns: 36px 1fr;
+            padding: 10px;
+        }
+
+        .admin-layout-avatar {
+            background: var(--admin-ink);
+            color: #ffffff;
+            font-weight: 900;
+            height: 36px;
+            width: 36px;
+        }
+
+        .admin-layout-user strong,
+        .admin-layout-user span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .admin-layout-user strong {
+            font-size: 0.9rem;
+        }
+
+        .admin-layout-user span {
+            color: var(--admin-muted);
+            font-size: 0.74rem;
+            font-weight: 700;
+        }
+
+        .admin-layout-main {
+            min-width: 0;
+            padding: 28px clamp(18px, 4vw, 48px) 48px;
+        }
+
+        .admin-layout-main .card {
+            border-radius: 8px !important;
+            box-shadow: var(--admin-shadow) !important;
+        }
+
+        .admin-layout-main .rounded-4,
+        .admin-layout-main .rounded-3,
+        .admin-layout-main .rounded-pill {
+            border-radius: 8px !important;
+        }
+
+        .admin-layout-main .btn-primary {
+            background: var(--admin-teal);
+            border-color: var(--admin-teal);
+        }
+
+        .admin-mobile-menu {
+            align-items: center;
+            background: #ffffff;
+            border: 1px solid var(--admin-line);
+            border-radius: 8px;
+            color: var(--admin-ink);
+            display: none;
+            font-weight: 900;
+            gap: 8px;
+            margin-bottom: 18px;
+            min-height: 42px;
+            padding: 9px 12px;
+        }
+
+        .messages-container {
+            left: 24px;
+            max-width: 560px;
+            position: fixed;
+            right: 24px;
+            top: 18px;
+            z-index: 1080;
+        }
+
+        .alert-elite {
+            background: #ffffff;
+            border: 1px solid var(--admin-line);
+            border-left: 4px solid var(--admin-teal);
+            border-radius: 8px;
+            box-shadow: var(--admin-shadow);
+            color: var(--admin-ink);
+        }
+
+        .alert-elite.alert-danger {
+            border-left-color: #cf3f3f;
+        }
+
+        .admin-nav-shell {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+            padding: 0 14px 18px;
+        }
+
+        .admin-nav-group {
+            display: grid;
+            gap: 6px;
+        }
+
+        .admin-nav-heading {
+            color: var(--admin-muted);
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.11em;
+            margin: 0;
+            padding: 0 10px 4px;
+            text-transform: uppercase;
+        }
+
+        .admin-nav-item {
+            align-items: center;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            color: var(--admin-muted);
+            display: grid;
+            font-size: 0.92rem;
+            font-weight: 700;
+            gap: 10px;
+            grid-template-columns: 34px 1fr;
+            min-height: 44px;
+            padding: 5px 10px 5px 5px;
+            text-decoration: none;
+            transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease, transform 180ms ease;
+        }
+
+        .admin-nav-item i {
+            align-items: center;
+            background: var(--admin-soft);
+            border-radius: 8px;
+            color: var(--admin-muted);
+            display: inline-flex;
+            font-size: 1rem;
+            height: 34px;
+            justify-content: center;
+            width: 34px;
+        }
+
+        .admin-nav-item:hover {
+            background: #ffffff;
+            border-color: var(--admin-line);
+            color: var(--admin-ink);
+            transform: translateX(2px);
+        }
+
+        .admin-nav-item:hover i {
+            color: var(--admin-teal);
+        }
+
+        .admin-nav-item.active {
+            background: #e8f5f2;
+            border-color: #b8ded7;
+            color: var(--admin-teal-strong);
+            box-shadow: inset 3px 0 0 var(--admin-teal);
+        }
+
+        .admin-nav-item.active i {
+            background: #ffffff;
+            color: var(--admin-teal-strong);
+        }
+
+        @media (max-width: 991.98px) {
+            .admin-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .admin-layout-sidebar {
+                display: none;
+            }
+
+            .admin-layout-main {
+                padding: 18px 12px 32px;
+            }
+
+            .admin-mobile-menu {
+                display: inline-flex;
+            }
+
+            .admin-nav-shell {
+                padding: 12px;
+            }
+        }
+    </style>
+    {% endblock %}
+</head>
+<body>
+<div class="admin-layout">
+    <aside class="admin-layout-sidebar no-print">
+        <div class="admin-layout-brand">
+            <div class="admin-layout-mark"><i class="bi bi-building-check"></i></div>
+            <div>
+                <strong>Hiden Systems</strong>
+                <span>Admin Console</span>
+            </div>
+        </div>
+
+        {% include 'admin_panel/sidebar.html' %}
+
+        <div class="admin-layout-footer">
+            <div class="admin-layout-user">
+                <div class="admin-layout-avatar">{{ request.user.username|slice:":1"|upper }}</div>
+                <div>
+                    <strong>{{ request.user.get_full_name|default:request.user.username }}</strong>
+                    <span>Administrador</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="admin-layout-main">
+        <button class="admin-mobile-menu" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminMobileNav" aria-controls="adminMobileNav">
+            <i class="bi bi-list"></i>
+            Menu
+        </button>
+
+        {% if messages %}
+        <div class="messages-container mb-4">
+            {% for message in messages %}
+            <div class="alert alert-elite {% if message.tags == 'error' %}alert-danger{% else %}alert-info{% endif %} d-flex align-items-center gap-3 mb-3">
+                <i class="bi {% if message.tags == 'error' %}bi-exclamation-octagon-fill{% else %}bi-info-circle-fill{% endif %} fs-4"></i>
+                <div class="fw-bold">{{ message }}</div>
+                <button type="button" class="btn-close ms-auto" data-bs-dismiss="alert" aria-label="Fechar"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        {% block admin_content %}{% endblock %}
+    </main>
+</div>
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="adminMobileNav" aria-labelledby="adminMobileNavLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title fw-bold" id="adminMobileNavLabel">Admin Console</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
+    </div>
+    <div class="offcanvas-body p-0">
+        {% include 'admin_panel/sidebar.html' %}
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+{% if 'configuracoes' in request.path %}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{% endif %}
+{% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,41 @@
+{
+    "id": 1,
+    "numero_contrato": "8047/2025",
+    "numero_protocolo": "8047/2025",
+    "processo_administrativo": "5508/2024",
+    "numero_pregao": "034/2024",
+    "secretario": "RODRIGO FLORENCIO",
+    "numero_nota_empenho": "1917",
+    "numero_ficha": "71",
+    "empresa": "DO FILHO DISTRIBUIDORA",
+    "objeto": "AQUISIÇÃO DE PAPEL A4",
+    "data_inicio": "2025-11-03",
+    "vigencia": 6,
+    "data_vencimento": "2026-05-03",
+    "status": "ativo",
+    "responsavel": "GABINETE",
+    "arquivo": "",
+    "dias_restantes": 33,
+    "alerta": "amarelo",
+    "itens": [
+        {
+            "id": 1,
+            "tipo_item": "SERVICO",
+            "descricao": "PAPEL A4",
+            "unidade": "CAIXA",
+            "proprietario": "",
+            "cpf": "",
+            "localidade": "",
+            "tipo_cobranca": "UNIDADE",
+            "quantidade": 36,
+            "quantidade_meses": 12,
+            "valor_unitario": "225.50",
+            "data_viagem": "",
+            "taxa_servico": "0.00",
+            "desconto": "0.00",
+            "caixa_atual": "",
+            "valor_total": "8118.00"
+        }
+    ],
+    "backup_timestamp": "2026-03-31T13:21:47.171123"
+}

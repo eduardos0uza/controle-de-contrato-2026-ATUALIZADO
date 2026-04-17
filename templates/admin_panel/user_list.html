@@ -1,0 +1,147 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Gerenciamento de Usuários - Hiden Systems{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Gerenciamento de Usuários</h4>
+                    <p class="text-muted small mb-0">Controle de acesso e permissões do sistema.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'admin_panel:dashboard' %}" class="btn btn-white shadow-sm rounded-pill px-4 border py-2 small fw-bold text-dark text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i>Voltar
+                    </a>
+                    <a href="{% url 'admin_panel:user_create' %}" class="btn btn-primary shadow-sm rounded-pill px-4 py-2 small fw-bold">
+                        <i class="bi bi-person-plus me-1"></i>Novo Usuário
+                    </a>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h6 class="fw-bold mb-0 text-muted text-uppercase small" style="letter-spacing: 1px;">Lista de Usuários</h6>
+                    <div class="d-flex gap-2">
+                        <form method="get" class="d-flex gap-2">
+                            <div class="input-group input-group-sm">
+                                <input type="text" name="q" class="form-control border-0 bg-light rounded-pill px-3" placeholder="Buscar usuários..." value="{{ q }}">
+                                <button class="btn btn-primary rounded-pill px-3" type="submit"><i class="bi bi-search"></i></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr class="text-muted small text-uppercase">
+                                <th>Usuário</th>
+                                <th>E-mail</th>
+                                <th>Acesso</th>
+                                <th>Status</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 40px; height: 40px;">
+                                            {% if user.username %}{{ user.username|make_list|first|upper }}{% else %}U{% endif %}
+                                        </div>
+                                        <div>
+                                            <span class="fw-bold d-block">{% if user %}{{ user.get_full_name|default:user.username }}{% else %}Usuário Indisponível{% endif %}</span>
+                                            <span class="text-muted small">@{% if user.username %}{{ user.username }}{% else %}desconhecido{% endif %}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="small">{{ user.email }}</td>
+                                <td>
+                                    {% for group in user.groups.all %}
+                                    <span class="badge bg-light text-dark border rounded-pill px-2 py-1 small fw-normal">{{ group.name }}</span>
+                                    {% empty %}
+                                    <span class="text-muted small">Nenhum</span>
+                                    {% endfor %}
+                                    {% if user.is_superuser %}<span class="badge bg-danger bg-opacity-10 text-danger border-0 rounded-pill px-2 py-1 small fw-bold">Super</span>{% endif %}
+                                </td>
+                                <td>
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input toggle-status" type="checkbox" data-url="{% url 'admin_panel:user_toggle_status' user.pk %}" {% if user.is_active %}checked{% endif %} {% if user == request.user %}disabled{% endif %}>
+                                        <label class="form-check-label small text-muted">{% if user.is_active %}Ativo{% else %}Inativo{% endif %}</label>
+                                    </div>
+                                </td>
+                                <td class="text-end">
+                                    <div class="dropdown">
+                                        <button class="btn btn-light btn-sm rounded-circle" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-3">
+                                            <li><a class="dropdown-item py-2" href="{% url 'admin_panel:user_update' user.pk %}"><i class="bi bi-pencil me-2"></i> Editar</a></li>
+                                            <li><hr class="dropdown-divider"></li>
+                                            <li><a class="dropdown-item py-2 text-danger" href="{% url 'admin_panel:user_delete' user.pk %}" onclick="return confirm('Tem certeza que deseja excluir este usuário?')"><i class="bi bi-trash me-2"></i> Excluir</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-center py-5">Nenhum usuário encontrado.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if users.has_other_pages %}
+                <nav class="mt-4">
+                    <ul class="pagination pagination-sm justify-content-center">
+                        {% if users.has_previous %}
+                        <li class="page-item"><a class="page-link border-0 rounded-pill mx-1" href="?page={{ users.previous_page_number }}&q={{ q }}"><i class="bi bi-chevron-left"></i></a></li>
+                        {% endif %}
+                        
+                        {% for i in users.paginator.page_range %}
+                            {% if users.number == i %}
+                            <li class="page-item active"><span class="page-link border-0 rounded-pill mx-1">{{ i }}</span></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link border-0 rounded-pill mx-1" href="?page={{ i }}&q={{ q }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if users.has_next %}
+                        <li class="page-item"><a class="page-link border-0 rounded-pill mx-1" href="?page={{ users.next_page_number }}&q={{ q }}"><i class="bi bi-chevron-right"></i></a></li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.toggle-status').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+        const url = this.dataset.url;
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    const label = this.nextElementSibling;
+                    label.textContent = data.is_active ? 'Ativo' : 'Inativo';
+                } else {
+                    this.checked = !this.checked;
+                    alert(data.message || 'Erro ao alterar status.');
+                }
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                this.checked = !this.checked;
+            });
+    });
+});
+</script>
+{% endblock %}
+{% endblock %}

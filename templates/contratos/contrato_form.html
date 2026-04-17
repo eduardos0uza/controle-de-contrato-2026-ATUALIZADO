@@ -1,0 +1,943 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }} | SJB{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-card-elite {
+        background: #ffffff;
+        border-radius: 28px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 15px 35px rgba(0, 59, 112, 0.04);
+        padding: 2.5rem;
+        margin-bottom: 2.5rem;
+        transition: all 0.3s ease;
+    }
+    .form-card-elite:hover {
+        box-shadow: 0 20px 50px rgba(0, 59, 112, 0.06);
+    }
+    .section-header-elite {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin-bottom: 2.5rem;
+        padding-bottom: 1.25rem;
+        border-bottom: 2px solid #f8fafc;
+    }
+    .section-icon-wrapper {
+        width: 48px;
+        height: 48px;
+        background: var(--primary-navy);
+        color: white;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        box-shadow: 0 8px 16px rgba(0, 59, 112, 0.2);
+    }
+    .form-label-elite {
+        font-size: 0.7rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #94a3b8;
+        margin-bottom: 10px;
+        display: block;
+    }
+    .btn-save-elite {
+        background: linear-gradient(135deg, #003B70 0%, #0056a3 100%) !important;
+        color: white !important;
+        padding: 1.2rem 3.5rem !important;
+        font-weight: 800 !important;
+        border-radius: 50px !important;
+        border: none !important;
+        box-shadow: 0 10px 25px rgba(0, 59, 112, 0.25) !important;
+        transition: all 0.3s ease !important;
+        letter-spacing: 0.02em;
+    }
+    .btn-save-elite:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 35px rgba(0, 59, 112, 0.35) !important;
+        filter: brightness(1.1);
+    }
+    .item-card-premium {
+        background: #fbfcfe;
+        border: 1px solid #e2e8f0;
+        border-radius: 24px;
+        transition: all 0.3s ease;
+    }
+    .item-card-premium:hover {
+        background: white;
+        border-color: var(--primary-navy);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    }
+    .total-footer-elite {
+        background: var(--primary-navy);
+        background-image: radial-gradient(circle at 10% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);
+        color: white;
+        padding: 1.75rem 2.5rem;
+        border-radius: 24px;
+        box-shadow: 0 15px 40px rgba(0, 59, 112, 0.2);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header de Navegação -->
+    <div class="row mb-5 no-print">
+        <div class="col-12 d-flex align-items-center gap-4">
+            <a href="{% url 'contratos:lista' %}" class="btn btn-white border shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center card-hover" style="width: 54px; height: 54px; min-width: 54px; background: white;">
+                <i class="bi bi-arrow-left fs-4 text-navy"></i>
+            </a>
+            <div>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-1">
+                        <li class="breadcrumb-item small fw-800 text-uppercase tracking-wider"><a href="{% url 'contratos:lista' %}" class="text-decoration-none text-muted">Contratos</a></li>
+                        <li class="breadcrumb-item active small fw-800 text-uppercase tracking-wider text-primary" aria-current="page">{{ titulo }}</li>
+                    </ol>
+                </nav>
+                <h1 class="h3 fw-800 mb-0 text-dark" style="letter-spacing: -0.03em;">{{ titulo }}</h1>
+            </div>
+        </div>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" id="contrato-form">
+        {% csrf_token %}
+        
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                
+                <!-- Sessão 1: Identificação Fundamental -->
+                <div class="form-card-elite">
+                    <div class="section-header-elite">
+                        <div class="section-icon-wrapper">
+                            <i class="bi bi-info-circle-fill"></i>
+                        </div>
+                        <h5 class="fw-bold mb-0 text-dark">Informações de Identificação</h5>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label for="{{ form.numero_contrato.id_for_label }}" class="form-label-elite">Nº Contrato (Gabinete)</label>
+                            {{ form.numero_contrato }}
+                            {% if form.numero_contrato.errors %}<div class="invalid-feedback d-block">{{ form.numero_contrato.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <label for="{{ form.empresa.id_for_label }}" class="form-label-elite">Empresa / Fornecedor Selecionado</label>
+                            {{ form.empresa }}
+                            {% if form.empresa.errors %}<div class="invalid-feedback d-block">{{ form.empresa.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-12">
+                            <label for="{{ form.objeto.id_for_label }}" class="form-label-elite">Objeto Detalhado do Contrato</label>
+                            {{ form.objeto }}
+                            {% if form.objeto.errors %}<div class="invalid-feedback d-block">{{ form.objeto.errors }}</div>{% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sessão 2: Dados do Processo Administrativo -->
+                <div class="form-card-elite">
+                    <div class="section-header-elite">
+                        <div class="section-icon-wrapper bg-secondary">
+                            <i class="bi bi-folder2-open"></i>
+                        </div>
+                        <h5 class="fw-bold mb-0 text-dark">Conformidade e Processos</h5>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label for="{{ form.numero_protocolo.id_for_label }}" class="form-label-elite">Nº Protocolo Geral</label>
+                            {{ form.numero_protocolo }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.processo_administrativo.id_for_label }}" class="form-label-elite">Processo Administrativo</label>
+                            {{ form.processo_administrativo }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.numero_pregao.id_for_label }}" class="form-label-elite">Modalidade / Nº Pregão</label>
+                            {{ form.numero_pregao }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.secretario.id_for_label }}" class="form-label-elite">Autoridade Responsável (Secretário)</label>
+                            {{ form.secretario }}
+                        </div>
+                        <div class="col-md-3">
+                            <label for="{{ form.numero_nota_empenho.id_for_label }}" class="form-label-elite">Nota de Empenho</label>
+                            {{ form.numero_nota_empenho }}
+                        </div>
+                        <div class="col-md-3">
+                            <label for="{{ form.numero_ficha.id_for_label }}" class="form-label-elite">Número da Ficha</label>
+                            {{ form.numero_ficha }}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sessão 3: Itens com Cálculos Dinâmicos -->
+                <div class="form-card-elite">
+                    <div class="section-header-elite d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="section-icon-wrapper bg-success">
+                                <i class="bi bi-tags-fill"></i>
+                            </div>
+                            <h5 class="fw-bold mb-0 text-dark">Detalhamento Financeiro (Itens)</h5>
+                        </div>
+                        <span class="badge bg-light text-secondary border px-3 py-2 rounded-pill small fw-bold">TOTAL AUTOMÁTICO</span>
+                    </div>
+
+                    {{ formset.management_form }}
+                    <div id="itens-container">
+                        {% for item_form in formset %}
+                        <div class="item-card-premium p-4 mb-4 item-form">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <div class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 rounded-pill fw-bold small item-number">Item {{ forloop.counter }}</div>
+                                {% if formset.can_delete %}
+                                    <div class="form-check form-switch d-none">{{ item_form.DELETE }}</div>
+                                    <button type="button" class="btn btn-outline-danger btn-sm border-0 rounded-circle remove-item-btn p-1" style="width: 32px; height: 32px;">
+                                        <i class="bi bi-trash3"></i>
+                                    </button>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="row g-3">
+                                {{ item_form.id }}
+                                <div class="col-md-3">
+                                    <label class="form-label-elite">Tipo</label>
+                                    {{ item_form.tipo_item }}
+                                </div>
+                                <div class="col-md-9">
+                                    <label class="form-label-elite">Descrição do Material / Serviço</label>
+                                    {{ item_form.descricao }}
+                                </div>
+                                <div class="col-md-2 field-padrao">
+                                    <label class="form-label-elite">UND</label>
+                                    {{ item_form.unidade }}
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label-elite">QTD</label>
+                                    {{ item_form.quantidade }}
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label-elite">VLR UNIT (R$)</label>
+                                    {{ item_form.valor_unitario }}
+                                </div>
+                                <div class="col-md-2 field-meses">
+                                    <label class="form-label-elite">Meses</label>
+                                    {{ item_form.quantidade_meses }}
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label-elite">TOTAL ITEM (R$)</label>
+                                    {{ item_form.valor_total }}
+                                </div>
+
+                                <!-- Campos Dinâmicos (Vão ocultar/mostrar via JS) -->
+                                <div class="col-md-3 field-padrao">
+                                    <label class="form-label-elite">Frequência</label>
+                                    {{ item_form.tipo_cobranca }}
+                                </div>
+                                <div class="col-md-3 field-passagem d-none">
+                                    <label class="form-label-elite">Data Viagem</label>
+                                    {{ item_form.data_viagem }}
+                                </div>
+                                <div class="col-md-2 field-taxa-desconto">
+                                    <label class="form-label-elite">Taxa (%)</label>
+                                    {{ item_form.taxa_servico }}
+                                </div>
+                                <div class="col-md-2 field-taxa-desconto">
+                                    <label class="form-label-elite">Desc. (%)</label>
+                                    {{ item_form.desconto }}
+                                </div>
+                                <div class="col-md-3 field-passagem d-none">
+                                    <label class="form-label-elite">Vlr Caixa (R$)</label>
+                                    {{ item_form.caixa_atual }}
+                                </div>
+                                <div class="col-md-4 field-aluguel d-none">
+                                    <label class="form-label-elite">Proprietário</label>
+                                    {{ item_form.proprietario }}
+                                </div>
+                                <div class="col-md-4 field-aluguel d-none">
+                                    <label class="form-label-elite">CPF</label>
+                                    {{ item_form.cpf }}
+                                </div>
+                                <div class="col-md-4 field-aluguel d-none">
+                                    <label class="form-label-elite">Localidade</label>
+                                    {{ item_form.localidade }}
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-center mt-4 gap-4">
+                        <button type="button" id="add-item" class="btn btn-white border px-4 py-3 rounded-pill fw-bold text-primary card-hover">
+                            <i class="bi bi-plus-circle-fill me-2"></i> Adicionar Nova Linha
+                        </button>
+                        
+                        <div class="total-footer-elite text-center text-md-end flex-grow-1 flex-md-grow-0" style="min-width: 250px;">
+                            <div class="small fw-bold text-uppercase opacity-75 mb-1" style="letter-spacing: 0.1em;">Investimento Consolidado</div>
+                            <div class="h2 fw-bold mb-0" id="contrato-total-display">R$ 0,00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sessão 4: Controle de Prazos e Status -->
+                <div class="form-card-elite">
+                    <div class="section-header-elite">
+                        <div class="section-icon-wrapper bg-warning">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <h5 class="fw-bold mb-0 text-dark">Timeline e Governança</h5>
+                    </div>
+                    
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label for="{{ form.data_inicio.id_for_label }}" class="form-label-elite">Data de Assinatura / Início</label>
+                            {{ form.data_inicio }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.vigencia.id_for_label }}" class="form-label-elite">Vigência Pactuada (Meses)</label>
+                            {{ form.vigencia }}
+                        </div>
+                        <div class="col-md-4">
+                            <label for="{{ form.data_vencimento.id_for_label }}" class="form-label-elite">Data Limite de Vencimento</label>
+                            {{ form.data_vencimento }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.status.id_for_label }}" class="form-label-elite">Status Operacional do Vínculo</label>
+                            {{ form.status }}
+                        </div>
+                        <div class="col-md-6">
+                            <label for="{{ form.responsavel.id_for_label }}" class="form-label-elite">Gestor / Fiscal Responsável</label>
+                            {{ form.responsavel }}
+                        </div>
+                        <div class="col-12 mt-4">
+                            <div class="p-4 bg-light rounded-4 border border-dashed text-center">
+                                <label for="{{ form.arquivo.id_for_label }}" class="form-label-elite d-block mb-3">Arquivo Original do Contrato (Digitalizado)</label>
+                                <div class="d-inline-block">
+                                    {{ form.arquivo }}
+                                </div>
+                                <p class="text-muted small mt-2 mb-0"><i class="bi bi-info-circle me-1"></i> Formatos suportados: PDF, DOCX (Máx 20MB)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ações de Rodapé -->
+                <div class="d-flex flex-column flex-md-row justify-content-end gap-3 mb-5 no-print">
+                    <a href="{% url 'contratos:lista' %}" class="btn btn-white border px-5 py-3 rounded-pill fw-bold text-muted card-hover order-2 order-md-1">
+                        Descartar e Sair
+                    </a>
+                    <button type="submit" class="btn btn-save-elite order-1 order-md-2">
+                        <i class="bi bi-cloud-check me-2"></i> Confirmar e Salvar Registro
+                    </button>
+                </div>
+
+            </div>
+        </div>
+        
+        <!-- Campo oculto para o valor total calculado -->
+        <input type="hidden" name="{{ form.valor.name }}" id="{{ form.valor.id_for_label }}" value="{{ form.valor.value|default:'0' }}">
+
+        <!-- Template vazio para novos itens (DOM) -->
+        <div id="empty-form" class="d-none">
+            <div class="item-card-premium p-4 mb-4 item-form">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="badge bg-secondary px-3 py-2 rounded-pill fw-bold small item-number">Novo Item</div>
+                    <button type="button" class="btn btn-outline-danger btn-sm border-0 rounded-circle remove-item-btn p-1" style="width: 32px; height: 32px;">
+                        <i class="bi bi-trash3"></i>
+                    </button>
+                    <div class="form-check form-switch d-none"><input type="checkbox" name="itens-__prefix__-DELETE" id="id_itens-__prefix__-DELETE"></div>
+                </div>
+                
+                <div class="row g-3">
+                    <input type="hidden" name="itens-__prefix__-id" id="id_itens-__prefix__-id">
+                    <div class="col-md-3">
+                        <label class="form-label-elite">Tipo</label>
+                        <select name="itens-__prefix__-tipo_item" class="form-select item-tipo-item form-control-elite" id="id_itens-__prefix__-tipo_item">
+                            <option value="SERVICO" selected>Serviço/Produto</option>
+                            <option value="PASSAGEM">Passagem Aérea</option>
+                            <option value="ALUGUEL">Aluguel</option>
+                        </select>
+                    </div>
+                    <div class="col-md-9">
+                        <label class="form-label-elite">Descrição</label>
+                        <textarea name="itens-__prefix__-descricao" cols="40" rows="1" class="form-control form-control-elite" placeholder="Descreva aqui..." id="id_itens-__prefix__-descricao"></textarea>
+                    </div>
+                    <div class="col-md-2 field-padrao">
+                        <label class="form-label-elite">UND</label>
+                        <input type="text" name="itens-__prefix__-unidade" class="form-control form-control-elite item-unidade" placeholder="UNID" id="id_itens-__prefix__-unidade">
+                    </div>
+                    <div class="col-md-2">
+                        <label class="form-label-elite">QTD</label>
+                        <input type="number" name="itens-__prefix__-quantidade" value="1" class="form-control form-control-elite item-quantidade" id="id_itens-__prefix__-quantidade">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label-elite">VLR UNIT (R$)</label>
+                        <input type="text" name="itens-__prefix__-valor_unitario" class="form-control form-control-elite money-mask item-valor-unitario" id="id_itens-__prefix__-valor_unitario">
+                    </div>
+                    <div class="col-md-2 field-meses">
+                        <label class="form-label-elite">Meses</label>
+                        <input type="number" name="itens-__prefix__-quantidade_meses" class="form-control form-control-elite item-quantidade-meses" min="1" id="id_itens-__prefix__-quantidade_meses">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label-elite">TOTAL (R$)</label>
+                        <input type="text" name="itens-__prefix__-valor_total" class="form-control form-control-elite item-valor-total" readonly id="id_itens-__prefix__-valor_total">
+                    </div>
+                    
+                    <!-- Padrão -->
+                    <div class="col-md-3 field-padrao">
+                        <label class="form-label-elite">Frequência</label>
+                        <select name="itens-__prefix__-tipo_cobranca" class="form-select item-tipo-cobranca form-control-elite" id="id_itens-__prefix__-tipo_cobranca">
+                            <option value="UNIDADE" selected>Unidade</option>
+                            <option value="MENSAL">Mensal</option>
+                        </select>
+                    </div>
+                    <!-- Passagem -->
+                    <div class="col-md-3 field-passagem d-none">
+                        <label class="form-label-elite">Data Viagem</label>
+                        <input type="date" name="itens-__prefix__-data_viagem" class="form-control form-control-elite item-data-viagem" id="id_itens-__prefix__-data_viagem">
+                    </div>
+                    <div class="col-md-2 field-taxa-desconto">
+                        <label class="form-label-elite">Taxa (%)</label>
+                        <input type="text" name="itens-__prefix__-taxa_servico" class="form-control form-control-elite percentage-mask item-taxa-servico" id="id_itens-__prefix__-taxa_servico">
+                    </div>
+                    <div class="col-md-2 field-taxa-desconto">
+                        <label class="form-label-elite">Desc (%)</label>
+                        <input type="text" name="itens-__prefix__-desconto" class="form-control form-control-elite percentage-mask item-desconto" id="id_itens-__prefix__-desconto">
+                    </div>
+                    <div class="col-md-3 field-passagem d-none">
+                        <label class="form-label-elite">Caixa (R$)</label>
+                        <input type="text" name="itens-__prefix__-caixa_atual" class="form-control form-control-elite money-mask item-caixa-atual" id="id_itens-__prefix__-caixa_atual">
+                    </div>
+                    <!-- Aluguel -->
+                    <div class="col-md-4 field-aluguel d-none">
+                        <label class="form-label-elite">Proprietário</label>
+                        <input type="text" name="itens-__prefix__-proprietario" class="form-control form-control-elite item-proprietario" id="id_itens-__prefix__-proprietario">
+                    </div>
+                    <div class="col-md-4 field-aluguel d-none">
+                        <label class="form-label-elite">CPF</label>
+                        <input type="text" name="itens-__prefix__-cpf" class="form-control form-control-elite item-cpf" id="id_itens-__prefix__-cpf">
+                    </div>
+                    <div class="col-md-4 field-aluguel d-none">
+                        <label class="form-label-elite">Localidade</label>
+                        <input type="text" name="itens-__prefix__-localidade" class="form-control form-control-elite item-localidade" id="id_itens-__prefix__-localidade">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // --- Auto-sync Contract Number and Protocol Number ---
+        const numeroContratoInput = document.getElementById('{{ form.numero_contrato.id_for_label }}');
+        const numeroProtocoloInput = document.getElementById('{{ form.numero_protocolo.id_for_label }}');
+
+        if (numeroContratoInput && numeroProtocoloInput) {
+            // When typing in Contract Number, update Protocol Number
+            numeroContratoInput.addEventListener('input', function() {
+                numeroProtocoloInput.value = this.value;
+            });
+
+            // When typing in Protocol Number, update Contract Number
+            numeroProtocoloInput.addEventListener('input', function() {
+                numeroContratoInput.value = this.value;
+            });
+        }
+
+        // --- Date Calculation Logic (Preserved) ---
+        const dataInicioInput = document.getElementById('{{ form.data_inicio.id_for_label }}');
+        const vigenciaInput = document.getElementById('{{ form.vigencia.id_for_label }}');
+        const dataVencimentoInput = document.getElementById('{{ form.data_vencimento.id_for_label }}');
+
+        function calcularVencimento() {
+            const dataInicioVal = dataInicioInput.value;
+            const meses = parseInt(vigenciaInput.value);
+
+            if (dataInicioVal && !isNaN(meses)) {
+                // Parse date string (YYYY-MM-DD) to avoid timezone issues
+                const parts = dataInicioVal.split('-');
+                const year = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1; // 0-indexed
+                const day = parseInt(parts[2]);
+
+                const dataInicio = new Date(year, month, day);
+                
+                // Add months logic
+                const targetMonth = dataInicio.getMonth() + meses;
+                const targetYear = dataInicio.getFullYear() + Math.floor(targetMonth / 12);
+                const targetMonthMod = targetMonth % 12; // 0-11
+                
+                // Get last day of target month to handle overflow (e.g. Jan 31 + 1 month)
+                const lastDayOfTargetMonth = new Date(targetYear, targetMonthMod + 1, 0).getDate();
+                const targetDay = Math.min(dataInicio.getDate(), lastDayOfTargetMonth);
+                
+                const dataVencimento = new Date(targetYear, targetMonthMod, targetDay);
+                
+                const yyyy = dataVencimento.getFullYear();
+                const mm = String(dataVencimento.getMonth() + 1).padStart(2, '0');
+                const dd = String(dataVencimento.getDate()).padStart(2, '0');
+                
+                dataVencimentoInput.value = `${yyyy}-${mm}-${dd}`;
+            }
+        }
+
+        if (dataInicioInput && vigenciaInput && dataVencimentoInput) {
+            dataInicioInput.addEventListener('change', calcularVencimento);
+            vigenciaInput.addEventListener('input', calcularVencimento);
+            
+            // Initial calculation if values exist (only for new contracts or empty date)
+            if (dataInicioInput.value && vigenciaInput.value && !dataVencimentoInput.value) {
+                calcularVencimento();
+            }
+        }
+
+        // --- Items Management Logic ---
+        
+        const itensContainer = document.getElementById('itens-container');
+        const addItemBtn = document.getElementById('add-item');
+        const totalFormsInput = document.getElementById('id_itens-TOTAL_FORMS');
+        const grandTotalDisplay = document.getElementById('contrato-total-display');
+        const grandTotalInput = document.getElementById('{{ form.valor.id_for_label }}'); // Hidden input for contract total
+
+        // Helper to format currency
+        function formatCurrency(value) {
+            return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Helper to parse currency string to float
+        function parseCurrency(value) {
+            if (!value) return 0;
+            
+            // Check if value is already a number (e.g. pasted or from backend without format)
+            if (typeof value === 'number') return value;
+            
+            // Handle BR format (comma as decimal separator)
+            if (value.indexOf(',') > -1) {
+                // Remove dots (thousand separators) and replace comma with dot
+                return parseFloat(value.replace(/\./g, '').replace(',', '.')) || 0;
+            }
+            
+            // Handle potential US format or raw float string (e.g. "1234.56")
+            if (value.indexOf('.') > -1) {
+                // If multiple dots, assume thousand separators (BR format without decimal part?) -> remove all dots
+                if ((value.match(/\./g) || []).length > 1) {
+                    return parseFloat(value.replace(/\./g, '')) || 0;
+                }
+                
+                // Single dot: heuristic check
+                const parts = value.split('.');
+                // If 2 decimal places ("123.45"), likely US float
+                if (parts[1].length === 2) {
+                    return parseFloat(value) || 0;
+                }
+                
+                // Otherwise (e.g. "1.000"), assume BR thousand separator -> remove dot
+                return parseFloat(value.replace(/\./g, '')) || 0;
+            }
+            
+            // No dots or commas
+            return parseFloat(value) || 0;
+        }
+
+        // Helper to parse percentage string to float
+        function parsePercent(value) {
+            if (!value) return 0;
+            let v = String(value).trim().replace(/[^\d.,]/g, ''); 
+            if (v.includes(',')) v = v.replace(/\./g, '').replace(',', '.'); 
+            const n = parseFloat(v); 
+            return isNaN(n) ? 0 : n; 
+        }
+
+        // Mask money input
+        function maskMoney(input) {
+            let value = input.value.replace(/\D/g, "");
+            let number = parseFloat(value) / 100;
+            if (isNaN(number)) {
+                input.value = "";
+                return;
+            }
+            input.value = number.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
+
+        // Mask percentage input (allow digits and comma, max 100?)
+        function maskPercentage(input) {
+            let v = String(input.value || '').trim(); 
+        
+            // remove espaços e % 
+            v = v.replace(/\s/g, '').replace('%', ''); 
+        
+            // mantém apenas dígitos, vírgula e ponto 
+            v = v.replace(/[^\d.,]/g, ''); 
+        
+            // se tiver vírgula, assume pt-BR: remove pontos de milhar e troca vírgula por ponto temporariamente 
+            if (v.includes(',')) { 
+                v = v.replace(/\./g, '').replace(',', '.'); 
+            } 
+        
+            let n = parseFloat(v); 
+            if (isNaN(n)) { 
+                // Don't clear if user is typing, just return
+                // input.value = ''; 
+                return; 
+            } 
+        
+            // limita 0 a 100 
+            if (n > 100) n = 100;
+            if (n < 0) n = 0;
+            
+            // Only format ON BLUR to allow free typing
+            // input.value = n.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); 
+        }
+
+        // Calculate total for a single row
+        function calculateRowTotal(row) {
+            const tipoItemSelect = row.querySelector('select[name$="-tipo_item"]');
+            const qtdInput = row.querySelector('input[name$="-quantidade"]');
+            const unitInput = row.querySelector('input[name$="-valor_unitario"]');
+            const totalInput = row.querySelector('input[name$="-valor_total"]');
+            
+            // Standard Fields
+            const cobrancaSelect = row.querySelector('select[name$="-tipo_cobranca"]');
+            const mesesInput = row.querySelector('input[name$="-quantidade_meses"]');
+            
+            // Taxa/Desconto Fields
+            const taxaInput = row.querySelector('input[name$="-taxa_servico"]');
+            const descontoInput = row.querySelector('input[name$="-desconto"]');
+
+            if (!qtdInput || !unitInput || !totalInput) return;
+
+            const qtd = parseFloat(qtdInput.value) || 0;
+            const unit = parseCurrency(unitInput.value);
+            let baseTotal = 0;
+
+            const isPassagem = tipoItemSelect && tipoItemSelect.value === 'PASSAGEM';
+            const isAluguel = tipoItemSelect && tipoItemSelect.value === 'ALUGUEL';
+
+            if (isPassagem) {
+                // Calculation for Passagem Aérea: Unit * Qty
+                baseTotal = qtd * unit;
+            } else {
+                // Calculation for Serviço/Produto or Aluguel
+                baseTotal = qtd * unit;
+                
+                let applyMeses = false;
+                if (isAluguel) {
+                    applyMeses = true;
+                } else if (cobrancaSelect && cobrancaSelect.value === 'MENSAL') {
+                    applyMeses = true;
+                }
+
+                if (applyMeses) {
+                    const meses = mesesInput ? (parseFloat(mesesInput.value) || 0) : 0;
+                    if (meses > 0) {
+                        baseTotal = baseTotal * meses;
+                    }
+                }
+            }
+            
+            // Apply Taxa (%) and Desconto (%) logic (SKIP for Aluguel)
+            let taxaPercent = 0;
+            let descontoPercent = 0;
+
+            if (!isAluguel) {
+                taxaPercent = taxaInput ? parsePercent(taxaInput.value) : 0;
+                descontoPercent = descontoInput ? parsePercent(descontoInput.value) : 0;
+            }
+            
+            // 1) aplica taxa sobre a base
+            let subtotal = baseTotal * (1 + (taxaPercent / 100));
+            
+            // 2) aplica desconto sobre o subtotal (já com taxa)
+            let total = subtotal * (1 - (descontoPercent / 100));
+            
+            // evita negativo
+            total = Math.max(0, total);
+            
+            totalInput.value = formatCurrency(total);
+            
+            // Update Grand Total whenever a row total changes
+            calculateGrandTotal();
+        }
+
+        // Toggle visibility of fields based on item type
+        function toggleItemFields(row) {
+            const tipoItemSelect = row.querySelector('select[name$="-tipo_item"]');
+            if (!tipoItemSelect) return;
+
+            const isPassagem = tipoItemSelect.value === 'PASSAGEM';
+            const isAluguel = tipoItemSelect.value === 'ALUGUEL';
+            const isPadrao = !isPassagem && !isAluguel;
+            
+            // Toggle classes
+            const padraoFields = row.querySelectorAll('.field-padrao');
+            const passagemFields = row.querySelectorAll('.field-passagem');
+            const aluguelFields = row.querySelectorAll('.field-aluguel');
+            const taxaDescontoFields = row.querySelectorAll('.field-taxa-desconto');
+            const mesesFields = row.querySelectorAll('.field-meses');
+            
+            padraoFields.forEach(field => {
+                field.classList.toggle('d-none', !isPadrao);
+            });
+            
+            passagemFields.forEach(field => {
+                field.classList.toggle('d-none', !isPassagem);
+            });
+
+            aluguelFields.forEach(field => {
+                field.classList.toggle('d-none', !isAluguel);
+            });
+
+            taxaDescontoFields.forEach(field => {
+                field.classList.toggle('d-none', isAluguel);
+            });
+
+            // Update Unit Value label based on type
+            const valorUnitarioLabel = row.querySelector('label[for$="-valor_unitario"]');
+            if (valorUnitarioLabel) {
+                if (isAluguel) {
+                    valorUnitarioLabel.textContent = 'Valor Mensal (R$)';
+                } else {
+                    valorUnitarioLabel.textContent = 'Valor Unitário (R$)';
+                }
+            }
+
+            // Meses Field Logic
+            let showMeses = false;
+            if (isAluguel) {
+                showMeses = true;
+            } else if (isPadrao) {
+                const cobrancaSelect = row.querySelector('select[name$="-tipo_cobranca"]');
+                if (cobrancaSelect && cobrancaSelect.value === 'MENSAL') {
+                    showMeses = true;
+                }
+            }
+            
+            mesesFields.forEach(field => {
+                 field.classList.toggle('d-none', !showMeses);
+            });
+
+             // Auto-fill months from vigencia if showing and empty
+             if (showMeses) {
+                const mesesInput = row.querySelector('input[name$="-quantidade_meses"]');
+                 if (mesesInput && !mesesInput.value) {
+                     const vigenciaInput = document.getElementById('{{ form.vigencia.id_for_label }}');
+                     if (vigenciaInput && vigenciaInput.value) {
+                         mesesInput.value = vigenciaInput.value;
+                     }
+                 }
+             }
+        }
+
+        // Calculate grand total of all visible items
+        function calculateGrandTotal() {
+            let grandTotal = 0;
+            const rows = itensContainer.querySelectorAll('.item-form');
+            
+            rows.forEach(row => {
+                // Skip if deleted (check both checkbox and row visibility)
+                const deleteInput = row.querySelector('input[name$="-DELETE"]');
+                if ((deleteInput && deleteInput.checked) || row.classList.contains('d-none')) return;
+
+                const totalInput = row.querySelector('input[name$="-valor_total"]');
+                if (totalInput) {
+                    grandTotal += parseCurrency(totalInput.value);
+                }
+            });
+
+            grandTotalDisplay.textContent = `R$ ${formatCurrency(grandTotal)}`;
+            if (grandTotalInput) {
+                // Ensure value is formatted correctly for Django DecimalField (dot as decimal)
+                grandTotalInput.value = grandTotal.toFixed(2).replace('.', ',');
+                // Actually Django DecimalField usually expects '1234.56' or '1234,56' depending on L10N. 
+                // Let's use standard dot format to be safe or check what the backend expects.
+                // If L10N is on, comma might be expected. But usually hidden input is better as dot.
+                // However, the form is submitting this hidden input. 
+                // Let's stick to simple dot format which is universally safer for DecimalField if localization is not strict on input.
+                // Wait, if I use `replace('.', ',')` it might be interpreted as string.
+                // Let's check `parseCurrency` implementation logic.
+                // Let's just use `.toFixed(2)` which gives `1234.56`. 
+                // Django with L10N=True/USE_THOUSAND_SEPARATOR=True might expect comma. 
+                // Let's leave it as `.toFixed(2)` (dot) which is standard.
+                grandTotalInput.value = grandTotal.toFixed(2).replace('.', ',');
+            }
+        }
+
+        // CPF Mask Function
+        function maskCPF(input) {
+            let v = input.value.replace(/\D/g, ''); // Remove non-digits
+            
+            // Limit to 11 digits
+            if (v.length > 11) v = v.substring(0, 11);
+            
+            // Apply mask
+            if (v.length > 9) {
+                v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+            } else if (v.length > 6) {
+                v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+            } else if (v.length > 3) {
+                v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+            }
+            
+            input.value = v;
+        }
+
+        // Attach events to a row
+        function attachRowEvents(row) {
+            const inputs = row.querySelectorAll('input, select, textarea');
+            const tipoItemSelect = row.querySelector('select[name$="-tipo_item"]');
+            
+            // Initial toggle
+            toggleItemFields(row);
+            
+            inputs.forEach(input => {
+                input.addEventListener('input', () => calculateRowTotal(row));
+                if (input.tagName === 'SELECT') {
+                    input.addEventListener('change', () => {
+                        if (input.name.includes('tipo_item')) {
+                            toggleItemFields(row);
+                        }
+                        // If type is Standard and Cobranca changes, we need to toggle Meses visibility
+                        if (input.name.includes('tipo_cobranca')) {
+                            toggleItemFields(row); // This handles the sub-visibility
+                        }
+                        calculateRowTotal(row);
+                    });
+                }
+            });
+
+            // Mask CPF inputs
+            const cpfInputs = row.querySelectorAll('.item-cpf');
+            cpfInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    maskCPF(this);
+                });
+                // Initial mask if value exists
+                if (input.value) maskCPF(input);
+            });
+
+            // Mask money inputs
+            const moneyInputs = row.querySelectorAll('.money-mask');
+            moneyInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    maskMoney(this);
+                    calculateRowTotal(row); // Recalculate after mask
+                });
+                
+                // Initial mask if value exists
+                if (input.value) maskMoney(input);
+            });
+
+            // Mask percentage inputs
+            const percentInputs = row.querySelectorAll('.percentage-mask');
+            percentInputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    calculateRowTotal(row);
+                });
+                
+                input.addEventListener('blur', function() {
+                   // Format nicely on blur
+                   let val = parsePercent(this.value);
+                   if (val > 100) val = 100;
+                   if (val < 0) val = 0;
+                   this.value = val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                   calculateRowTotal(row);
+                });
+
+                if (input.value) {
+                     // Initial format
+                     let val = parsePercent(input.value);
+                     input.value = val.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                }
+            });
+            
+            // Remove button logic
+            const removeBtn = row.querySelector('.remove-item-btn');
+            const deleteInput = row.querySelector('input[name$="-DELETE"]');
+            
+            if (removeBtn) {
+                removeBtn.addEventListener('click', function() {
+                    if (deleteInput) {
+                        deleteInput.checked = true;
+                        row.classList.add('d-none');
+                    } else {
+                        row.remove();
+                        // We need to update TOTAL_FORMS if we remove from DOM
+                        const currentForms = parseInt(totalFormsInput.value);
+                        totalFormsInput.value = currentForms - 1;
+                    }
+                    calculateGrandTotal();
+                    updateBadges();
+                });
+            }
+
+            // Initial calculation for this row
+            calculateRowTotal(row);
+        }
+
+        function updateBadges() {
+             let visibleCount = 0;
+             const rows = itensContainer.querySelectorAll('.item-form');
+             rows.forEach(row => {
+                 if (!row.classList.contains('d-none')) {
+                     visibleCount++;
+                     const badge = row.querySelector('.item-number');
+                     if (badge) badge.textContent = `Item ${visibleCount}`;
+                 }
+            });
+        }
+
+
+        // Add new item
+        if (addItemBtn) {
+            addItemBtn.addEventListener('click', function() {
+                const formIdx = parseInt(totalFormsInput.value);
+                const emptyFormHtml = document.getElementById('empty-form').innerHTML;
+                const newHtml = emptyFormHtml.replace(/__prefix__/g, formIdx);
+                
+                const newRow = document.createElement('div');
+                newRow.innerHTML = newHtml;
+                const rowContent = newRow.firstElementChild; // The .card div
+                
+                itensContainer.appendChild(rowContent);
+                
+                // Update total forms
+                totalFormsInput.value = formIdx + 1;
+                
+                attachRowEvents(rowContent);
+                updateFormIndices();
+            });
+        }
+
+        // Initialize existing rows
+        const existingRows = itensContainer.querySelectorAll('.item-form');
+        existingRows.forEach(row => {
+            attachRowEvents(row);
+        });
+
+        // Initialize global money masks (e.g. caixa_atual)
+        const globalMoneyInputs = document.querySelectorAll('.money-mask:not(#itens-container .money-mask)');
+        globalMoneyInputs.forEach(input => {
+            input.addEventListener('input', function() {
+                maskMoney(this);
+            });
+            if (input.value) maskMoney(input);
+        });
+        
+        // Initial Grand Total Calculation
+        calculateGrandTotal();
+
+        // Listen for vigencia changes to recalculate all rows
+        if (vigenciaInput) {
+            vigenciaInput.addEventListener('input', function() {
+                const allRows = document.querySelectorAll('.item-form');
+                allRows.forEach(row => calculateRowTotal(row));
+            });
+        }
+
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% load static humanize %}
+
+{% block title %}Dossiê Central: {{ contrato.numero_contrato }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Estilo Flat - Máxima Estabilidade */
+    body { background-color: #f8f9fa; }
+    .box-contrato {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    .header-blue {
+        background-color: #003B70;
+        color: #fff;
+        padding: 30px;
+        border-radius: 8px;
+        margin-bottom: 25px;
+    }
+    .t-label {
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #6c757d;
+        text-transform: uppercase;
+        display: block;
+    }
+    .t-value {
+        font-weight: 600;
+        color: #212529;
+    }
+    .badge-status {
+        padding: 10px;
+        border-radius: 4px;
+        display: block;
+        text-align: center;
+        font-weight: 700;
+        margin-bottom: 15px;
+    }
+    .row-compact { margin-bottom: 15px; border-bottom: 1px solid #f1f1f1; padding-bottom: 8px; }
+    .timeline-history {
+        position: relative;
+        padding-left: 30px;
+    }
+    .timeline-history::before {
+        content: '';
+        position: absolute;
+        left: 11px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: #dee2e6;
+    }
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+    }
+    .timeline-marker {
+        position: absolute;
+        left: -30px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        background: #fff;
+        border: 2px solid #003B70;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1;
+    }
+    .timeline-content {
+        background: #f8f9fa;
+        padding: 12px;
+        border-radius: 8px;
+        border-left: 3px solid #003B70;
+    }
+    .timeline-item.create .timeline-marker { border-color: #198754; color: #198754; }
+    .timeline-item.create .timeline-content { border-left-color: #198754; }
+    .timeline-item.status .timeline-marker { border-color: #ffc107; color: #ffc107; }
+    .timeline-item.status .timeline-content { border-left-color: #ffc107; }
+    .timeline-item.alerta .timeline-marker { border-color: #dc3545; color: #dc3545; }
+    .timeline-item.alerta .timeline-content { border-left-color: #dc3545; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Botoes Top -->
+    <div class="d-flex justify-content-between mb-4 no-print">
+        <a href="{% url 'contratos:lista' %}" class="btn btn-secondary btn-sm px-4">
+            <i class="bi bi-arrow-left"></i> Voltar
+        </a>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-light btn-sm border px-3">Imprimir</button>
+            <a href="{% url 'contratos:editar' contrato.id %}" class="btn btn-primary btn-sm px-4">Editar</a>
+        </div>
+    </div>
+
+    <!-- Banner Info -->
+    <div class="header-blue">
+        <div class="row align-items-center">
+            <div class="col-md-9">
+                <span class="small opacity-75">Nº CONTRATO: {{ contrato.numero_contrato }} | STATUS: {{ contrato.get_status_display }}</span>
+                <h1 class="fw-bold my-2">{{ contrato.empresa|default:"Fornecedor" }}</h1>
+                <p class="mb-0 small opacity-75">{{ contrato.objeto }}</p>
+            </div>
+            <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                <span class="small d-block opacity-75">VALOR GLOBAL</span>
+                <span class="h2 fw-bold">R$ {{ contrato.valor|floatformat:2|intcomma }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Esquerda -->
+        <div class="col-lg-8">
+            <div class="box-contrato">
+                <h5 class="fw-bold mb-4 border-bottom pb-2">Informações do Processo</h5>
+                <div class="row g-3">
+                    <div class="col-md-4">
+                        <span class="t-label">Protocolo</span>
+                        <span class="t-value">{{ contrato.numero_protocolo|default:"--" }}</span>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="t-label">Processo Adm.</span>
+                        <span class="t-value">{{ contrato.processo_administrativo|default:"--" }}</span>
+                    </div>
+                    <div class="col-md-4">
+                        <span class="t-label">Pregão</span>
+                        <span class="t-value">{{ contrato.numero_pregao|default:"--" }}</span>
+                    </div>
+                    <div class="col-md-6">
+                        <span class="t-label">Secretário Gestor</span>
+                        <span class="t-value">{{ contrato.secretario|default:"--" }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="t-label">Empenho</span>
+                        <span class="t-value">{{ contrato.numero_nota_empenho|default:"--" }}</span>
+                    </div>
+                    <div class="col-md-3">
+                        <span class="t-label">Ficha</span>
+                        <span class="t-value">{{ contrato.numero_ficha|default:"--" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="box-contrato">
+                <h5 class="fw-bold mb-4 border-bottom pb-2">Itens Contratados</h5>
+                {% if contrato.itens.exists %}
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Descrição</th>
+                                <th class="text-center">Qtd</th>
+                                <th class="text-end">Unitário</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in contrato.itens.all %}
+                            <tr>
+                                <td>
+                                    <div class="fw-bold">{{ item.descricao }}</div>
+                                    <div class="small">
+                                        <span class="badge bg-secondary">{{ item.get_tipo_item_display }}</span>
+                                        {% if item.tipo_item == 'ALUGUEL' %}
+                                            | Prop: {{ item.proprietario|default:"--" }}
+                                        {% endif %}
+                                        {% if item.tipo_item == 'PASSAGEM' and item.data_viagem %}
+                                            | Viagem: {{ item.data_viagem|date:"d/m/Y" }}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td class="text-center">{{ item.quantidade }}</td>
+                                <td class="text-end">R$ {{ item.valor_unitario|floatformat:2|intcomma }}</td>
+                                <td class="text-end fw-bold">R$ {{ item.valor_total|floatformat:2|intcomma }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <p class="text-center py-4 text-muted">Sem itens detalhados.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Direita -->
+        <div class="col-lg-4">
+            <div class="box-contrato">
+                <h5 class="fw-bold mb-4 border-bottom pb-2">Acompanhamento</h5>
+                
+                <span class="t-label mb-2 text-center">Status de Alerta</span>
+                <div class="badge-status text-white d-flex align-items-center justify-content-center gap-2" 
+                     style="background-color: {{ contrato.alerta_info.color }};"
+                     title="{{ contrato.alerta_info.description }}">
+                    <i class="bi {{ contrato.alerta_info.icon }}"></i>
+                    {{ contrato.alerta_info.label }}
+                </div>
+
+                <div class="row g-2 mb-4">
+                    <div class="col-6 bg-light p-2 text-center border">
+                        <span class="t-label">Início</span>
+                        <span class="fw-bold small">{{ contrato.data_inicio|date:"d/m/Y" }}</span>
+                    </div>
+                    <div class="col-6 bg-light p-2 text-center border">
+                        <span class="t-label">Término</span>
+                        <span class="fw-bold small">{{ contrato.data_vencimento|date:"d/m/Y" }}</span>
+                    </div>
+                </div>
+
+                <div class="p-3 border rounded bg-light mb-4">
+                    <h6 class="fw-bold small text-muted text-uppercase border-bottom pb-2 mb-3">Origem do Registro</h6>
+                    <div class="mb-2">
+                        <span class="t-label">Secretaria Responsável</span>
+                        <span class="fw-bold text-primary">{{ contrato.secretaria.nome|default:"Administração Geral" }}</span>
+                    </div>
+                    <div class="mb-2">
+                        <span class="t-label">Criado por</span>
+                        <span class="fw-bold">
+                            {% if contrato.criado_por %}
+                                {{ contrato.criado_por.get_full_name|default:contrato.criado_por.username }}
+                            {% else %}
+                                Sistema
+                            {% endif %}
+                        </span>
+                    </div>
+                    <div>
+                        <span class="t-label">Data de Cadastro</span>
+                        <span class="small text-muted">{{ contrato.criado_em|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="t-label">Progresso</span>
+                        <span class="fw-bold small text-primary">{{ contrato.progresso|default:0 }}%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-primary" style="width: {{ contrato.progresso|default:0 }}%;"></div>
+                    </div>
+                </div>
+
+                <div class="p-2 border text-center rounded">
+                    <span class="t-label">Responsável</span>
+                    <span class="fw-bold">{{ contrato.responsavel }}</span>
+                </div>
+            </div>
+
+            <div class="box-contrato">
+                <h5 class="fw-bold mb-4 border-bottom pb-2">Histórico do Dossiê</h5>
+                <div class="timeline-history" style="max-height: 500px; overflow-y: auto;">
+                    {% for h in historico %}
+                    <div class="timeline-item {% if h.acao == 'CREATE' %}create{% elif h.acao == 'STATUS' %}status{% elif h.acao == 'ALERTA' %}alerta{% endif %}">
+                        <div class="timeline-marker">
+                            {% if h.acao == 'CREATE' %}<i class="bi bi-plus-circle-fill small"></i>
+                            {% elif h.acao == 'STATUS' %}<i class="bi bi-arrow-repeat small"></i>
+                            {% elif h.acao == 'ALERTA' %}<i class="bi bi-exclamation-triangle-fill small" style="font-size: 10px;"></i>
+                            {% else %}<i class="bi bi-pencil-fill small" style="font-size: 10px;"></i>{% endif %}
+                        </div>
+                        <div class="timeline-content shadow-sm">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <span class="fw-bold text-dark" style="font-size: 0.85rem;">{{ h.get_acao_display }}</span>
+                                <span class="text-muted small" style="font-size: 0.7rem;">{{ h.alterado_em|date:"d/m/y H:i" }}</span>
+                            </div>
+                            <p class="mb-2 text-secondary small">{{ h.descricao|default:"Alteração no contrato" }}</p>
+                            
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="avatar-sm bg-white rounded-circle d-flex align-items-center justify-content-center border" style="width: 20px; height: 20px;">
+                                    <i class="bi bi-person text-primary" style="font-size: 10px;"></i>
+                                </div>
+                                <span class="fw-bold text-muted" style="font-size: 0.75rem;">
+                                    {% if h.alterado_por %}
+                                        {{ h.alterado_por.get_full_name|default:h.alterado_por.username }}
+                                    {% else %}
+                                        Sistema
+                                    {% endif %}
+                                </span>
+                            </div>
+
+                            {% if h.alteracoes %}
+                            <button class="btn btn-link btn-sm p-0 mt-2 text-primary fw-bold text-decoration-none" 
+                                    style="font-size: 0.7rem;" 
+                                    data-bs-toggle="collapse" 
+                                    data-bs-target="#detail{{ h.id }}">
+                                <i class="bi bi-info-circle me-1"></i> Ver detalhes da alteração <i class="bi bi-chevron-down ms-1"></i>
+                            </button>
+                            <div class="collapse" id="detail{{ h.id }}">
+                                <div class="bg-white border rounded p-2 mt-2 shadow-sm" style="font-size: 0.7rem;">
+                                    {% for campo, valores in h.alteracoes.items %}
+                                    <div class="mb-1 pb-1 {% if not forloop.last %}border-bottom{% endif %}">
+                                        <span class="fw-bold text-dark text-uppercase" style="font-size: 0.65rem;">{{ campo }}:</span>
+                                        <div class="d-flex align-items-center gap-2 mt-1">
+                                            <span class="text-danger text-decoration-line-through bg-danger bg-opacity-10 px-1 rounded">{{ valores.antes|default:"--" }}</span>
+                                            <i class="bi bi-arrow-right text-muted"></i>
+                                            <span class="text-success bg-success bg-opacity-10 px-1 rounded fw-bold">{{ valores.depois|default:"--" }}</span>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="bi bi-clock-history fs-3 opacity-25 d-block mb-2"></i>
+                        Sem histórico registrado.
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-outline-danger w-100 fw-bold rounded mt-3" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                Remover Dossiê
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-body text-center p-4">
+                <h4 class="fw-bold">Confirmar Exclusão?</h4>
+                <p>O contrato {{ contrato.numero_contrato }} será apagado permanentemente.</p>
+                <div class="d-flex gap-2 justify-content-center mt-4">
+                    <button type="button" class="btn btn-light border px-4" data-bs-dismiss="modal">Manter</button>
+                    <form action="{% url 'contratos:excluir' contrato.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger px-4">Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

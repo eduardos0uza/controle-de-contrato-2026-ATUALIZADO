@@ -1,0 +1,22 @@
+{
+    "id": 1,
+    "numero_contrato": "CT-TESTE-SUPABASE-20260331",
+    "numero_protocolo": "CT-TESTE-SUPABASE-20260331",
+    "processo_administrativo": "",
+    "numero_pregao": "",
+    "secretario": "",
+    "numero_nota_empenho": "",
+    "numero_ficha": "",
+    "empresa": "Empresa Teste Supabase",
+    "objeto": "Contrato de validação automática do Supabase",
+    "data_inicio": "2026-03-31",
+    "vigencia": 12,
+    "data_vencimento": "2027-03-31",
+    "status": "ativo",
+    "responsavel": "Validação Automática",
+    "arquivo": "",
+    "dias_restantes": 365,
+    "alerta": "normal",
+    "itens": [],
+    "backup_timestamp": "2026-03-31T14:46:34.105754"
+}

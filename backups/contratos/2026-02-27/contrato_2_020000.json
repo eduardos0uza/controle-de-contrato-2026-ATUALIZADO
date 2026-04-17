@@ -1,0 +1,41 @@
+{
+    "id": 2,
+    "numero_contrato": "4965/2025",
+    "numero_protocolo": "4965/2025",
+    "processo_administrativo": "8205/2024",
+    "numero_pregao": "012/2025",
+    "secretario": "RODRIGO FLORENCIO",
+    "numero_nota_empenho": "",
+    "numero_ficha": "75",
+    "empresa": "PORTO & PORTO",
+    "objeto": "LOCAÇÃO DE VEÍCULO",
+    "data_inicio": "2025-06-13",
+    "vigencia": 12,
+    "data_vencimento": "2026-06-13",
+    "status": "ativo",
+    "responsavel": "GABINETE",
+    "arquivo": "",
+    "dias_restantes": 106,
+    "alerta": "normal",
+    "itens": [
+        {
+            "id": 2,
+            "tipo_item": "SERVICO",
+            "descricao": "VEÍCULO SEDAN - 5 LUGARES",
+            "unidade": "VEÍCULOS",
+            "proprietario": "",
+            "cpf": "",
+            "localidade": "",
+            "tipo_cobranca": "MENSAL",
+            "quantidade": 1,
+            "quantidade_meses": 12,
+            "valor_unitario": "3800.00",
+            "data_viagem": "",
+            "taxa_servico": "0.00",
+            "desconto": "0.00",
+            "caixa_atual": "",
+            "valor_total": "45600.00"
+        }
+    ],
+    "backup_timestamp": "2026-02-27T02:00:00.174164"
+}

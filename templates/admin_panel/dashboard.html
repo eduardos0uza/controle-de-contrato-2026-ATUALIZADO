@@ -1,0 +1,660 @@
+﻿{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Painel Administrativo | Hiden Systems{% endblock %}
+
+{% block extra_css %}
+{{ block.super }}
+<style>
+    :root {
+        --admin-bg: #f3f6f8;
+        --admin-card: #ffffff;
+        --admin-ink: #172033;
+        --admin-muted: #65748a;
+        --admin-line: #dfe7ef;
+        --admin-teal: #0f766e;
+        --admin-blue: #1d4ed8;
+        --admin-amber: #c77803;
+        --admin-red: #cf3f3f;
+        --admin-green: #12805c;
+        --admin-shadow: 0 18px 44px rgba(32, 42, 58, 0.10);
+    }
+
+    .admin-topbar,
+    .panel-head,
+    .kpi-head,
+    .admin-actions {
+        align-items: center;
+        display: flex;
+    }
+
+    .admin-topbar {
+        gap: 18px;
+        justify-content: space-between;
+        margin-bottom: 24px;
+    }
+
+    .admin-kicker {
+        color: var(--admin-teal);
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.12em;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+    }
+
+    .admin-title h1 {
+        font-size: clamp(2rem, 4vw, 3.25rem);
+        font-weight: 900;
+        letter-spacing: 0;
+        line-height: 1;
+        margin: 0;
+        max-width: 760px;
+    }
+
+    .admin-title p {
+        color: var(--admin-muted);
+        font-size: 1.02rem;
+        font-weight: 600;
+        margin: 12px 0 0;
+        max-width: 680px;
+    }
+
+    .admin-actions {
+        flex-wrap: wrap;
+        gap: 10px;
+        justify-content: flex-end;
+    }
+
+    .admin-btn {
+        align-items: center;
+        border-radius: 8px;
+        display: inline-flex;
+        font-size: 0.9rem;
+        font-weight: 900;
+        gap: 9px;
+        min-height: 42px;
+        padding: 10px 15px;
+        text-decoration: none;
+        white-space: nowrap;
+    }
+
+    .admin-btn-primary {
+        background: var(--admin-teal);
+        border: 1px solid var(--admin-teal);
+        box-shadow: 0 10px 22px rgba(15, 118, 110, 0.18);
+        color: #ffffff;
+    }
+
+    .admin-btn-primary:hover { background: #0b5f59; color: #ffffff; }
+    .admin-btn-secondary {
+        background: #ffffff;
+        border: 1px solid var(--admin-line);
+        color: var(--admin-ink);
+    }
+
+    .admin-btn-secondary:hover { background: #f7fafc; color: var(--admin-ink); }
+
+    .command-band {
+        background: var(--admin-card);
+        border: 1px solid var(--admin-line);
+        border-radius: 8px;
+        box-shadow: var(--admin-shadow);
+        display: grid;
+        grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+        margin-bottom: 24px;
+        overflow: hidden;
+    }
+
+    .command-left,
+    .command-right { padding: 24px; }
+
+    .command-left {
+        background: linear-gradient(135deg, rgba(15, 118, 110, 0.12), rgba(255,255,255,0) 44%), #ffffff;
+    }
+
+    .command-title {
+        align-items: center;
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 46px 1fr;
+        margin-bottom: 18px;
+    }
+
+    .icon-tile {
+        align-items: center;
+        background: var(--admin-ink);
+        border-radius: 8px;
+        color: #ffffff;
+        display: inline-flex;
+        height: 46px;
+        justify-content: center;
+        width: 46px;
+    }
+
+    .command-title h2,
+    .panel-head h3 {
+        font-size: 1.05rem;
+        font-weight: 900;
+        margin: 0;
+    }
+
+    .command-title p,
+    .panel-head p {
+        color: var(--admin-muted);
+        font-size: 0.86rem;
+        font-weight: 600;
+        margin: 3px 0 0;
+    }
+
+    .command-metrics {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .command-mini,
+    .kpi-card,
+    .panel-card,
+    .quick-action,
+    .system-stat,
+    .renewal-item {
+        background: var(--admin-card);
+        border: 1px solid var(--admin-line);
+        border-radius: 8px;
+    }
+
+    .command-mini {
+        background: rgba(255,255,255,0.76);
+        padding: 13px;
+    }
+
+    .command-mini span,
+    .kpi-head span {
+        color: var(--admin-muted);
+        display: block;
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .command-mini strong {
+        display: block;
+        font-size: 1.35rem;
+        font-weight: 900;
+        margin-top: 2px;
+    }
+
+    .command-right {
+        background: var(--admin-ink);
+        color: #ffffff;
+        display: grid;
+        gap: 12px;
+    }
+
+    .system-row {
+        align-items: center;
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 38px 1fr auto;
+    }
+
+    .system-row i {
+        align-items: center;
+        background: rgba(255,255,255,0.1);
+        border-radius: 8px;
+        color: #8ee6d7;
+        display: inline-flex;
+        height: 38px;
+        justify-content: center;
+        width: 38px;
+    }
+
+    .system-row span { color: rgba(255,255,255,0.68); display: block; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+    .system-row strong { color: #ffffff; display: block; font-size: 0.94rem; }
+    .system-pill { color: #b8fff1; font-size: 0.72rem; font-style: normal; font-weight: 900; text-transform: uppercase; }
+
+    .kpi-grid {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        margin-bottom: 24px;
+    }
+
+    .kpi-card {
+        box-shadow: 0 10px 28px rgba(32, 42, 58, 0.08);
+        min-height: 156px;
+        overflow: hidden;
+        padding: 18px;
+        position: relative;
+    }
+
+    .kpi-card::before {
+        background: var(--tone, var(--admin-teal));
+        content: "";
+        height: 4px;
+        left: 0;
+        position: absolute;
+        right: 0;
+        top: 0;
+    }
+
+    .kpi-head {
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
+
+    .kpi-head i {
+        align-items: center;
+        background: #f3f6f8;
+        border-radius: 8px;
+        color: var(--tone, var(--admin-teal));
+        display: inline-flex;
+        height: 36px;
+        justify-content: center;
+        width: 36px;
+    }
+
+    .kpi-card strong {
+        display: block;
+        font-size: clamp(1.75rem, 3vw, 2.45rem);
+        font-weight: 900;
+        line-height: 1;
+        overflow-wrap: anywhere;
+    }
+
+    .kpi-card p {
+        color: var(--admin-muted);
+        font-size: 0.9rem;
+        font-weight: 700;
+        margin: 12px 0 0;
+    }
+
+    .admin-grid {
+        display: grid;
+        gap: 24px;
+        grid-template-columns: minmax(0, 1.55fr) minmax(330px, 0.85fr);
+    }
+
+    .panel-card {
+        box-shadow: 0 10px 28px rgba(32, 42, 58, 0.08);
+        overflow: hidden;
+    }
+
+    .panel-card + .panel-card { margin-top: 24px; }
+
+    .panel-head {
+        border-bottom: 1px solid var(--admin-line);
+        gap: 14px;
+        justify-content: space-between;
+        padding: 18px 20px;
+    }
+
+    .panel-body { padding: 20px; }
+    .panel-link { color: var(--admin-teal); font-size: 0.86rem; font-weight: 900; text-decoration: none; white-space: nowrap; }
+
+    .admin-table-wrap { overflow-x: auto; }
+    .admin-table { border-collapse: collapse; width: 100%; }
+    .admin-table th {
+        color: var(--admin-muted);
+        font-size: 0.72rem;
+        font-weight: 900;
+        letter-spacing: 0.08em;
+        padding: 0 14px 12px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+    .admin-table td { border-top: 1px solid var(--admin-line); padding: 14px; vertical-align: middle; }
+    .muted-small { color: var(--admin-muted); display: block; font-size: 0.82rem; font-weight: 700; margin-top: 3px; }
+    .strong-line { display: block; font-weight: 900; max-width: 360px; }
+
+    .priority-badge {
+        align-items: center;
+        border: 1px solid var(--admin-line);
+        border-radius: 999px;
+        display: inline-flex;
+        font-size: 0.78rem;
+        font-weight: 900;
+        gap: 7px;
+        padding: 6px 9px;
+        white-space: nowrap;
+    }
+
+    .priority-dot { border-radius: 999px; display: inline-block; height: 9px; width: 9px; }
+    .icon-button {
+        align-items: center;
+        background: #f5f8fb;
+        border: 1px solid var(--admin-line);
+        border-radius: 8px;
+        color: var(--admin-ink);
+        display: inline-flex;
+        height: 36px;
+        justify-content: center;
+        text-decoration: none;
+        width: 36px;
+    }
+
+    .feed-list,
+    .quick-grid,
+    .system-stat-list,
+    .renewal-list { display: grid; gap: 10px; }
+
+    .feed-item {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: 40px 1fr;
+    }
+
+    .feed-icon {
+        align-items: center;
+        background: #f5f8fb;
+        border: 1px solid var(--admin-line);
+        border-radius: 8px;
+        display: inline-flex;
+        height: 40px;
+        justify-content: center;
+        width: 40px;
+    }
+
+    .feed-content { border-bottom: 1px solid var(--admin-line); min-width: 0; padding-bottom: 12px; }
+    .feed-item:last-child .feed-content { border-bottom: 0; padding-bottom: 0; }
+    .feed-time { color: var(--admin-muted); font-size: 0.78rem; font-weight: 800; margin-bottom: 4px; }
+    .feed-text { font-size: 0.92rem; font-weight: 600; line-height: 1.45; }
+
+    .quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .quick-action {
+        align-items: center;
+        background: #f5f8fb;
+        color: var(--admin-ink);
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 38px 1fr;
+        min-height: 68px;
+        padding: 12px;
+        text-decoration: none;
+    }
+
+    .quick-action i,
+    .system-stat i,
+    .renewal-item i {
+        align-items: center;
+        background: #ffffff;
+        border-radius: 8px;
+        display: inline-flex;
+        height: 38px;
+        justify-content: center;
+        width: 38px;
+    }
+
+    .quick-action i { color: var(--admin-teal); }
+    .quick-action span { display: block; font-size: 0.9rem; font-weight: 900; line-height: 1.1; }
+    .quick-action small { color: var(--admin-muted); display: block; font-size: 0.74rem; font-weight: 700; margin-top: 3px; }
+
+    .status-stack { display: grid; gap: 10px; }
+    .status-row {
+        background: #f5f8fb;
+        border: 1px solid var(--admin-line);
+        border-radius: 8px;
+        overflow: hidden;
+        padding: 12px;
+    }
+    .status-row-head {
+        align-items: center;
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 9px;
+    }
+    .status-row-head span { color: var(--admin-ink); font-size: 0.9rem; font-weight: 900; }
+    .status-row-head strong { color: var(--admin-teal); font-size: 0.92rem; font-weight: 900; }
+    .status-meter {
+        background: #e3eaf1;
+        border-radius: 999px;
+        height: 8px;
+        overflow: hidden;
+    }
+    .status-meter span {
+        background: linear-gradient(90deg, var(--admin-teal), var(--admin-blue));
+        border-radius: inherit;
+        display: block;
+        height: 100%;
+        min-width: 8px;
+    }
+    .system-stat-list { margin-top: 18px; }
+    .system-stat,
+    .renewal-item {
+        align-items: center;
+        background: #f5f8fb;
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 38px 1fr auto;
+        padding: 11px;
+    }
+
+    .system-stat i { color: var(--admin-blue); }
+    .system-stat span { font-size: 0.9rem; font-weight: 900; }
+    .system-stat strong { color: var(--admin-teal); font-size: 1rem; font-weight: 900; }
+    .renewal-item { grid-template-columns: 38px 1fr; }
+    .renewal-item i { color: var(--admin-amber); }
+    .renewal-item strong,
+    .renewal-item span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .renewal-item strong { font-size: 0.9rem; font-weight: 900; }
+
+    .empty-state {
+        align-items: center;
+        color: var(--admin-muted);
+        display: grid;
+        gap: 8px;
+        justify-items: center;
+        min-height: 128px;
+        text-align: center;
+    }
+
+    .empty-state i { color: #c7d0dd; font-size: 2rem; }
+    .mobile-admin-toggle { display: none; }
+
+    @keyframes adminReveal {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .admin-reveal { animation: adminReveal 420ms ease both; }
+
+    @media (max-width: 1240px) {
+        .kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .admin-grid,
+        .command-band { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 991.98px) {
+        .admin-topbar { align-items: flex-start; flex-direction: column; }
+        .admin-actions { justify-content: flex-start; width: 100%; }
+    }
+
+    @media (max-width: 640px) {
+        .kpi-grid,
+        .command-metrics,
+        .quick-grid { grid-template-columns: 1fr; }
+        .command-left,
+        .command-right,
+        .panel-body,
+        .panel-head { padding: 16px; }
+        .admin-actions { display: grid; grid-template-columns: 1fr; }
+        .admin-btn { justify-content: center; width: 100%; }
+    }
+</style>
+{% endblock %}
+
+{% block admin_content %}
+        <header class="admin-topbar admin-reveal">
+            <div class="admin-title">
+                <div class="admin-kicker">Painel Administrativo</div>
+                <h1>Controle geral em uma tela clara.</h1>
+                <p>Ola, {{ request.user.first_name|default:request.user.username }}. Contratos, usuarios e alertas principais consolidados para decisao rapida.</p>
+            </div>
+            <div class="admin-actions">
+                <a href="{% url 'contratos:dashboard' %}" class="admin-btn admin-btn-secondary"><i class="bi bi-arrow-left"></i> Portal</a>
+                <a href="{% url 'admin_panel:system_settings' %}" class="admin-btn admin-btn-secondary"><i class="bi bi-sliders2"></i> Configuracoes</a>
+                <a href="{% url 'admin_panel:backup_restore' %}" class="admin-btn admin-btn-primary"><i class="bi bi-database-check"></i> Backup</a>
+            </div>
+        </header>
+
+        <section class="command-band admin-reveal">
+            <div class="command-left">
+                <div class="command-title">
+                    <div class="icon-tile"><i class="bi bi-command"></i></div>
+                    <div>
+                        <h2>Centro de operacao</h2>
+                        <p>Resumo executivo do ambiente administrativo.</p>
+                    </div>
+                </div>
+                <div class="command-metrics">
+                    <div class="command-mini"><span>Usuarios ativos</span><strong>{{ usuarios_ativos }}</strong></div>
+                    <div class="command-mini"><span>Contratos</span><strong>{{ total_contratos }}</strong></div>
+                    <div class="command-mini"><span>Alertas criticos</span><strong>{{ vencidos }}</strong></div>
+                </div>
+            </div>
+            <div class="command-right">
+                <div class="system-row"><i class="bi bi-shield-lock"></i><div><span>Seguranca</span><strong>Autenticacao protegida</strong></div><em class="system-pill">Online</em></div>
+                <div class="system-row"><i class="bi bi-activity"></i><div><span>Operacao</span><strong>Monitoramento ativo</strong></div><em class="system-pill">OK</em></div>
+                <div class="system-row"><i class="bi bi-clock-history"></i><div><span>Auditoria</span><strong>{{ logs_recentes|length }} eventos recentes</strong></div><em class="system-pill">Live</em></div>
+            </div>
+        </section>
+
+        <section class="kpi-grid admin-reveal">
+            <article class="kpi-card" style="--tone: var(--admin-blue);">
+                <div class="kpi-head"><span>Operadores</span><i class="bi bi-people-fill"></i></div>
+                <strong>{{ total_usuarios }}</strong>
+                <p>{{ novos_usuarios_mes }} novo(s) este mes</p>
+            </article>
+            <article class="kpi-card" style="--tone: var(--admin-teal);">
+                <div class="kpi-head"><span>Contratos</span><i class="bi bi-file-earmark-text-fill"></i></div>
+                <strong>{{ total_contratos }}</strong>
+                <p>Itens em gestao administrativa</p>
+            </article>
+            <article class="kpi-card" style="--tone: var(--admin-green);">
+                <div class="kpi-head"><span>Valor total</span><i class="bi bi-cash-stack"></i></div>
+                <strong>R$ {{ valor_total|floatformat:0|intcomma }}</strong>
+                <p>Volume sob acompanhamento</p>
+            </article>
+            <article class="kpi-card" style="--tone: var(--admin-red);">
+                <div class="kpi-head"><span>Vencidos</span><i class="bi bi-exclamation-triangle-fill"></i></div>
+                <strong>{{ vencidos }}</strong>
+                <p>Alertas que precisam de atencao</p>
+            </article>
+        </section>
+
+        <div class="admin-grid">
+            <div>
+                <section class="panel-card admin-reveal">
+                    <div class="panel-head">
+                        <div><h3>Contratos em urgencia</h3><p>Vencidos ou em faixa critica.</p></div>
+                        <a href="{% url 'admin_panel:contratos_list' %}?alerta=vencido" class="panel-link">Abrir lista <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                    <div class="panel-body">
+                        {% if contratos_alertas %}
+                        <div class="admin-table-wrap">
+                            <table class="admin-table">
+                                <thead><tr><th>Contrato</th><th>Vencimento</th><th>Prioridade</th><th></th></tr></thead>
+                                <tbody>
+                                    {% for contrato in contratos_alertas %}
+                                    <tr>
+                                        <td><span class="strong-line">{{ contrato.objeto|default:"Contrato sem objeto"|truncatechars:56 }}</span><span class="muted-small">{{ contrato.numero_contrato }} - {{ contrato.empresa|default:"Empresa nao informada" }}</span></td>
+                                        <td><strong>{{ contrato.data_vencimento|date:"d/m/Y" }}</strong><span class="muted-small">{{ contrato.dias_restantes }} dias restantes</span></td>
+                                        <td><span class="priority-badge" title="{{ contrato.alerta_info.description }}"><span class="priority-dot" style="background: {{ contrato.alerta_info.color }};"></span>{{ contrato.alerta_info.label }}</span></td>
+                                        <td class="text-end"><a href="{% url 'contratos:detalhe' contrato.pk %}" class="icon-button" title="Abrir contrato"><i class="bi bi-arrow-up-right"></i></a></td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% else %}
+                        <div class="empty-state"><i class="bi bi-check2-circle"></i><strong>Nenhum alerta critico agora.</strong></div>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <section class="panel-card admin-reveal">
+                    <div class="panel-head">
+                        <div><h3>Atividades recentes</h3><p>Eventos registrados no painel.</p></div>
+                        <a href="{% url 'admin_panel:audit_log_list' %}" class="panel-link">Log completo <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                    <div class="panel-body">
+                        <div class="feed-list">
+                            {% for log in logs_recentes %}
+                            <div class="feed-item">
+                                <div class="feed-icon" title="{{ log.get_acao_display }}">
+                                    {% if log.acao == 'CREATE' %}<i class="bi bi-plus-lg text-success"></i>
+                                    {% elif log.acao == 'DELETE' %}<i class="bi bi-trash3 text-danger"></i>
+                                    {% elif log.acao == 'UPDATE' %}<i class="bi bi-pencil-square text-primary"></i>
+                                    {% else %}<i class="bi bi-info-lg text-secondary"></i>{% endif %}
+                                </div>
+                                <div class="feed-content">
+                                    <div class="feed-time">{{ log.data_hora|date:"d/m/Y H:i" }}</div>
+                                    <div class="feed-text"><strong>{% if log.usuario %}{{ log.usuario.get_full_name|default:log.usuario.username }}{% else %}Sistema{% endif %}</strong> {{ log.descricao }}</div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="empty-state"><i class="bi bi-clipboard-check"></i><strong>Nenhuma atividade recente.</strong></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <div>
+                <section class="panel-card admin-reveal">
+                    <div class="panel-head"><div><h3>Acoes rapidas</h3><p>Atalhos de operacao.</p></div></div>
+                    <div class="panel-body">
+                        <div class="quick-grid">
+                            <a href="{% url 'admin_panel:user_create' %}" class="quick-action"><i class="bi bi-person-plus-fill"></i><span>Novo usuario<small>Acesso</small></span></a>
+                            <a href="{% url 'admin_panel:contratos_list' %}" class="quick-action"><i class="bi bi-file-earmark-plus-fill"></i><span>Contratos<small>Gestao</small></span></a>
+                            <a href="{% url 'admin_panel:post_create' %}" class="quick-action"><i class="bi bi-journal-plus"></i><span>Novo post<small>Conteudo</small></span></a>
+                            <a href="{% url 'admin_panel:media_list' %}" class="quick-action"><i class="bi bi-images"></i><span>Midias<small>Arquivos</small></span></a>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel-card admin-reveal">
+                    <div class="panel-head"><div><h3>Status dos contratos</h3><p>Distribuicao atual.</p></div></div>
+                    <div class="panel-body">
+                        <div class="status-stack">
+                            {% for item in status_distribuicao %}
+                            <div class="status-row">
+                                <div class="status-row-head">
+                                    <span>{{ item.label }}</span>
+                                    <strong>{{ item.total }}</strong>
+                                </div>
+                                <div class="status-meter" aria-label="{{ item.percent }}% dos contratos">
+                                    <span style="width: {{ item.percent }}%;"></span>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <div class="empty-state"><i class="bi bi-pie-chart"></i><strong>Sem status para exibir.</strong></div>
+                            {% endfor %}
+                        </div>
+                        <div class="system-stat-list">
+                            <div class="system-stat"><i class="bi bi-file-post"></i><span>Posts</span><strong>{{ total_posts }}</strong></div>
+                            <div class="system-stat"><i class="bi bi-files"></i><span>Paginas</span><strong>{{ total_paginas }}</strong></div>
+                            <div class="system-stat"><i class="bi bi-cloud-check"></i><span>Midias</span><strong>{{ total_midias }}</strong></div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="panel-card admin-reveal">
+                    <div class="panel-head"><div><h3>Proximos vencimentos</h3><p>Contratos que pedem revisao.</p></div></div>
+                    <div class="panel-body">
+                        <div class="renewal-list">
+                            {% for contrato in proximos_vencimentos %}
+                            <div class="renewal-item"><i class="bi bi-calendar2-week"></i><div><strong>{{ contrato.objeto|default:"Contrato sem objeto"|truncatechars:36 }}</strong><span class="muted-small">{{ contrato.data_vencimento|date:"d M, Y" }}</span></div></div>
+                            {% empty %}
+                            <div class="empty-state"><i class="bi bi-calendar-check"></i><strong>Nenhum vencimento proximo.</strong></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+{% endblock %}

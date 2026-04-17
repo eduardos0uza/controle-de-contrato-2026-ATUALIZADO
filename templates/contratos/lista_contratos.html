@@ -1,0 +1,641 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}Central de Contratos | São João da Barra{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --ledger-navy: #06233f;
+        --ledger-blue: #0b4f86;
+        --ledger-cyan: #32b7d4;
+        --ledger-green: #0e9f6e;
+        --ledger-amber: #d88914;
+        --ledger-red: #d94b4b;
+        --ledger-ink: #142033;
+        --ledger-muted: #687789;
+        --ledger-line: #dfe8f1;
+        --ledger-bg: #eef4f7;
+        --ledger-card: #ffffff;
+        --ledger-shadow: 0 18px 48px rgba(6, 35, 63, 0.1);
+    }
+
+    body {
+        background:
+            radial-gradient(circle at 0% 8%, rgba(50, 183, 212, 0.18), transparent 30rem),
+            radial-gradient(circle at 96% 5%, rgba(14, 159, 110, 0.13), transparent 26rem),
+            linear-gradient(180deg, #f7fbfd 0%, var(--ledger-bg) 100%);
+        font-family: 'Outfit', sans-serif;
+    }
+
+    .contracts-page {
+        color: var(--ledger-ink);
+        display: grid;
+        gap: 24px;
+    }
+
+    .ledger-hero {
+        align-items: stretch;
+        background: var(--ledger-card);
+        border: 1px solid var(--ledger-line);
+        border-radius: 30px;
+        box-shadow: var(--ledger-shadow);
+        display: grid;
+        gap: 0;
+        grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);
+        overflow: hidden;
+    }
+
+    .ledger-hero-main {
+        background:
+            linear-gradient(135deg, rgba(6,35,63,0.06), rgba(50,183,212,0.04)),
+            #ffffff;
+        padding: clamp(24px, 4vw, 40px);
+    }
+
+    .ledger-hero-side {
+        background: linear-gradient(135deg, var(--ledger-navy), var(--ledger-blue));
+        color: #ffffff;
+        display: grid;
+        gap: 12px;
+        padding: clamp(22px, 3vw, 32px);
+    }
+
+    .ledger-kicker {
+        color: var(--ledger-blue);
+        font-size: 0.74rem;
+        font-weight: 950;
+        letter-spacing: 0.14em;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+    }
+
+    .ledger-title {
+        font-size: clamp(2rem, 4.2vw, 4rem);
+        font-weight: 950;
+        letter-spacing: -0.055em;
+        line-height: 0.96;
+        margin: 0;
+        max-width: 760px;
+    }
+
+    .ledger-copy {
+        color: var(--ledger-muted);
+        font-size: 1rem;
+        font-weight: 650;
+        line-height: 1.65;
+        margin: 16px 0 0;
+        max-width: 680px;
+    }
+
+    .ledger-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 24px;
+    }
+
+    .ledger-btn {
+        align-items: center;
+        border-radius: 16px;
+        display: inline-flex;
+        font-weight: 900;
+        gap: 9px;
+        justify-content: center;
+        min-height: 46px;
+        padding: 12px 18px;
+        text-decoration: none;
+    }
+
+    .ledger-btn-primary { background: var(--ledger-navy); color: #ffffff; }
+    .ledger-btn-primary:hover { background: var(--ledger-blue); color: #ffffff; }
+    .ledger-btn-light { background: #f4f8fb; border: 1px solid var(--ledger-line); color: var(--ledger-ink); }
+    .ledger-btn-light:hover { color: var(--ledger-blue); }
+
+    .ledger-side-item {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.16);
+        border-radius: 18px;
+        padding: 16px;
+    }
+
+    .ledger-side-item span { color: rgba(255,255,255,0.67); display: block; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.09em; text-transform: uppercase; }
+    .ledger-side-item strong { display: block; font-size: 1.5rem; font-weight: 950; letter-spacing: -0.04em; margin-top: 3px; }
+
+    .ledger-kpis {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .ledger-kpi {
+        background: var(--ledger-card);
+        border: 1px solid var(--ledger-line);
+        border-radius: 24px;
+        box-shadow: 0 12px 32px rgba(6,35,63,0.07);
+        display: grid;
+        gap: 14px;
+        grid-template-columns: 48px 1fr;
+        padding: 18px;
+    }
+
+    .ledger-kpi i {
+        align-items: center;
+        background: color-mix(in srgb, var(--tone, var(--ledger-blue)) 12%, white);
+        border-radius: 16px;
+        color: var(--tone, var(--ledger-blue));
+        display: inline-flex;
+        font-size: 1.25rem;
+        height: 48px;
+        justify-content: center;
+        width: 48px;
+    }
+
+    .ledger-kpi span { color: var(--ledger-muted); display: block; font-size: 0.68rem; font-weight: 950; letter-spacing: 0.09em; text-transform: uppercase; }
+    .ledger-kpi strong { display: block; font-size: clamp(1.35rem, 3vw, 2.05rem); font-weight: 950; letter-spacing: -0.04em; line-height: 1.05; margin-top: 2px; overflow-wrap: anywhere; }
+
+    .filter-dock {
+        background: rgba(255,255,255,0.92);
+        border: 1px solid var(--ledger-line);
+        border-radius: 28px;
+        box-shadow: 0 14px 36px rgba(6,35,63,0.07);
+        overflow: hidden;
+    }
+
+    .filter-dock-head {
+        align-items: center;
+        border-bottom: 1px solid var(--ledger-line);
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px 22px;
+    }
+
+    .filter-dock-head h2 { font-size: 1.05rem; font-weight: 950; margin: 0; }
+    .filter-dock-head p { color: var(--ledger-muted); font-size: 0.86rem; font-weight: 650; margin: 4px 0 0; }
+    .filter-body { padding: 22px; }
+
+    .field-label { color: var(--ledger-muted); font-size: 0.68rem; font-weight: 950; letter-spacing: 0.09em; margin-bottom: 8px; text-transform: uppercase; }
+    .form-control-ledger,
+    .form-select.form-control-ledger {
+        background-color: #f6fafc !important;
+        border: 1px solid var(--ledger-line) !important;
+        border-radius: 15px !important;
+        color: var(--ledger-ink) !important;
+        font-weight: 700 !important;
+        min-height: 48px;
+        padding: 0.72rem 0.95rem !important;
+    }
+
+    .form-control-ledger:focus {
+        background: #ffffff !important;
+        border-color: var(--ledger-blue) !important;
+        box-shadow: 0 0 0 4px rgba(11,79,134,0.1) !important;
+    }
+
+    .preset-row {
+        align-items: center;
+        background: #f6fafc;
+        border: 1px dashed #cbd9e5;
+        border-radius: 18px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        padding: 12px;
+    }
+
+    .preset-row span { color: var(--ledger-muted); font-size: 0.68rem; font-weight: 950; letter-spacing: 0.09em; margin-right: 4px; text-transform: uppercase; }
+    .preset-row .btn { border-radius: 99px; font-size: 0.78rem; font-weight: 900; }
+
+    .ledger-table-card {
+        background: var(--ledger-card);
+        border: 1px solid var(--ledger-line);
+        border-radius: 28px;
+        box-shadow: var(--ledger-shadow);
+        overflow: hidden;
+    }
+
+    .ledger-table-head {
+        align-items: center;
+        border-bottom: 1px solid var(--ledger-line);
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 20px 22px;
+    }
+
+    .ledger-table-head h2 { font-size: 1.05rem; font-weight: 950; margin: 0; }
+    .ledger-table-head p { color: var(--ledger-muted); font-size: 0.86rem; font-weight: 650; margin: 4px 0 0; }
+    .table-responsive-ledger { max-height: 75vh; overflow: auto; }
+    .table-ledger { border-collapse: collapse; margin: 0; width: 100%; }
+    .table-ledger thead th {
+        background: var(--ledger-navy) !important;
+        border: 0;
+        color: #ffffff !important;
+        cursor: pointer;
+        font-size: 0.66rem;
+        font-weight: 950;
+        letter-spacing: 0.1em;
+        padding: 16px 14px;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .table-ledger tbody td {
+        border-bottom: 1px solid var(--ledger-line);
+        color: #2a3a4f;
+        font-size: 0.88rem;
+        padding: 15px 14px;
+        vertical-align: middle;
+    }
+
+    .table-ledger tbody tr { cursor: pointer; transition: background 160ms ease; }
+    .table-ledger tbody tr:hover { background: #f7fbfd; }
+    .sort-icon { color: rgba(255,255,255,0.55); font-size: 0.72rem; }
+    .contract-link { color: var(--ledger-blue); display: block; font-weight: 950; text-decoration: none; }
+    .contract-desc { color: var(--ledger-muted); font-size: 0.75rem; font-weight: 650; margin-top: 4px; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .date-chip, .owner-line { align-items: center; display: inline-flex; gap: 8px; font-weight: 800; white-space: nowrap; }
+    .date-chip i { color: var(--ledger-muted); }
+    .days-chip, .status-chip {
+        border-radius: 99px;
+        display: inline-flex;
+        font-size: 0.73rem;
+        font-weight: 950;
+        padding: 7px 10px;
+        white-space: nowrap;
+    }
+    .days-chip.danger { background: #fff0f0; color: var(--ledger-red); }
+    .days-chip.warning { background: #fff7e8; color: var(--ledger-amber); }
+    .days-chip.calm { background: #f1f6f8; color: var(--ledger-muted); }
+    .status-chip.ok { background: #eaf8f1; color: var(--ledger-green); }
+    .status-chip.hold { background: #fff7e8; color: var(--ledger-amber); }
+    .status-chip.muted { background: #eef2f6; color: #718092; }
+    .agency-stack strong { display: block; font-size: 0.82rem; }
+    .agency-stack span { color: var(--ledger-muted); display: block; font-size: 0.72rem; font-weight: 650; margin-top: 2px; }
+    .owner-line span { align-items: center; background: #eaf5f9; border-radius: 10px; color: var(--ledger-blue); display: inline-flex; font-size: 0.7rem; font-weight: 950; height: 28px; justify-content: center; width: 28px; }
+    .alert-line { align-items: center; display: inline-flex; font-size: 0.78rem; font-weight: 900; gap: 8px; white-space: nowrap; }
+    .alert-line i { border-radius: 99px; display: inline-block; height: 10px; width: 10px; }
+    .action-pack { display: inline-flex; gap: 6px; }
+    .action-btn { align-items: center; background: #f6fafc; border: 1px solid var(--ledger-line); border-radius: 12px; color: var(--ledger-ink); display: inline-flex; height: 36px; justify-content: center; text-decoration: none; width: 36px; }
+    .action-btn:hover { background: #ffffff; color: var(--ledger-blue); }
+    .action-btn.danger { color: var(--ledger-red); }
+    .empty-ledger { align-items: center; color: var(--ledger-muted); display: grid; gap: 6px; justify-items: center; min-height: 170px; text-align: center; }
+    .empty-ledger i { color: #b9c7d4; font-size: 2.2rem; }
+    .empty-ledger strong { color: var(--ledger-ink); }
+    .pagination-ledger .page-link { border: 0; border-radius: 12px; color: var(--ledger-muted); font-weight: 850; margin: 0 2px; padding: 9px 14px; }
+    .pagination-ledger .page-item.active .page-link { background: var(--ledger-navy); color: #ffffff; }
+    .row-updated { animation: highlightUpdate 900ms ease-out; }
+    @keyframes highlightUpdate { 0% { background: rgba(50,183,212,0.14); } 100% { background: transparent; } }
+
+    .offcanvas-elite { border-left: 1px solid var(--ledger-line); box-shadow: -18px 0 44px rgba(6,35,63,0.11); width: min(460px, 100vw) !important; }
+    .offcanvas-elite .offcanvas-header { background: #f7fbfd; border-bottom: 1px solid var(--ledger-line); padding: 1.4rem; }
+    .offcanvas-elite .offcanvas-body { padding: 1.4rem; }
+
+    @media (max-width: 1180px) {
+        .ledger-hero { grid-template-columns: 1fr; }
+        .ledger-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 680px) {
+        .ledger-hero { border-radius: 22px; }
+        .ledger-actions { display: grid; }
+        .ledger-btn { width: 100%; }
+        .ledger-kpis { grid-template-columns: 1fr; }
+        .filter-dock-head, .ledger-table-head { align-items: flex-start; flex-direction: column; }
+    }
+
+    @media print {
+        .no-print, .navbar-elite, .footer-elite { display: none !important; }
+        body { background: #fff !important; }
+        .ledger-table-card, .ledger-kpi, .ledger-hero, .filter-dock { box-shadow: none !important; }
+        .table-responsive-ledger { max-height: none !important; overflow: visible !important; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="contracts-page">
+    <section class="ledger-hero no-print">
+        <div class="ledger-hero-main">
+            <div class="ledger-kicker">Central operacional</div>
+            <h1 class="ledger-title">A base de contratos com leitura rápida e ação direta.</h1>
+            <p class="ledger-copy">Filtre, ordene e abra o dossiê de cada contrato sem perder o contexto da lista. A tela agora prioriza prazo, risco e valor.</p>
+            <div class="ledger-actions">
+                <a href="{% url 'contratos:criar' %}" class="ledger-btn ledger-btn-primary"><i class="bi bi-plus-lg"></i> Novo registro</a>
+                <a href="{% url 'contratos:relatorios' %}" class="ledger-btn ledger-btn-light"><i class="bi bi-bar-chart"></i> Relatórios</a>
+                <button onclick="window.print()" type="button" class="ledger-btn ledger-btn-light"><i class="bi bi-printer"></i> Imprimir</button>
+            </div>
+        </div>
+        <aside class="ledger-hero-side">
+            <div class="ledger-side-item"><span>Resultado filtrado</span><strong>{{ kpis.total }}</strong></div>
+            <div class="ledger-side-item"><span>Valor consolidado</span><strong>R$ {{ kpis.valor|floatformat:0|intcomma }}</strong></div>
+            <div class="ledger-side-item"><span>Janela crítica</span><strong>{{ kpis.vencendo_30 }} em 30d</strong></div>
+        </aside>
+    </section>
+
+    <section class="ledger-kpis no-print">
+        <article class="ledger-kpi" style="--tone: var(--ledger-blue);"><i class="bi bi-layers-fill"></i><div><span>Total filtrado</span><strong>{{ kpis.total }}</strong></div></article>
+        <article class="ledger-kpi" style="--tone: var(--ledger-green);"><i class="bi bi-cash-stack"></i><div><span>Valor global</span><strong>R$ {{ kpis.valor|floatformat:0|intcomma }}</strong></div></article>
+        <article class="ledger-kpi" style="--tone: var(--ledger-amber);"><i class="bi bi-alarm-fill"></i><div><span>Vencendo 30d</span><strong>{{ kpis.vencendo_30 }}</strong></div></article>
+        <article class="ledger-kpi" style="--tone: var(--ledger-red);"><i class="bi bi-shield-x"></i><div><span>Expirados</span><strong>{{ kpis.vencidos|default:0 }}</strong></div></article>
+    </section>
+
+    <section class="filter-dock no-print">
+        <div class="filter-dock-head">
+            <div>
+                <h2>Busca orientada por risco</h2>
+                <p>Combine texto, status, responsável, alerta e janelas de vencimento.</p>
+            </div>
+            <a href="{% url 'contratos:lista' %}" class="btn btn-light border rounded-pill fw-bold px-4">Limpar filtros</a>
+        </div>
+        <div class="filter-body">
+            <form id="filterForm" method="get" class="row g-3 align-items-end">
+                <div class="col-xl-4 col-lg-6">
+                    <label class="field-label">Busca</label>
+                    <input type="text" name="search" class="form-control form-control-ledger" placeholder="Número, objeto, fornecedor ou responsável..." value="{{ request.GET.search|default:'' }}">
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-6">
+                    <label class="field-label">Status</label>
+                    <select name="status" id="statusFilter" class="form-select form-control-ledger">
+                        <option value="">Todos</option>
+                        {% for key, value in status_choices %}<option value="{{ key }}" {% if request.GET.status == key %}selected{% endif %}>{{ value }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-6">
+                    <label class="field-label">Responsável</label>
+                    <select name="responsavel" id="responsavelFilter" class="form-select form-control-ledger">
+                        <option value="">Todos</option>
+                        {% for resp in responsaveis %}<option value="{{ resp.username }}" {% if request.GET.responsavel == resp.username %}selected{% endif %}>{{ resp.username }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-6">
+                    <label class="field-label">Alerta</label>
+                    <select name="alerta" id="alertaFilter" class="form-select form-control-ledger">
+                        <option value="">Todos</option>
+                        {% for key, value in alerta_choices %}<option value="{{ key }}" {% if request.GET.alerta == key %}selected{% endif %}>{{ value }}</option>{% endfor %}
+                    </select>
+                </div>
+                <div class="col-xl-2 col-lg-3 col-md-6">
+                    <button type="submit" class="ledger-btn ledger-btn-primary w-100 border-0">Filtrar</button>
+                </div>
+                <div class="col-12">
+                    <input type="hidden" name="inicio" id="dataInicio" value="{{ request.GET.inicio }}">
+                    <input type="hidden" name="fim" id="dataFim" value="{{ request.GET.fim }}">
+                    <div class="preset-row">
+                        <span>Atalhos</span>
+                        <button type="button" class="btn btn-light border date-preset" data-days="30">Próximos 30 dias</button>
+                        <button type="button" class="btn btn-light border date-preset" data-days="90">Próximos 90 dias</button>
+                        <button type="button" class="btn btn-light border date-preset" data-days="this_month">Este mês</button>
+                        <button type="button" class="btn btn-danger date-preset" data-expired="true">Vencidos</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+
+    <section class="ledger-table-card">
+        <div class="ledger-table-head">
+            <div>
+                <h2>Livro de contratos</h2>
+                <p>Exibindo {{ contratos.start_index }}–{{ contratos.end_index }} de {{ contratos.paginator.count }} registros.</p>
+            </div>
+            <div class="dropdown no-print">
+                <button class="btn btn-light border rounded-pill px-3 fw-bold dropdown-js" type="button" data-bs-toggle="dropdown">{{ filtros.per_page|default:25 }} por pág <i class="bi bi-chevron-down ms-1"></i></button>
+                <ul class="dropdown-menu border-0 shadow-lg rounded-4 p-2">
+                    <li><a class="dropdown-item rounded-3" href="?per_page=10{% for k,v in request.GET.items %}{% if k != 'per_page' %}&{{k}}={{v}}{% endif %}{% endfor %}">10 registros</a></li>
+                    <li><a class="dropdown-item rounded-3" href="?per_page=25{% for k,v in request.GET.items %}{% if k != 'per_page' %}&{{k}}={{v}}{% endif %}{% endfor %}">25 registros</a></li>
+                    <li><a class="dropdown-item rounded-3" href="?per_page=50{% for k,v in request.GET.items %}{% if k != 'per_page' %}&{{k}}={{v}}{% endif %}{% endfor %}">50 registros</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="table-responsive-ledger">
+            <table class="table-ledger">
+                <thead class="sticky-top">
+                    <tr>
+                        <th class="ps-4 sortable" data-sort="numero_contrato">Contrato <i class="bi bi-arrow-down-up sort-icon ms-1"></i></th>
+                        <th class="sortable" data-sort="data_vencimento">Vencimento <i class="bi bi-arrow-down-up sort-icon ms-1"></i></th>
+                        <th class="sortable" data-sort="dias_restantes">Dias <i class="bi bi-arrow-down-up sort-icon ms-1"></i></th>
+                        <th class="text-end sortable" data-sort="valor">Valor <i class="bi bi-arrow-down-up sort-icon ms-1"></i></th>
+                        <th class="sortable" data-sort="status">Status <i class="bi bi-arrow-down-up sort-icon ms-1"></i></th>
+                        <th>Secretaria / criador</th>
+                        <th class="sortable" data-sort="responsavel">Responsável <i class="bi bi-arrow-down-up sort-icon ms-1"></i></th>
+                        <th>Alerta</th>
+                        <th class="text-end pe-4 no-print">Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-contratos-tbody">
+                    {% include 'contratos/partials/_lista_contratos_tbody.html' %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <div class="d-flex flex-wrap justify-content-end align-items-center mb-5 no-print gap-3">
+        {% if contratos.has_other_pages %}
+        <nav>
+            <ul class="pagination pagination-ledger mb-0">
+                {% if contratos.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ contratos.previous_page_number }}{% for k,v in request.GET.items %}{% if k != 'page' %}&{{k}}={{v}}{% endif %}{% endfor %}"><i class="bi bi-chevron-left"></i></a></li>{% endif %}
+                {% for i in contratos.paginator.page_range %}
+                    {% if contratos.number == i %}<li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                    {% elif i > contratos.number|add:'-3' and i < contratos.number|add:'3' %}<li class="page-item"><a class="page-link" href="?page={{ i }}{% for k,v in request.GET.items %}{% if k != 'page' %}&{{k}}={{v}}{% endif %}{% endfor %}">{{ i }}</a></li>{% endif %}
+                {% endfor %}
+                {% if contratos.has_next %}<li class="page-item"><a class="page-link" href="?page={{ contratos.next_page_number }}{% for k,v in request.GET.items %}{% if k != 'page' %}&{{k}}={{v}}{% endif %}{% endfor %}"><i class="bi bi-chevron-right"></i></a></li>{% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+            <div class="modal-body p-4 text-center">
+                <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 60px; height: 60px;"><i class="bi bi-trash3 fs-3"></i></div>
+                <h5 class="fw-bold text-dark mb-2">Excluir registro?</h5>
+                <p class="text-muted small px-3">Você está prestes a remover o contrato <strong id="contractNumber" class="text-dark"></strong>. Esta ação é irreversível.</p>
+            </div>
+            <div class="modal-footer border-0 pb-4 px-4 gap-2">
+                <button type="button" class="btn btn-light rounded-pill flex-grow-1 fw-bold py-2" data-bs-dismiss="modal">Cancelar</button>
+                <form id="deleteForm" method="post" class="flex-grow-1">{% csrf_token %}<button type="button" id="confirmDeleteButton" class="btn btn-danger rounded-pill w-100 fw-bold py-2">Confirmar exclusão</button></form>
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalDetalhe" tabindex="-1" aria-labelledby="modalDetalheLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl modal-fullscreen-lg-down">
+        <div class="modal-content border-0 shadow-2xl rounded-4 overflow-hidden">
+            <div class="modal-body p-0" id="modalBody">
+                <div class="text-center py-5" id="modalLoading">
+                    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                        <span class="visually-hidden">Carregando...</span>
+                    </div>
+                    <p class="mt-3 text-muted fw-bold">Sincronizando dados institucionais...</p>
+                </div>
+                <div id="modalContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let refreshInterval;
+    const REFRESH_RATE = 20000;
+    let currentController = null;
+
+    function startRealtimeUpdates() { refreshInterval = setInterval(fetchUpdates, REFRESH_RATE); }
+    function stopRealtimeUpdates() { if (refreshInterval) { clearInterval(refreshInterval); refreshInterval = null; } }
+
+    async function fetchUpdates() {
+        if (currentController) currentController.abort();
+        currentController = new AbortController();
+        try {
+            const url = new URL(window.location.href);
+            url.searchParams.set('partial', 'true');
+            const response = await fetch(url.toString(), { headers: { 'X-Requested-With': 'XMLHttpRequest' }, signal: currentController.signal });
+            if (response.ok) {
+                const html = await response.text();
+                const tbody = document.getElementById('lista-contratos-tbody');
+                if (tbody) {
+                    tbody.innerHTML = html;
+                    tbody.querySelectorAll('tr').forEach(tr => {
+                        tr.classList.add('row-updated');
+                        setTimeout(() => tr.classList.remove('row-updated'), 900);
+                    });
+                    initializeTooltips();
+                }
+            }
+        } catch (e) { if (e.name !== 'AbortError') console.error(e); }
+    }
+
+    function initializeTooltips() {
+        if (typeof bootstrap === 'undefined' || !bootstrap.Tooltip) return;
+        document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(t => bootstrap.Tooltip.getOrCreateInstance(t));
+    }
+
+    const modalEl = document.getElementById('modalDetalhe');
+    const modalContent = document.getElementById('modalContent');
+    const modalLoading = document.getElementById('modalLoading');
+
+    if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+        const modal = new bootstrap.Modal(modalEl);
+
+        window.openContractDetail = async function(url) {
+            if (!modalContent || !modalLoading) return;
+            modalContent.innerHTML = '';
+            modalLoading.classList.remove('d-none');
+            modal.show();
+
+            try {
+                const response = await fetch(url + (url.includes('?') ? '&' : '?') + 'partial=true', { 
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' } 
+                });
+                if (response.ok) {
+                    modalContent.innerHTML = await response.text();
+                } else {
+                    modalContent.innerHTML = `
+                        <div class="text-center py-5">
+                            <i class="bi bi-exclamation-triangle text-danger fs-1"></i>
+                            <p class="text-muted mt-3 fw-bold">Erro ao carregar detalhes institucionais.</p>
+                            <button type="button" class="btn btn-primary rounded-pill px-4 mt-2" data-bs-dismiss="modal">Fechar</button>
+                        </div>`;
+                }
+            } catch (error) {
+                modalContent.innerHTML = `
+                    <div class="text-center py-5">
+                        <i class="bi bi-wifi-off text-warning fs-1"></i>
+                        <p class="text-muted mt-3 fw-bold">Falha na conexão com a central de dados.</p>
+                        <button type="button" class="btn btn-primary rounded-pill px-4 mt-2" data-bs-dismiss="modal">Tentar novamente</button>
+                    </div>`;
+            } finally {
+                modalLoading.classList.add('d-none');
+            }
+        };
+
+        // Delegar cliques para links de contrato e linhas da tabela
+        document.addEventListener('click', function(event) {
+            // Se for um link de detalhe dentro da tabela
+            const contractLink = event.target.closest('.contract-link');
+            // Se for uma linha da tabela com data-detail-url
+            const contractRow = event.target.closest('tr[data-detail-url]');
+            
+            if (contractLink || contractRow) {
+                // Se clicou em um botão de ação real, não abrir o modal de detalhe
+                if (event.target.closest('.action-pack') || event.target.closest('button') || event.target.closest('.ledger-actions')) return;
+                
+                event.preventDefault();
+                const url = contractLink ? contractLink.getAttribute('href') : contractRow.getAttribute('data-detail-url');
+                if (url) window.openContractDetail(url);
+            }
+        });
+    }
+
+    const deleteModal = document.getElementById('deleteModal');
+    if (deleteModal) {
+        const deleteForm = deleteModal.querySelector('#deleteForm');
+        const confirmDeleteButton = deleteModal.querySelector('#confirmDeleteButton');
+        deleteModal.addEventListener('show.bs.modal', event => {
+            stopRealtimeUpdates();
+            const button = event.relatedTarget;
+            deleteModal.querySelector('#contractNumber').textContent = button.getAttribute('data-contract-number');
+            deleteForm.action = button.getAttribute('data-delete-url');
+        });
+        deleteModal.addEventListener('hidden.bs.modal', () => startRealtimeUpdates());
+        confirmDeleteButton.addEventListener('click', () => deleteForm.requestSubmit());
+    }
+
+    document.querySelectorAll('.date-preset').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const today = new Date();
+            const formatDate = d => d.toISOString().split('T')[0];
+            let start = '', end = '';
+            if (btn.dataset.days === 'this_month') {
+                start = formatDate(new Date(today.getFullYear(), today.getMonth(), 1));
+                end = formatDate(new Date(today.getFullYear(), today.getMonth() + 1, 0));
+            } else if (btn.dataset.expired) {
+                const y = new Date(); y.setDate(y.getDate() - 1);
+                end = formatDate(y);
+            } else if (btn.dataset.days) {
+                const days = parseInt(btn.dataset.days, 10);
+                start = formatDate(today);
+                const endDate = new Date(); endDate.setDate(today.getDate() + days);
+                end = formatDate(endDate);
+            }
+            document.getElementById('dataInicio').value = start;
+            document.getElementById('dataFim').value = end;
+            document.getElementById('filterForm').submit();
+        });
+    });
+
+    document.querySelectorAll('th.sortable').forEach(th => {
+        th.addEventListener('click', () => {
+            const sortField = th.dataset.sort;
+            const url = new URL(window.location.href);
+            const currentField = url.searchParams.get('sort');
+            let direction = 'asc';
+            if (currentField === sortField) direction = url.searchParams.get('direction') === 'asc' ? 'desc' : 'asc';
+            url.searchParams.set('sort', sortField);
+            url.searchParams.set('direction', direction);
+            localStorage.setItem('contractSort', JSON.stringify({ field: sortField, direction }));
+            window.location.href = url.toString();
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        startRealtimeUpdates();
+        initializeTooltips();
+        if (!window.location.search || window.location.search === '?') {
+            const savedSortRaw = localStorage.getItem('contractSort');
+            const savedSort = savedSortRaw ? JSON.parse(savedSortRaw) : null;
+            if (savedSort) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('sort', savedSort.field);
+                url.searchParams.set('direction', savedSort.direction);
+                window.location.href = url.toString();
+            }
+        }
+    });
+</script>
+{% endblock %}

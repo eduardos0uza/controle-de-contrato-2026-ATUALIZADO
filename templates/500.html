@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Erro 500 - Servidor{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-sm border-0 p-5">
+                <div class="card-body">
+                    <h1 class="display-1 text-danger mb-4"><i class="bi bi-exclamation-triangle"></i></h1>
+                    <h2 class="mb-3">Ops! Ocorreu um erro no servidor.</h2>
+                    <p class="lead text-muted mb-4">
+                        Nossa equipe técnica já foi notificada. Por favor, tente novamente em alguns instantes.
+                    </p>
+                    
+                    {% if error %}
+                    <div class="alert alert-light border text-start mb-4">
+                        <h6 class="alert-heading text-danger">Detalhes do Erro:</h6>
+                        <pre class="mb-0" style="white-space: pre-wrap; font-size: 0.85rem;">{{ error }}</pre>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="javascript:history.back()" class="btn btn-outline-secondary px-4 me-md-2">
+                            <i class="bi bi-arrow-left"></i> Voltar
+                        </a>
+                        <a href="{% url 'contratos:dashboard' %}" class="btn btn-primary px-4">
+                            <i class="bi bi-house"></i> Ir para o Início
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <p class="mt-4 text-muted small">
+                Hiden Systems - Controle de Contratos &copy; 2026
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

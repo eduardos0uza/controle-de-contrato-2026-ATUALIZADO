@@ -1,0 +1,588 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Logs de Auditoria - Hiden Systems{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+    <style>
+        .card-stats-primary {
+            background: linear-gradient(135deg, #0d6efd 0%, #004dc7 100%);
+            color: white;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        .card-stats-primary:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(13, 110, 253, 0.2) !important;
+        }
+        .card-stats-white {
+            background: white;
+            border-left: 5px solid;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+        .card-stats-white:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05) !important;
+        }
+        .icon-box-white {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .icon-box-colored {
+            border-radius: 14px;
+            width: 52px;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .filter-label {
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #adb5bd;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.6rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .form-control-custom {
+            background-color: #f1f3f5 !important;
+            border: 2px solid transparent !important;
+            border-radius: 14px !important;
+            padding: 0.75rem 1rem !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            transition: all 0.2s ease !important;
+            height: 52px !important;
+            width: 100%;
+        }
+        select.form-control-custom {
+            padding-right: 2.5rem !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e") !important;
+            background-repeat: no-repeat !important;
+            background-position: right 1rem center !important;
+            background-size: 16px 12px !important;
+            appearance: none !important;
+        }
+        .form-control-custom:focus {
+            background-color: white !important;
+            border-color: #0d6efd !important;
+            box-shadow: 0 0 0 4px rgba(13, 110, 253, 0.1) !important;
+        }
+        .btn-filter {
+            border-radius: 14px !important;
+            padding: 0 1.25rem !important;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            height: 52px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+        .btn-filter:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
+        }
+        .btn-clear {
+            border-radius: 14px !important;
+            width: 52px;
+            height: 52px !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f3f5;
+            border: 2px solid transparent;
+            color: #6c757d;
+            transition: all 0.2s ease;
+        }
+        .btn-clear:hover {
+            background: #e9ecef;
+            color: #343a40;
+            transform: rotate(90deg);
+        }
+        .table-custom thead th {
+            background-color: #f8f9fa;
+            color: #adb5bd;
+            font-weight: 800;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 1.25rem 1rem;
+            border: none;
+        }
+        .table-custom tbody td {
+            padding: 1.25rem 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid #f8f9fa;
+        }
+        .log-row {
+            transition: all 0.2s ease;
+        }
+        .log-row:hover {
+            background-color: #fcfcfc;
+            transform: scale(1.002);
+        }
+        .badge-outline {
+            background: transparent;
+            border: 1px solid;
+        }
+        pre.json-viewer {
+            background-color: #1a1d20 !important;
+            color: #a5d8ff !important;
+            padding: 1.5rem !important;
+            border-radius: 16px !important;
+            font-family: 'Fira Code', 'Cascadia Code', 'JetBrains Mono', monospace;
+            font-size: 0.85rem !important;
+            box-shadow: inset 0 4px 12px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            line-height: 1.6;
+        }
+        .avatar-activity {
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+        .audit-detail-grid {
+            display: grid;
+            gap: 12px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+        .audit-detail-box {
+            background: #ffffff;
+            border: 1px solid #edf1f5;
+            border-radius: 14px;
+            padding: 14px;
+        }
+        .audit-detail-box span {
+            color: #6c757d;
+            display: block;
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+        .audit-detail-box strong {
+            display: block;
+            font-size: 0.92rem;
+            margin-top: 4px;
+            overflow-wrap: anywhere;
+        }
+        @media (max-width: 767.98px) {
+            .audit-detail-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+
+    
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Logs de Auditoria</h4>
+                    <p class="text-muted small mb-0">Rastreamento completo de todas as atividades do sistema.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'admin_panel:dashboard' %}" class="btn btn-white shadow-sm rounded-pill px-4 border py-2 small fw-bold text-dark text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i>Voltar
+                    </a>
+                    <button class="btn btn-white shadow-sm rounded-pill px-3 border py-2 small fw-bold" onclick="location.reload()">
+                        <i class="bi bi-arrow-clockwise me-1"></i>Atualizar
+                    </button>
+                </div>
+            </div>
+
+            <!-- Estatísticas de Logs -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 card-stats-primary h-100">
+                        <div class="card-body d-flex align-items-center p-3">
+                            <div class="icon-box-white me-3 text-white">
+                                <i class="bi bi-clock-history fs-4"></i>
+                            </div>
+                            <div>
+                                <div class="small opacity-75 fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px;">Hoje</div>
+                                <div class="fs-3 fw-bold">{{ stats.total_hoje }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 card-stats-white h-100" style="border-left-color: #198754;">
+                        <div class="card-body d-flex align-items-center p-3">
+                            <div class="icon-box-colored me-3 bg-success bg-opacity-10 text-success">
+                                <i class="bi bi-plus-circle fs-4"></i>
+                            </div>
+                            <div>
+                                <div class="small text-muted fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px;">Criações</div>
+                                <div class="fs-3 fw-bold text-dark">{{ stats.criacoes }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 card-stats-white h-100" style="border-left-color: #0dcaf0;">
+                        <div class="card-body d-flex align-items-center p-3">
+                            <div class="icon-box-colored me-3 bg-info bg-opacity-10 text-info">
+                                <i class="bi bi-pencil fs-4"></i>
+                            </div>
+                            <div>
+                                <div class="small text-muted fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px;">Edições</div>
+                                <div class="fs-3 fw-bold text-dark">{{ stats.edicoes }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card border-0 shadow-sm rounded-4 card-stats-white h-100" style="border-left-color: #dc3545;">
+                        <div class="card-body d-flex align-items-center p-3">
+                            <div class="icon-box-colored me-3 bg-danger bg-opacity-10 text-danger">
+                                <i class="bi bi-trash fs-4"></i>
+                            </div>
+                            <div>
+                                <div class="small text-muted fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.5px;">Exclusões</div>
+                                <div class="fs-3 fw-bold text-dark">{{ stats.exclusoes }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filtros e Busca -->
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4 bg-white">
+                <form method="GET" class="row g-3 align-items-end">
+                    <div class="col-xl-3 col-lg-4 col-md-6">
+                        <label class="filter-label"><i class="bi bi-search"></i>Palavra-chave</label>
+                        <input type="text" name="q" class="form-control form-control-custom" placeholder="O que você procura?" value="{{ filtros.q }}">
+                    </div>
+                    <div class="col-xl-2 col-lg-4 col-md-6">
+                        <label class="filter-label"><i class="bi bi-person"></i>Usuário</label>
+                        <select name="usuario" class="form-control form-control-custom">
+                            <option value="">Todos</option>
+                            {% for u in usuarios %}
+                            {% if u %}<option value="{{ u.id }}" {% if filtros.usuario == u.id|stringformat:"s" %}selected{% endif %}>{{ u.username }}</option>{% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-xl-2 col-lg-4 col-md-6">
+                        <label class="filter-label"><i class="bi bi-activity"></i>Operação</label>
+                        <select name="acao" class="form-control form-control-custom">
+                            <option value="">Todas</option>
+                            {% for acao_val, acao_label in acoes %}
+                            <option value="{{ acao_val }}" {% if filtros.acao == acao_val %}selected{% endif %}>{{ acao_label }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-xl-3 col-lg-8 col-md-12">
+                        <label class="filter-label"><i class="bi bi-calendar-range"></i>Período</label>
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <input type="date" name="data_inicio" class="form-control form-control-custom px-2" value="{{ filtros.data_inicio }}" title="Data Inicial">
+                            </div>
+                            <div class="col-6">
+                                <input type="date" name="data_fim" class="form-control form-control-custom px-2" value="{{ filtros.data_fim }}" title="Data Final">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-2 col-lg-4 col-md-12">
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary btn-filter flex-grow-1 shadow-sm" title="Filtrar Resultados">
+                                <i class="bi bi-funnel-fill me-2"></i>Filtrar
+                            </button>
+                            <a href="{% url 'admin_panel:audit_log_list' %}" class="btn-clear shadow-sm" title="Limpar todos os filtros">
+                                <i class="bi bi-arrow-counterclockwise fs-5"></i>
+                            </a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Listagem de Logs -->
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+                <div class="card-header bg-white border-0 p-4 d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="fw-bold mb-0">Registros Recentes</h5>
+                        <small class="text-muted">Mostrando os últimos eventos do sistema</small>
+                    </div>
+                    <a href="?{{ request.GET.urlencode }}&export=csv" class="btn btn-outline-success btn-sm rounded-pill px-3 fw-bold border-2">
+                        <i class="bi bi-download me-1"></i>Exportar CSV
+                    </a>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="table table-custom table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4"><i class="bi bi-clock me-1"></i>Data/Hora</th>
+                                <th><i class="bi bi-person me-1"></i>Usuário</th>
+                                <th><i class="bi bi-lightning-charge me-1"></i>Ação</th>
+                                <th><i class="bi bi-card-text me-1"></i>Contexto</th>
+                                <th><i class="bi bi-globe me-1"></i>IP</th>
+                                <th class="text-end pe-4">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for log in logs %}
+                            <tr class="log-row">
+                                <td class="ps-4">
+                                    <div class="fw-bold text-dark small">{{ log.data_hora|date:"d/m/Y" }}</div>
+                                    <div class="text-muted" style="font-size: 0.7rem;">{{ log.data_hora|date:"H:i:s" }}</div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar-activity bg-primary bg-opacity-10 text-primary">
+                                            {% if log.usuario %}{{ log.usuario.username|slice:":1"|upper }}{% else %}S{% endif %}
+                                        </div>
+                                        <div>
+                                            <div class="fw-bold text-dark small">{% if log.usuario %}{{ log.usuario.username }}{% else %}Sistema{% endif %}</div>
+                                            <div class="text-muted" style="font-size: 0.65rem;">
+                                                {% if log.usuario and log.usuario.profile and log.usuario.profile.secretaria %}
+                                                    {{ log.usuario.profile.secretaria.nome }}
+                                                {% elif log.usuario %}
+                                                    ID: {{ log.usuario.id }}
+                                                {% else %}
+                                                    Ação do Sistema
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if log.acao == 'CREATE' %}
+                                        <span class="badge bg-success bg-opacity-10 text-success rounded-pill px-3 py-2 small fw-bold">
+                                            <i class="bi bi-plus-lg me-1"></i>Criar
+                                        </span>
+                                    {% elif log.acao == 'UPDATE' %}
+                                        <span class="badge bg-info bg-opacity-10 text-info rounded-pill px-3 py-2 small fw-bold">
+                                            <i class="bi bi-pencil-fill me-1"></i>Editar
+                                        </span>
+                                    {% elif log.acao == 'DELETE' %}
+                                        <span class="badge bg-danger bg-opacity-10 text-danger rounded-pill px-3 py-2 small fw-bold">
+                                            <i class="bi bi-trash3-fill me-1"></i>Excluir
+                                        </span>
+                                    {% elif log.acao == 'LOGIN' %}
+                                        <span class="badge bg-primary bg-opacity-10 text-primary rounded-pill px-3 py-2 small fw-bold">
+                                            <i class="bi bi-shield-check me-1"></i>Login
+                                        </span>
+                                    {% elif log.acao == 'LOGOUT' %}
+                                        <span class="badge bg-warning bg-opacity-10 text-warning rounded-pill px-3 py-2 small fw-bold">
+                                            <i class="bi bi-door-open me-1"></i>Logout
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-secondary bg-opacity-10 text-secondary rounded-pill px-3 py-2 small fw-bold">
+                                            <i class="bi bi-lightning-charge me-1"></i>{{ log.get_acao_display }}
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="text-dark small fw-bold text-uppercase mb-1" style="font-size: 0.6rem; letter-spacing: 0.5px;">{{ log.tabela }}</div>
+                                    <div class="text-muted text-truncate fw-medium" style="max-width: 250px; font-size: 0.75rem;">{{ log.descricao }}</div>
+                                </td>
+                                <td class="small text-muted font-monospace">{{ log.ip_address }}</td>
+                                <td class="text-end pe-4">
+                                    <button class="btn btn-white btn-sm rounded-4 px-3 fw-bold shadow-sm border py-2"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#logDetailModal"
+                                            data-log-detail-url="{% url 'admin_panel:audit_log_detail' log.id %}">
+                                        <i class="bi bi-eye me-1"></i>Detalhes
+                                    </button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-inbox fs-1 d-block mb-3 opacity-25"></i>
+                                    Nenhum log registrado com os filtros atuais.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                {% if logs.has_other_pages %}
+                <nav class="mt-4 pb-4">
+                    <ul class="pagination pagination-sm justify-content-center gap-1">
+                        {% if logs.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link border-0 rounded-3 shadow-sm" href="?{% if querystring_without_page %}{{ querystring_without_page }}&{% endif %}page={{ logs.previous_page_number }}" aria-label="Página anterior">
+                                <i class="bi bi-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+
+                        {% for i in pagination_range %}
+                            {% if logs.number == i %}
+                            <li class="page-item active"><span class="page-link border-0 rounded-3 shadow-sm fw-bold px-3">{{ i }}</span></li>
+                            {% elif i == logs.paginator.ELLIPSIS %}
+                            <li class="page-item disabled"><span class="page-link border-0 rounded-3 bg-transparent px-2">{{ i }}</span></li>
+                            {% else %}
+                            <li class="page-item"><a class="page-link border-0 rounded-3 shadow-sm px-3" href="?{% if querystring_without_page %}{{ querystring_without_page }}&{% endif %}page={{ i }}">{{ i }}</a></li>
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if logs.has_next %}
+                        <li class="page-item">
+                            <a class="page-link border-0 rounded-3 shadow-sm" href="?{% if querystring_without_page %}{{ querystring_without_page }}&{% endif %}page={{ logs.next_page_number }}" aria-label="Próxima página">
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+            </div>
+        </div>
+
+
+<!-- Modal único carregado sob demanda para manter a lista leve -->
+<div class="modal fade" id="logDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4 text-start overflow-hidden">
+            <div class="modal-header border-0 bg-dark text-white p-4">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="bg-white bg-opacity-20 p-2 rounded-3 text-white">
+                        <i class="bi bi-terminal fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0">Detalhes do Registro</h5>
+                        <small class="opacity-75" data-log-field="subtitle">Carregando auditoria...</small>
+                    </div>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+            <div class="modal-body p-4 bg-light bg-opacity-50">
+                <div data-log-loading class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+                    <div class="fw-bold mt-3 text-muted">Carregando detalhes...</div>
+                </div>
+                <div data-log-error class="alert alert-danger d-none mb-0">
+                    Não foi possível carregar este registro agora.
+                </div>
+                <div data-log-content class="d-none">
+                    <div class="audit-detail-grid mb-3">
+                        <div class="audit-detail-box"><span>Responsável</span><strong data-log-field="usuario">-</strong></div>
+                        <div class="audit-detail-box"><span>Secretaria</span><strong data-log-field="secretaria">-</strong></div>
+                        <div class="audit-detail-box"><span>Operação</span><strong data-log-field="acao">-</strong></div>
+                        <div class="audit-detail-box"><span>Tabela</span><strong data-log-field="tabela">-</strong></div>
+                        <div class="audit-detail-box"><span>Endereço IP</span><strong data-log-field="ip">-</strong></div>
+                        <div class="audit-detail-box"><span>Navegador / Sistema</span><strong data-log-field="user_agent">-</strong></div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-4 p-3 mb-3">
+                        <h6 class="fw-bold text-muted small text-uppercase mb-3">Descrição da Atividade</h6>
+                        <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 border-start border-primary border-4">
+                            <i class="bi bi-chat-left-dots me-2"></i>
+                            <span class="fw-medium" data-log-field="descricao">-</span>
+                        </div>
+                    </div>
+
+                    <div class="card border-0 shadow-sm rounded-4 p-3">
+                        <h6 class="fw-bold text-muted small text-uppercase mb-3">Rastreamento de Dados</h6>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="small fw-bold mb-2 text-danger"><i class="bi bi-dash-circle me-1"></i>Estado Anterior</div>
+                                <pre class="json-viewer mb-0" data-log-field="dados_anteriores" style="max-height: 250px; overflow-y: auto;">{}</pre>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="small fw-bold mb-2 text-success"><i class="bi bi-plus-circle me-1"></i>Novo Estado</div>
+                                <pre class="json-viewer mb-0" data-log-field="dados_novos" style="max-height: 250px; overflow-y: auto;">{}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-0 p-4 bg-light bg-opacity-50">
+                <button type="button" class="btn btn-dark rounded-pill px-4 fw-bold shadow-sm" data-bs-dismiss="modal">Fechar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('logDetailModal');
+    if (!modal) return;
+
+    const loading = modal.querySelector('[data-log-loading]');
+    const content = modal.querySelector('[data-log-content]');
+    const errorBox = modal.querySelector('[data-log-error]');
+
+    function setText(field, value) {
+        const target = modal.querySelector('[data-log-field="' + field + '"]');
+        if (target) target.textContent = value || '-';
+    }
+
+    function setJson(field, value) {
+        const target = modal.querySelector('[data-log-field="' + field + '"]');
+        if (!target) return;
+        if (!value || (typeof value === 'object' && Object.keys(value).length === 0)) {
+            target.textContent = '{}';
+            return;
+        }
+        target.textContent = JSON.stringify(value, null, 2);
+    }
+
+    modal.addEventListener('show.bs.modal', function(event) {
+        const button = event.relatedTarget;
+        const url = button ? button.getAttribute('data-log-detail-url') : null;
+
+        loading.classList.remove('d-none');
+        content.classList.add('d-none');
+        errorBox.classList.add('d-none');
+        setText('subtitle', 'Carregando auditoria...');
+
+        if (!url) {
+            loading.classList.add('d-none');
+            errorBox.classList.remove('d-none');
+            return;
+        }
+
+        fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function(response) {
+                if (!response.ok) throw new Error('Erro ao carregar log');
+                return response.json();
+            })
+            .then(function(data) {
+                setText('subtitle', 'ID #' + data.id + ' - ' + data.data_hora);
+                setText('usuario', data.usuario);
+                setText('secretaria', data.secretaria || '-');
+                setText('acao', data.acao);
+                setText('tabela', data.tabela);
+                setText('ip', data.ip);
+                setText('user_agent', data.user_agent);
+                setText('descricao', data.descricao);
+                setJson('dados_anteriores', data.dados_anteriores);
+                setJson('dados_novos', data.dados_novos);
+                loading.classList.add('d-none');
+                content.classList.remove('d-none');
+            })
+            .catch(function() {
+                loading.classList.add('d-none');
+                errorBox.classList.remove('d-none');
+            });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% load humanize %}
+{% for contrato in contratos %}
+<tr data-detail-url="{% url 'contratos:detalhe' contrato.id %}">
+    <td class="ps-4">
+        <a href="{% url 'contratos:detalhe' contrato.id %}" class="contract-link">{{ contrato.numero_contrato }}</a>
+        <div class="contract-desc">
+            {% if contrato.empresa or contrato.objeto %}
+                {% if contrato.empresa %}<strong>{{ contrato.empresa }}</strong>{% endif %}
+                {% if contrato.empresa and contrato.objeto %}<span> - </span>{% endif %}
+                {{ contrato.objeto|default:"" }}
+            {% else %}
+                {{ contrato.descricao|default:"Sem descrição" }}
+            {% endif %}
+        </div>
+    </td>
+    <td>
+        <span class="date-chip"><i class="bi bi-calendar3"></i>{{ contrato.data_vencimento|date:"d/m/Y" }}</span>
+    </td>
+    <td>
+        {% if contrato.dias_restantes < 0 %}
+            <span class="days-chip danger">Vencido há {{ contrato.dias_vencido }} dias</span>
+        {% elif contrato.dias_restantes <= 30 %}
+            <span class="days-chip danger">{{ contrato.dias_restantes }} dias</span>
+        {% elif contrato.dias_restantes <= 90 %}
+            <span class="days-chip warning">{{ contrato.dias_restantes }} dias</span>
+        {% else %}
+            <span class="days-chip calm">{{ contrato.dias_restantes }} dias</span>
+        {% endif %}
+    </td>
+    <td class="text-end fw-bold text-nowrap">R$ {{ contrato.valor_contrato|floatformat:2|intcomma }}</td>
+    <td>
+        <span class="status-chip {% if contrato.status == 'ativo' %}ok{% elif contrato.status == 'encerrado' %}muted{% else %}hold{% endif %}">{{ contrato.get_status_display }}</span>
+    </td>
+    <td>
+        <div class="agency-stack">
+            <strong>{{ contrato.secretaria.nome|default:"-" }}</strong>
+            <span>
+                {% if contrato.criado_por %}
+                    {{ contrato.criado_por.get_full_name|default:contrato.criado_por.username }}
+                {% else %}
+                    Sistema
+                {% endif %}
+            </span>
+        </div>
+    </td>
+    <td>
+        {% if contrato.responsavel %}
+        <span class="owner-line"><span>{{ contrato.responsavel|make_list|first|upper }}</span>{{ contrato.responsavel }}</span>
+        {% else %}
+        <span class="text-muted small fw-bold">-</span>
+        {% endif %}
+    </td>
+    <td>
+        <span class="alert-line" title="{{ contrato.alerta_info.description }}"><i style="background: {{ contrato.alerta_info.color }};"></i>{{ contrato.alerta_info.label }}</span>
+    </td>
+    <td class="text-end pe-4 no-print">
+        <div class="actions action-pack">
+            <a href="{% url 'contratos:detalhe' contrato.id %}" class="action-btn" data-bs-toggle="tooltip" title="Visualizar"><i class="bi bi-eye"></i></a>
+            <a href="{% url 'contratos:editar' contrato.id %}" class="action-btn" data-bs-toggle="tooltip" title="Editar"><i class="bi bi-pencil"></i></a>
+            <button type="button" class="action-btn danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-contract-id="{{ contrato.id }}" data-contract-number="{{ contrato.numero_contrato }}" data-delete-url="{% url 'contratos:excluir' contrato.id %}" title="Excluir"><i class="bi bi-trash"></i></button>
+        </div>
+    </td>
+</tr>
+{% empty %}
+<tr><td colspan="9"><div class="empty-ledger"><i class="bi bi-search"></i><strong>Nenhum contrato encontrado.</strong><span>Ajuste os filtros para ampliar a busca.</span></div></td></tr>
+{% endfor %}

@@ -1,0 +1,42 @@
+{
+    "id": 11,
+    "numero_contrato": "2626/2026",
+    "secretaria": 16,
+    "numero_protocolo": "2626/2026",
+    "processo_administrativo": "26/2026",
+    "numero_pregao": "006/2026",
+    "secretario": "RODRIGO FLORENCIO",
+    "numero_nota_empenho": "324",
+    "numero_ficha": "49",
+    "empresa": "Hiden",
+    "objeto": "TESTE",
+    "data_inicio": "2026-04-10",
+    "vigencia": 12,
+    "data_vencimento": "2027-04-10",
+    "status": "ativo",
+    "responsavel": "Eduardo Silva",
+    "arquivo": null,
+    "dias_restantes": 365,
+    "alerta": "normal",
+    "itens": [
+        {
+            "id": 25,
+            "tipo_item": "SERVICO",
+            "descricao": "CONTRA",
+            "unidade": "UND",
+            "proprietario": "",
+            "cpf": "",
+            "localidade": "",
+            "tipo_cobranca": "UNIDADE",
+            "quantidade": 1,
+            "quantidade_meses": "",
+            "valor_unitario": "12131.23",
+            "data_viagem": "",
+            "taxa_servico": "20.00",
+            "desconto": "5.00",
+            "caixa_atual": "",
+            "valor_total": "13829.60"
+        }
+    ],
+    "backup_timestamp": "2026-04-10T16:25:56.786755"
+}

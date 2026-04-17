@@ -1,0 +1,67 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }} - Hiden Systems{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+            <div class="card border-0 shadow-sm rounded-4 p-4">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <a href="{% url 'admin_panel:post_list' %}" class="btn btn-light rounded-circle p-2">
+                        <i class="bi bi-arrow-left"></i>
+                    </a>
+                    <h5 class="fw-bold mb-0">{{ title }}</h5>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="row g-3">
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold text-muted">Título do Post</label>
+                            {{ form.titulo }}
+                            {% if form.titulo.errors %}<div class="text-danger small mt-1">{{ form.titulo.errors }}</div>{% endif %}
+                        </div>
+                        
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold text-muted">Slug (URL amigável)</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text bg-light border-0">/blog/</span>
+                                {{ form.slug }}
+                            </div>
+                            {% if form.slug.errors %}<div class="text-danger small mt-1">{{ form.slug.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold text-muted">Conteúdo</label>
+                            {{ form.conteudo }}
+                            {% if form.conteudo.errors %}<div class="text-danger small mt-1">{{ form.conteudo.errors }}</div>{% endif %}
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-check form-switch mt-3">
+                                {{ form.publicado }}
+                                <label class="form-check-label small fw-bold text-muted">Publicar imediatamente</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid mt-5">
+                        <button type="submit" class="btn btn-primary rounded-pill py-3 fw-bold shadow-sm">
+                            <i class="bi bi-check2-circle me-2"></i>Salvar Post
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+<style>
+    input, textarea {
+        border-radius: 12px !important;
+        border: 1px solid #dee2e6 !important;
+    }
+    input:focus, textarea:focus {
+        border-color: #0d6efd !important;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, .1) !important;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Muitas Requisições - Hiden Systems{% endblock %}
+
+{% block admin_content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <div class="card border-0 shadow-sm rounded-4 p-5">
+                <div class="mb-4">
+                    <div class="display-1 text-warning mb-3">
+                        <i class="bi bi-clock-history"></i>
+                    </div>
+                    <h2 class="fw-bold">Calma lá!</h2>
+                    <p class="text-muted fs-5">{{ message|default:"Você está fazendo muitas requisições em um curto período de tempo." }}</p>
+                    <p class="text-muted small">Por motivos de segurança, sua atividade foi limitada temporariamente. Por favor, aguarde alguns minutos antes de tentar novamente.</p>
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button onclick="window.location.reload()" class="btn btn-primary rounded-pill py-3 fw-bold shadow-sm">
+                        <i class="bi bi-arrow-clockwise me-2"></i>Tentar Novamente
+                    </button>
+                    <a href="{% url 'contratos:dashboard' %}" class="btn btn-light rounded-pill py-3 fw-bold">
+                        Voltar ao Início
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

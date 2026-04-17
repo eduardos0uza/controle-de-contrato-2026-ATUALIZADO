@@ -1,0 +1,41 @@
+{
+    "id": 10,
+    "numero_contrato": "10051/2024",
+    "numero_protocolo": "10051/2024",
+    "processo_administrativo": "",
+    "numero_pregao": "",
+    "secretario": "NAYARA PEREIRA",
+    "numero_nota_empenho": "1704",
+    "numero_ficha": "069",
+    "empresa": "PREFEITURA",
+    "objeto": "CIDENNF",
+    "data_inicio": "2025-01-13",
+    "vigencia": 12,
+    "data_vencimento": "2026-01-13",
+    "status": "ativo",
+    "responsavel": "GABINETE",
+    "arquivo": "",
+    "dias_restantes": -77,
+    "alerta": "vencido",
+    "itens": [
+        {
+            "id": 24,
+            "tipo_item": "SERVICO",
+            "descricao": "CIDENNF",
+            "unidade": "UNIDADE",
+            "proprietario": "",
+            "cpf": "",
+            "localidade": "",
+            "tipo_cobranca": "MENSAL",
+            "quantidade": 1,
+            "quantidade_meses": 12,
+            "valor_unitario": "8665.89",
+            "data_viagem": "",
+            "taxa_servico": "0.00",
+            "desconto": "0.00",
+            "caixa_atual": "",
+            "valor_total": "103990.68"
+        }
+    ],
+    "backup_timestamp": "2026-03-31T13:21:47.420099"
+}

@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Verificação de Segurança - Hiden Systems{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                <div class="mb-4">
+                    <div class="display-1 text-primary mb-3">
+                        <i class="bi bi-shield-lock"></i>
+                    </div>
+                    <h4 class="fw-bold">Verificação de Segurança</h4>
+                    <p class="text-muted small">A autenticação de dois fatores está ativada. Um código de 6 dígitos foi enviado para o seu dispositivo/e-mail.</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <input type="text" name="code" class="form-control form-control-lg text-center fw-bold" placeholder="000000" maxlength="6" autofocus required style="letter-spacing: 0.5rem; font-size: 2rem;">
+                        <div class="mt-2 text-muted small" id="timer">
+                            Expira em: <span id="time">{{ expires_in }}</span>s
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary rounded-pill py-3 fw-bold shadow-sm">
+                            <i class="bi bi-check2-circle me-2"></i>Verificar Código
+                        </button>
+                    </div>
+                </form>
+
+                <div class="mt-4 pt-3 border-top d-flex justify-content-between align-items-center">
+                    <p class="text-muted small mb-0">Não recebeu o código?</p>
+                    <form method="post" class="m-0">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="resend">
+                        <button type="submit" class="btn btn-link btn-sm text-primary text-decoration-none p-0 fw-bold">Reenviar Código</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let timeLeft = {{ expires_in }};
+    const timeSpan = document.getElementById('time');
+    const timerDiv = document.getElementById('timer');
+
+    const countdown = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+            clearInterval(countdown);
+            timeSpan.textContent = "0";
+            timerDiv.classList.add('text-danger');
+            timerDiv.innerHTML = "O código expirou. Solicite um novo.";
+        } else {
+            timeSpan.textContent = timeLeft;
+        }
+    }, 1000);
+</script>
+{% endblock %}

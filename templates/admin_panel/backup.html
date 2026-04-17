@@ -1,0 +1,79 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Backup e Restauração - Hiden Systems{% endblock %}
+
+{% block admin_content %}
+<div class="admin-page">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h4 class="fw-bold text-dark mb-1">Backup & Segurança</h4>
+                    <p class="text-muted small mb-0">Proteja os dados do sistema com backups periódicos.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="{% url 'admin_panel:dashboard' %}" class="btn btn-white shadow-sm rounded-pill px-4 border py-2 small fw-bold text-dark text-decoration-none">
+                        <i class="bi bi-arrow-left me-1"></i>Voltar
+                    </a>
+                    <a href="{% url 'admin_panel:backup_restore' %}?action=create" class="btn btn-primary shadow-sm rounded-pill px-4 py-2 small fw-bold">
+                        <i class="bi bi-cloud-arrow-down me-1"></i>Gerar Novo Backup
+                    </a>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h6 class="fw-bold mb-0 text-muted text-uppercase small" style="letter-spacing: 1px;">Arquivos de Backup</h6>
+                </div>
+
+                <div class="alert alert-info border-0 rounded-4 p-3 small d-flex align-items-center gap-3">
+                    <i class="bi bi-info-circle-fill fs-5"></i>
+                    <div>
+                        <strong>Aviso de Segurança:</strong> Os backups contêm todos os dados do sistema, exceto permissões e tipos de conteúdo. Armazene-os em local seguro.
+                    </div>
+                </div>
+
+                <div class="table-responsive mt-4">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr class="text-muted small text-uppercase">
+                                <th>Arquivo</th>
+                                <th>Data de Criação</th>
+                                <th>Tamanho</th>
+                                <th class="text-end">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for backup in backups %}
+                            <tr>
+                                <td class="fw-bold small text-dark"><i class="bi bi-file-earmark-code me-2 text-primary"></i>{{ backup.name }}</td>
+                                <td class="small">{{ backup.date|date:"d/m/Y H:i" }}</td>
+                                <td class="small text-muted">{{ backup.size }}</td>
+                                <td class="text-end">
+                                    <button class="btn btn-light btn-sm rounded-circle" type="button" title="Restaurar (Em breve)">
+                                        <i class="bi bi-arrow-counterclockwise text-warning"></i>
+                                    </button>
+                                    <button class="btn btn-light btn-sm rounded-circle ms-1" type="button" title="Download">
+                                        <i class="bi bi-download text-success"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center py-5">Nenhum backup encontrado na pasta local.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm rounded-4 p-4 border-start border-warning border-4">
+                <h6 class="fw-bold text-dark mb-3">Restauração Manual</h6>
+                <p class="text-muted small mb-3">Para restaurar um backup manualmente, utilize o comando abaixo no terminal do servidor:</p>
+                <div class="bg-dark text-white p-3 rounded-3 small font-monospace">
+                    python manage.py loaddata backups/nome_do_arquivo.json
+                </div>
+            </div>
+        </div>
+
+{% endblock %}

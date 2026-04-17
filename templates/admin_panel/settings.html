@@ -1,0 +1,444 @@
+{% extends 'admin_panel/admin_base.html' %}
+{% load static %}
+
+{% block title %}Configurações do Sistema - Hiden Systems{% endblock %}
+
+{% block admin_content %}
+<div class="container-fluid py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-1" style="font-size: 2rem;">Configurações do Sistema</h2>
+            <p class="text-muted mb-0" style="font-size: 1.1rem;">Gerencie o comportamento e as informações globais do software.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{% url 'admin_panel:dashboard' %}" class="btn btn-light rounded-pill px-4 d-flex align-items-center gap-2" style="font-size: 1.1rem; border: 1px solid #e2e8f0;">
+                <i class="bi bi-arrow-left"></i>Voltar
+            </a>
+            <button type="button" class="btn btn-outline-primary rounded-pill px-4 d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#newSettingModal" style="font-size: 1.1rem;">
+                <i class="bi bi-plus-lg"></i>Nova Configuração
+            </button>
+            <button type="button" id="saveAllBtn" class="btn btn-primary rounded-pill px-4 shadow-sm d-flex align-items-center gap-2" style="font-size: 1.1rem;">
+                <i class="bi bi-check2-all"></i>Salvar Tudo
+            </button>
+        </div>
+    </div>
+
+    <!-- Barra de Busca e Abas -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4">
+        <div class="card-body p-4">
+            <div class="row align-items-center g-4">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-0 py-3 px-4"><i class="bi bi-search fs-5"></i></span>
+                        <input type="text" id="settingSearch" class="form-control bg-light border-0 py-3 fs-5" placeholder="Procurar configuração...">
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <ul class="nav nav-pills justify-content-md-end gap-2" id="settingTabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active rounded-pill px-4 py-2 fs-5" id="all-tab" data-bs-toggle="pill" data-bs-target="#all-settings" type="button" role="tab">Todas</button>
+                        </li>
+                        {% for group_label, settings in grouped_settings.items %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link rounded-pill px-4 py-2 fs-5" id="tab-{{ forloop.counter }}" data-bs-toggle="pill" data-bs-target="#group-{{ forloop.counter }}" type="button" role="tab">{{ group_label }}</button>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="settingsForm" method="post">
+        {% csrf_token %}
+        <div class="tab-content" id="settingTabsContent">
+            <!-- Aba: Todas as Configurações -->
+            <div class="tab-pane fade show active" id="all-settings" role="tabpanel">
+                <div class="row g-4">
+                    {% for setting in all_settings %}
+                        <div class="col-xl-4 col-md-6 setting-card" data-name="{{ setting.label|lower }} {{ setting.chave|lower }} {{ setting.descricao|lower }}">
+                            <div class="card h-100 border-0 shadow-sm rounded-4 hover-shadow transition">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-4">
+                                        <div>
+                                             <h5 class="fw-bold text-dark mb-1">{{ setting.label }}</h5>
+                                             <small class="text-primary fw-medium fs-6">{{ setting.chave }}</small>
+                                         </div>
+                                         <div class="d-flex gap-2 align-items-center">
+                                             <button type="button" class="btn btn-link text-danger p-0 delete-setting-btn" data-id="{{ setting.id }}" data-name="{{ setting.label }}" title="Excluir">
+                                                 <i class="bi bi-trash3 fs-5"></i>
+                                             </button>
+                                             <span class="badge bg-light text-muted border-0 rounded-pill px-3 py-2 fs-6">ID: {{ setting.id }}</span>
+                                         </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        {% if setting.field_type == 'BOOLEAN' %}
+                                            <div class="form-check form-switch custom-switch py-3">
+                                                <input type="hidden" name="setting_{{ setting.id }}" value="False">
+                                                <input class="form-check-input" style="width: 3.5rem; height: 1.75rem;" type="checkbox" name="setting_{{ setting.id }}" value="True" id="switch_{{ setting.id }}" {% if setting.valor|lower == 'true' or setting.valor|lower == 'sim' or setting.valor == '1' %}checked{% endif %}>
+                                                <label class="form-check-label text-muted fs-6 ms-3" for="switch_{{ setting.id }}">Ativar / Desativar</label>
+                                            </div>
+                                        {% elif setting.field_type == 'TEXTAREA' %}
+                                            <textarea name="setting_{{ setting.id }}" class="form-control bg-light border-0 rounded-3 p-3 fs-5" rows="4">{{ setting.valor }}</textarea>
+                                        {% elif setting.field_type == 'NUMBER' %}
+                                            <input type="number" name="setting_{{ setting.id }}" class="form-control bg-light border-0 rounded-3 p-3 fs-5" value="{{ setting.valor }}">
+                                        {% elif setting.field_type == 'EMAIL' %}
+                                            <input type="email" name="setting_{{ setting.id }}" class="form-control bg-light border-0 rounded-3 p-3 fs-5" value="{{ setting.valor }}">
+                                        {% elif setting.field_type == 'DATE' %}
+                                            <input type="date" name="setting_{{ setting.id }}" class="form-control bg-light border-0 rounded-3 p-3 fs-5" value="{{ setting.valor }}">
+                                        {% else %}
+                                            <input type="text" name="setting_{{ setting.id }}" class="form-control bg-light border-0 rounded-3 p-3 fs-5" value="{{ setting.valor }}">
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <p class="text-muted fs-6 mb-0 d-flex align-items-start gap-3">
+                                        <i class="bi bi-info-circle mt-1 fs-5"></i>
+                                        <span>{{ setting.descricao|default:"Sem descrição definida." }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Abas por Grupo -->
+            {% for group_label, settings in grouped_settings.items %}
+            <div class="tab-pane fade" id="group-{{ forloop.counter }}" role="tabpanel">
+                <div class="row g-4">
+                    {% for setting in settings %}
+                        <div class="col-xl-4 col-md-6 setting-card" data-name="{{ setting.label|lower }} {{ setting.chave|lower }} {{ setting.descricao|lower }}">
+                            <div class="card h-100 border-0 shadow-sm rounded-4 hover-shadow transition">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-start mb-4">
+                                        <div>
+                                            <h5 class="fw-bold text-dark mb-1">{{ setting.label }}</h5>
+                                            <small class="text-primary fw-medium fs-6">{{ setting.chave }}</small>
+                                        </div>
+                                        <div class="d-flex gap-2 align-items-center">
+                                            <button type="button" class="btn btn-link text-danger p-0 delete-setting-btn" data-id="{{ setting.id }}" data-name="{{ setting.label }}" title="Excluir">
+                                                <i class="bi bi-trash3 fs-5"></i>
+                                            </button>
+                                            <span class="badge bg-light text-muted border-0 rounded-pill px-3 py-2 fs-6">ID: {{ setting.id }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-4">
+                                        {% if setting.field_type == 'BOOLEAN' %}
+                                            <div class="form-check form-switch custom-switch py-3">
+                                                <input type="hidden" name="setting_{{ setting.id }}" value="False">
+                                                <input class="form-check-input" style="width: 3.5rem; height: 1.75rem;" type="checkbox" name="setting_{{ setting.id }}" value="True" id="switch_group_{{ setting.id }}" {% if setting.valor|lower == 'true' or setting.valor|lower == 'sim' or setting.valor == '1' %}checked{% endif %}>
+                                                <label class="form-check-label text-muted fs-6 ms-3" for="switch_group_{{ setting.id }}">Ativar / Desativar</label>
+                                            </div>
+                                        {% elif setting.field_type == 'TEXTAREA' %}
+                                            <textarea name="setting_{{ setting.id }}" class="form-control bg-light border-0 rounded-3 p-3 fs-5" rows="4">{{ setting.valor }}</textarea>
+                                        {% elif setting.field_type == 'NUMBER' %}
+                                            <input type="number" name="setting_{{ setting.id }}" class="form-control bg-light border-0 rounded-3 p-3 fs-5" value="{{ setting.valor }}">
+                                        {% elif setting.field_type == 'EMAIL' %}
+                                            <input type="email" name="setting_{{ setting.id }}" class="form-control bg-light border-0 rounded-3 p-3 fs-5" value="{{ setting.valor }}">
+                                        {% elif setting.field_type == 'DATE' %}
+                                            <input type="date" name="setting_{{ setting.id }}" class="form-control bg-light border-0 rounded-3 p-3 fs-5" value="{{ setting.valor }}">
+                                        {% else %}
+                                            <input type="text" name="setting_{{ setting.id }}" class="form-control bg-light border-0 rounded-3 p-3 fs-5" value="{{ setting.valor }}">
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <p class="text-muted fs-6 mb-0 d-flex align-items-start gap-3">
+                                        <i class="bi bi-info-circle mt-1 fs-5"></i>
+                                        <span>{{ setting.descricao|default:"Sem descrição definida." }}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </form>
+</div>
+
+<!-- Modal Nova Configuração -->
+<div class="modal fade" id="newSettingModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 rounded-4 shadow-lg">
+            <div class="modal-header border-0 pb-0 px-4 pt-4">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 p-2 rounded-3 me-3">
+                        <i class="bi bi-plus-circle-fill text-primary fs-4"></i>
+                    </div>
+                    <div>
+                        <h5 class="modal-title fw-bold mb-0">Nova Configuração</h5>
+                        <p class="text-muted small mb-0">Adicione um novo parâmetro global ao sistema.</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form method="post" action="{% url 'admin_panel:system_settings' %}">
+                <div class="modal-body p-4 bg-light bg-opacity-10">
+                    {% csrf_token %}
+                    <div class="row g-4">
+                        <div class="col-md-7">
+                            <div class="form-group mb-3">
+                                <label class="form-label d-flex align-items-center gap-2 mb-2">
+                                    <span class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; font-size: 0.7rem;">1</span>
+                                    <span class="fw-bold">Nome curto da configuração</span>
+                                </label>
+                                {{ form.chave }}
+                                <div class="form-text mt-1 text-muted" style="font-size: 0.75rem;">
+                                    Use apenas letras MAIÚSCULAS e underscores. <br>
+                                    Ex: <span class="badge bg-light text-dark border fw-normal">NOME_DA_CIDADE</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group mb-3">
+                                <label class="form-label d-flex align-items-center gap-2 mb-2">
+                                    <span class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; font-size: 0.7rem;">2</span>
+                                    <span class="fw-bold">Onde vai aparecer?</span>
+                                </label>
+                                {{ form.tipo }}
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group mb-3">
+                                <label class="form-label d-flex align-items-center gap-2 mb-2">
+                                    <span class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; font-size: 0.7rem;">3</span>
+                                    <span class="fw-bold">Qual o valor inicial?</span>
+                                </label>
+                                {{ form.valor }}
+                                <div class="form-text mt-1 text-muted" style="font-size: 0.75rem;">Ex: "São Paulo", "R$ 1.500,00", "Sim" ou "Não"</div>
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-group">
+                                <label class="form-label d-flex align-items-center gap-2 mb-2">
+                                    <span class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 20px; height: 20px; font-size: 0.7rem;">4</span>
+                                    <span class="fw-bold">Explicação rápida para humanos</span>
+                                </label>
+                                {{ form.descricao }}
+                                <div class="form-text mt-1 text-muted" style="font-size: 0.75rem;">Para que os outros administradores saibam o que é isso.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-light rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-5 shadow-sm">
+                        <i class="bi bi-plus-lg me-1"></i>Criar Configuração
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="toastContainer" class="toast-container position-fixed bottom-0 end-0 p-3"></div>
+
+<style>
+    .hover-shadow:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 1rem 3rem rgba(0,0,0,.1) !important;
+    }
+    .transition { transition: all 0.3s ease; }
+    .custom-switch .form-check-input {
+        width: 3rem;
+        height: 1.5rem;
+        cursor: pointer;
+    }
+    .nav-pills .nav-link.active {
+        background-color: var(--bs-primary);
+        box-shadow: 0 4px 10px rgba(var(--bs-primary-rgb), 0.3);
+    }
+    .nav-pills .nav-link {
+        color: var(--bs-gray-600);
+        font-weight: 500;
+    }
+    .form-control:focus {
+        background-color: #fff !important;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    }
+    
+    /* Toast styles */
+    .toast-success { border-left: 4px solid #198754; }
+    .toast-error { border-left: 4px solid #dc3545; }
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const saveBtn = document.getElementById('saveAllBtn');
+    const form = document.getElementById('settingsForm');
+    
+    saveBtn.addEventListener('click', function() {
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Salvando...';
+        
+        // Coletar apenas uma instância de cada configuração (para evitar duplicatas das abas)
+        const finalFormData = new FormData();
+        finalFormData.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
+        finalFormData.append('bulk_update', 'true');
+        
+        const uniqueKeys = new Set();
+        const inputs = form.querySelectorAll('[name^="setting_"]');
+        
+        inputs.forEach(input => {
+            if (!uniqueKeys.has(input.name)) {
+                if (input.type === 'checkbox') {
+                    // Checkbox logic: find the checked one or the hidden false
+                    const checkbox = form.querySelector(`input[type="checkbox"][name="${input.name}"]:checked`);
+                    finalFormData.append(input.name, checkbox ? 'True' : 'False');
+                } else if (input.tagName === 'TEXTAREA' || input.tagName === 'INPUT') {
+                    finalFormData.append(input.name, input.value);
+                }
+                uniqueKeys.add(input.name);
+            }
+        });
+        
+        fetch(window.location.href, {
+            method: 'POST',
+            body: finalFormData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': finalFormData.get('csrfmiddlewaretoken')
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                showToast('Sucesso', data.message, 'success');
+            } else {
+                showToast('Erro', 'Ocorreu um erro ao salvar.', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('Erro', 'Falha na comunicação com o servidor.', 'error');
+        })
+        .finally(() => {
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="bi bi-check2-all me-1"></i>Salvar Tudo';
+        });
+    });
+    
+    // Sincronizar inputs entre abas
+    form.addEventListener('input', function(e) {
+        if (e.target.name && e.target.name.startsWith('setting_')) {
+            const name = e.target.name;
+            const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+            const relatedInputs = form.querySelectorAll(`[name="${name}"]`);
+            
+            relatedInputs.forEach(input => {
+                if (input !== e.target) {
+                    if (input.type === 'checkbox') {
+                        input.checked = value;
+                    } else {
+                        input.value = value;
+                    }
+                }
+            });
+        }
+    });
+    
+    // Busca em tempo real
+    const searchInput = document.getElementById('settingSearch');
+    const cards = document.querySelectorAll('.setting-card');
+    
+    searchInput.addEventListener('input', function() {
+        const term = this.value.toLowerCase();
+        cards.forEach(card => {
+            const content = card.getAttribute('data-name');
+            if (content.includes(term)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        // Se estiver buscando, volta para a aba "Todas"
+         if (term.length > 0) {
+             const allTab = new bootstrap.Tab(document.getElementById('all-tab'));
+             allTab.show();
+         }
+     });
+ 
+    // Lógica de Exclusão
+    document.addEventListener('click', function(e) {
+        const deleteBtn = e.target.closest('.delete-setting-btn');
+        if (deleteBtn) {
+            const settingId = deleteBtn.dataset.id;
+            const settingName = deleteBtn.dataset.name;
+            
+            Swal.fire({
+                title: 'Tem certeza?',
+                text: `Você está prestes a excluir a configuração "${settingName}". Esta ação não pode ser desfeita!`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#dc3545',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Sim, excluir!',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const formData = new FormData();
+                    formData.append('csrfmiddlewaretoken', form.querySelector('[name=csrfmiddlewaretoken]').value);
+                    formData.append('delete_setting', 'true');
+                    formData.append('setting_id', settingId);
+                    
+                    fetch(window.location.href, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'success') {
+                            showToast('Sucesso', 'Configuração excluída.', 'success');
+                            location.reload();
+                        } else {
+                            showToast('Erro', data.message || 'Erro ao excluir.', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire('Erro!', 'Falha na comunicação com o servidor.', 'error');
+                    });
+                }
+            });
+        }
+    });
+ 
+     function showToast(title, message, type) {
+        const container = document.getElementById('toastContainer');
+        const toastId = 'toast-' + Date.now();
+        const toastClass = type === 'success' ? 'toast-success' : 'toast-error';
+        const icon = type === 'success' ? 'bi-check-circle-fill text-success' : 'bi-exclamation-triangle-fill text-danger';
+        
+        const toastHTML = `
+            <div id="${toastId}" class="toast ${toastClass} shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header border-0">
+                    <i class="bi ${icon} me-2"></i>
+                    <strong class="me-auto">${title}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body pt-0">
+                    ${message}
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', toastHTML);
+        const toastElement = document.getElementById(toastId);
+        const bsToast = new bootstrap.Toast(toastElement, { delay: 3000 });
+        bsToast.show();
+        
+        toastElement.addEventListener('hidden.bs.toast', function () {
+            toastElement.remove();
+        });
+    }
+});
+</script>
+{% endblock %}

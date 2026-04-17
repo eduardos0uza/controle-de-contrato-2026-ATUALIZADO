@@ -1,0 +1,41 @@
+{
+    "id": 1,
+    "numero_contrato": "CT-TESTE-SUPABASE-20260331",
+    "numero_protocolo": "CT-TESTE-SUPABASE-20260331",
+    "processo_administrativo": "",
+    "numero_pregao": "",
+    "secretario": "",
+    "numero_nota_empenho": "",
+    "numero_ficha": "",
+    "empresa": "Empresa Teste Supabase",
+    "objeto": "Contrato de validação automática do Supabase",
+    "data_inicio": "2026-03-31",
+    "vigencia": 12,
+    "data_vencimento": "2027-03-31",
+    "status": "ativo",
+    "responsavel": "Validação Automática",
+    "arquivo": "",
+    "dias_restantes": 365,
+    "alerta": "normal",
+    "itens": [
+        {
+            "id": 1,
+            "tipo_item": "SERVICO",
+            "descricao": "Item de validação de persistência",
+            "unidade": "UN",
+            "proprietario": "",
+            "cpf": "",
+            "localidade": "",
+            "tipo_cobranca": "UNIDADE",
+            "quantidade": 1,
+            "quantidade_meses": "",
+            "valor_unitario": "1500.00",
+            "data_viagem": "",
+            "taxa_servico": "0.00",
+            "desconto": "0.00",
+            "caixa_atual": "",
+            "valor_total": "1500.00"
+        }
+    ],
+    "backup_timestamp": "2026-03-31T14:46:33.306309"
+}
