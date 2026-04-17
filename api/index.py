@@ -13,7 +13,7 @@ sys.path.append(str(BASE_DIR))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "controle_contratos.settings")
 
 # Inicializa a aplicação WSGI (IMPORTANTE: nome 'app' para Vercel)
-# Vercel Deployment Force Update: 2026-04-16T13:00:00
+# Vercel Deployment Force Update: 2026-04-16T13:30:00
 
 # Vercel's static analyzer needs these at the top level
 app = None
