@@ -27,64 +27,98 @@
         font-family: 'Outfit', sans-serif;
     }
 
+    .contracts-shell {
+        margin-inline: auto;
+        max-width: 100%;
+        width: 100%;
+    }
+
     .contracts-page {
         color: var(--ledger-ink);
         display: grid;
         gap: 24px;
+        width: 100%;
     }
 
     .ledger-hero {
-        align-items: stretch;
-        background: var(--ledger-card);
-        border: 1px solid var(--ledger-line);
-        border-radius: 30px;
+        align-items: center;
+        background:
+            linear-gradient(135deg, rgba(6,35,63,0.98), rgba(11,79,134,0.92)),
+            radial-gradient(circle at 88% 12%, rgba(50,183,212,0.22), transparent 24rem);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 28px;
         box-shadow: var(--ledger-shadow);
+        color: #ffffff;
         display: grid;
-        gap: 0;
-        grid-template-columns: minmax(0, 1fr) minmax(280px, 0.42fr);
+        gap: clamp(20px, 3vw, 36px);
+        grid-template-columns: minmax(0, 1fr) minmax(420px, 0.72fr);
         overflow: hidden;
+        padding: clamp(28px, 3.6vw, 48px);
+        position: relative;
+    }
+
+    .ledger-hero::before {
+        background:
+            linear-gradient(90deg, rgba(255,255,255,0.055) 1px, transparent 1px),
+            linear-gradient(0deg, rgba(255,255,255,0.045) 1px, transparent 1px);
+        background-size: 34px 34px;
+        content: "";
+        inset: 0;
+        opacity: 0.52;
+        pointer-events: none;
+        position: absolute;
+    }
+
+    .ledger-hero > * {
+        position: relative;
+        z-index: 1;
     }
 
     .ledger-hero-main {
-        background:
-            linear-gradient(135deg, rgba(6,35,63,0.06), rgba(50,183,212,0.04)),
-            #ffffff;
-        padding: clamp(24px, 4vw, 40px);
+        display: grid;
+        max-width: 760px;
     }
 
     .ledger-hero-side {
-        background: linear-gradient(135deg, var(--ledger-navy), var(--ledger-blue));
-        color: #ffffff;
         display: grid;
         gap: 12px;
-        padding: clamp(22px, 3vw, 32px);
+        grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .ledger-kicker {
-        color: var(--ledger-blue);
+        align-items: center;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.16);
+        border-radius: 999px;
+        color: #9cf2ff;
+        display: inline-flex;
         font-size: 0.74rem;
         font-weight: 950;
+        gap: 8px;
         letter-spacing: 0.14em;
         margin-bottom: 12px;
+        padding: 8px 14px;
         text-transform: uppercase;
+        width: fit-content;
     }
 
     .ledger-title {
-        font-size: clamp(2rem, 4.2vw, 4rem);
+        color: #ffffff;
+        font-size: clamp(2.2rem, 4.1vw, 4.15rem);
         font-weight: 950;
         letter-spacing: -0.055em;
         line-height: 0.96;
         margin: 0;
-        max-width: 760px;
+        max-width: 790px;
     }
 
     .ledger-copy {
-        color: var(--ledger-muted);
+        color: rgba(255,255,255,0.74);
         font-size: 1rem;
         font-weight: 650;
         line-height: 1.65;
         margin: 16px 0 0;
-        max-width: 680px;
+        max-width: 760px;
     }
 
     .ledger-actions {
@@ -106,20 +140,102 @@
         text-decoration: none;
     }
 
-    .ledger-btn-primary { background: var(--ledger-navy); color: #ffffff; }
-    .ledger-btn-primary:hover { background: var(--ledger-blue); color: #ffffff; }
-    .ledger-btn-light { background: #f4f8fb; border: 1px solid var(--ledger-line); color: var(--ledger-ink); }
-    .ledger-btn-light:hover { color: var(--ledger-blue); }
+    .ledger-btn-primary { background: #ffffff; color: var(--ledger-navy); }
+    .ledger-btn-primary:hover { background: #f5fbff; color: var(--ledger-blue); }
+    .ledger-btn-light { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); color: #ffffff; }
+    .ledger-btn-light:hover { background: rgba(255,255,255,0.16); color: #ffffff; }
 
     .ledger-side-item {
         background: rgba(255,255,255,0.1);
         border: 1px solid rgba(255,255,255,0.16);
-        border-radius: 18px;
-        padding: 16px;
+        border-radius: 20px;
+        color: #ffffff;
+        min-height: 132px;
+        padding: 18px 16px;
+        position: relative;
     }
 
-    .ledger-side-item span { color: rgba(255,255,255,0.67); display: block; font-size: 0.72rem; font-weight: 900; letter-spacing: 0.09em; text-transform: uppercase; }
-    .ledger-side-item strong { display: block; font-size: 1.5rem; font-weight: 950; letter-spacing: -0.04em; margin-top: 3px; }
+    .ledger-side-item.feature {
+        background: rgba(255,255,255,0.14);
+        grid-column: auto;
+        min-height: 132px;
+        overflow: hidden;
+    }
+
+    .ledger-side-item.feature::after {
+        background: radial-gradient(circle, rgba(50,183,212,0.32), transparent 62%);
+        content: "";
+        height: 220px;
+        position: absolute;
+        right: -72px;
+        top: -88px;
+        width: 220px;
+    }
+
+    .ledger-side-item span {
+        color: rgba(255,255,255,0.64);
+        display: block;
+        font-size: 0.68rem;
+        font-weight: 950;
+        letter-spacing: 0.09em;
+        position: relative;
+        text-transform: uppercase;
+        z-index: 1;
+    }
+
+    .ledger-side-item strong {
+        display: block;
+        font-size: clamp(1.75rem, 2.5vw, 2.35rem);
+        font-weight: 950;
+        letter-spacing: -0.055em;
+        line-height: 1;
+        margin-top: 8px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .ledger-side-item small {
+        color: rgba(255,255,255,0.64);
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 800;
+        margin-top: 12px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .metric-inline {
+        align-items: baseline;
+        display: flex;
+        gap: 7px;
+        white-space: nowrap;
+    }
+
+    .metric-inline em {
+        color: rgba(255,255,255,0.72);
+        font-size: 0.9rem;
+        font-style: normal;
+        font-weight: 900;
+        letter-spacing: -0.02em;
+    }
+
+    .ledger-mini-chart {
+        align-items: end;
+        display: flex;
+        gap: 7px;
+        height: 28px;
+        margin-top: 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .ledger-mini-chart i {
+        background: rgba(255,255,255,0.34);
+        border-radius: 999px;
+        display: block;
+        flex: 1;
+        min-width: 10px;
+    }
 
     .ledger-kpis {
         display: grid;
@@ -158,7 +274,7 @@
         border: 1px solid var(--ledger-line);
         border-radius: 28px;
         box-shadow: 0 14px 36px rgba(6,35,63,0.07);
-        overflow: hidden;
+        overflow: visible;
     }
 
     .filter-dock-head {
@@ -207,7 +323,9 @@
     .preset-row .btn { border-radius: 99px; font-size: 0.78rem; font-weight: 900; }
 
     .ledger-table-card {
-        background: var(--ledger-card);
+        background:
+            radial-gradient(circle at 0% 0%, rgba(50,183,212,0.08), transparent 22rem),
+            #f7fbfd;
         border: 1px solid var(--ledger-line);
         border-radius: 28px;
         box-shadow: var(--ledger-shadow);
@@ -220,48 +338,66 @@
         display: flex;
         justify-content: space-between;
         gap: 16px;
-        padding: 20px 22px;
+        padding: 22px 24px;
     }
 
-    .ledger-table-head h2 { font-size: 1.05rem; font-weight: 950; margin: 0; }
+    .ledger-table-head h2 { font-size: 1.18rem; font-weight: 950; letter-spacing: -0.02em; margin: 0; }
     .ledger-table-head p { color: var(--ledger-muted); font-size: 0.86rem; font-weight: 650; margin: 4px 0 0; }
-    .table-responsive-ledger { max-height: 75vh; overflow: auto; }
-    .table-ledger { border-collapse: collapse; margin: 0; width: 100%; }
+    .table-responsive-ledger { max-height: none; overflow: visible; padding: 12px; }
+    .table-ledger { border-collapse: separate; border-spacing: 0 8px; margin: 0; table-layout: fixed; width: 100%; }
     .table-ledger thead th {
-        background: var(--ledger-navy) !important;
+        background: transparent !important;
         border: 0;
-        color: #ffffff !important;
+        color: var(--ledger-muted) !important;
         cursor: pointer;
-        font-size: 0.66rem;
+        font-size: clamp(0.57rem, 0.55vw, 0.66rem);
         font-weight: 950;
         letter-spacing: 0.1em;
-        padding: 16px 14px;
+        padding: 4px 8px 8px;
         text-transform: uppercase;
         white-space: nowrap;
     }
 
     .table-ledger tbody td {
+        background: #ffffff;
         border-bottom: 1px solid var(--ledger-line);
+        border-top: 1px solid var(--ledger-line);
         color: #2a3a4f;
-        font-size: 0.88rem;
-        padding: 15px 14px;
+        font-size: clamp(0.76rem, 0.72vw, 0.88rem);
+        padding: 13px 8px;
         vertical-align: middle;
+        overflow-wrap: anywhere;
     }
+    .table-ledger tbody td:first-child { border-left: 1px solid var(--ledger-line); border-radius: 17px 0 0 17px; }
+    .table-ledger tbody td:last-child { border-right: 1px solid var(--ledger-line); border-radius: 0 17px 17px 0; }
 
-    .table-ledger tbody tr { cursor: pointer; transition: background 160ms ease; }
-    .table-ledger tbody tr:hover { background: #f7fbfd; }
+    .table-ledger th:nth-child(1), .table-ledger td:nth-child(1) { width: 23%; padding-left: 24px; }
+    .table-ledger th:nth-child(2), .table-ledger td:nth-child(2) { width: 9%; }
+    .table-ledger th:nth-child(3), .table-ledger td:nth-child(3) { width: 9%; }
+    .table-ledger th:nth-child(4), .table-ledger td:nth-child(4) { width: 9%; }
+    .table-ledger th:nth-child(5), .table-ledger td:nth-child(5) { width: 7%; }
+    .table-ledger th:nth-child(6), .table-ledger td:nth-child(6) { width: 12%; }
+    .table-ledger th:nth-child(7), .table-ledger td:nth-child(7) { width: 10%; }
+    .table-ledger th:nth-child(8), .table-ledger td:nth-child(8) { width: 12%; }
+    .table-ledger th:nth-child(9), .table-ledger td:nth-child(9) { width: 9%; padding-right: 24px; }
+
+    .table-ledger tbody tr { cursor: pointer; transition: filter 160ms ease, transform 160ms ease; }
+    .table-ledger tbody tr:hover { filter: drop-shadow(0 12px 20px rgba(6,35,63,0.08)); transform: translateY(-1px); }
     .sort-icon { color: rgba(255,255,255,0.55); font-size: 0.72rem; }
-    .contract-link { color: var(--ledger-blue); display: block; font-weight: 950; text-decoration: none; }
-    .contract-desc { color: var(--ledger-muted); font-size: 0.75rem; font-weight: 650; margin-top: 4px; max-width: 280px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .date-chip, .owner-line { align-items: center; display: inline-flex; gap: 8px; font-weight: 800; white-space: nowrap; }
+    .contract-link { align-items: center; color: var(--ledger-blue); display: inline-flex; font-weight: 950; gap: 10px; text-decoration: none; }
+    .contract-link::before { background: linear-gradient(180deg, var(--ledger-navy), var(--ledger-blue)); border-radius: 99px; content: ""; height: 28px; width: 4px; }
+    .contract-desc { color: var(--ledger-muted); display: -webkit-box; font-size: 0.75rem; font-weight: 650; line-height: 1.35; margin-top: 4px; max-width: 100%; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+    .date-chip, .owner-line { align-items: center; display: inline-flex; gap: 7px; font-weight: 800; max-width: 100%; }
+    .owner-line { min-width: 0; }
+    .owner-line > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
     .date-chip i { color: var(--ledger-muted); }
     .days-chip, .status-chip {
         border-radius: 99px;
         display: inline-flex;
-        font-size: 0.73rem;
+        font-size: clamp(0.64rem, 0.62vw, 0.73rem);
         font-weight: 950;
+        line-height: 1.15;
         padding: 7px 10px;
-        white-space: nowrap;
     }
     .days-chip.danger { background: #fff0f0; color: var(--ledger-red); }
     .days-chip.warning { background: #fff7e8; color: var(--ledger-amber); }
@@ -269,14 +405,15 @@
     .status-chip.ok { background: #eaf8f1; color: var(--ledger-green); }
     .status-chip.hold { background: #fff7e8; color: var(--ledger-amber); }
     .status-chip.muted { background: #eef2f6; color: #718092; }
-    .agency-stack strong { display: block; font-size: 0.82rem; }
+    .agency-stack strong { display: block; font-size: 0.82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .agency-stack span { color: var(--ledger-muted); display: block; font-size: 0.72rem; font-weight: 650; margin-top: 2px; }
-    .owner-line span { align-items: center; background: #eaf5f9; border-radius: 10px; color: var(--ledger-blue); display: inline-flex; font-size: 0.7rem; font-weight: 950; height: 28px; justify-content: center; width: 28px; }
-    .alert-line { align-items: center; display: inline-flex; font-size: 0.78rem; font-weight: 900; gap: 8px; white-space: nowrap; }
+    .owner-line .owner-avatar { align-items: center; background: #eaf5f9; border-radius: 10px; color: var(--ledger-blue); display: inline-flex; flex: 0 0 28px; font-size: 0.7rem; font-weight: 950; height: 28px; justify-content: center; width: 28px; }
+    .owner-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .alert-line { align-items: center; background: #f9fbfd; border: 1px solid var(--ledger-line); border-radius: 999px; display: inline-flex; font-size: 0.72rem; font-weight: 900; gap: 8px; line-height: 1.2; padding: 7px 10px; }
     .alert-line i { border-radius: 99px; display: inline-block; height: 10px; width: 10px; }
-    .action-pack { display: inline-flex; gap: 6px; }
-    .action-btn { align-items: center; background: #f6fafc; border: 1px solid var(--ledger-line); border-radius: 12px; color: var(--ledger-ink); display: inline-flex; height: 36px; justify-content: center; text-decoration: none; width: 36px; }
-    .action-btn:hover { background: #ffffff; color: var(--ledger-blue); }
+    .action-pack { display: inline-flex; gap: 5px; justify-content: flex-end; }
+    .action-btn { align-items: center; background: #f6fafc; border: 1px solid var(--ledger-line); border-radius: 11px; color: var(--ledger-ink); display: inline-flex; flex: 0 0 34px; height: 34px; justify-content: center; text-decoration: none; width: 34px; }
+    .action-btn:hover { background: var(--ledger-navy); border-color: var(--ledger-navy); color: #ffffff; }
     .action-btn.danger { color: var(--ledger-red); }
     .empty-ledger { align-items: center; color: var(--ledger-muted); display: grid; gap: 6px; justify-items: center; min-height: 170px; text-align: center; }
     .empty-ledger i { color: #b9c7d4; font-size: 2.2rem; }
@@ -290,13 +427,95 @@
     .offcanvas-elite .offcanvas-header { background: #f7fbfd; border-bottom: 1px solid var(--ledger-line); padding: 1.4rem; }
     .offcanvas-elite .offcanvas-body { padding: 1.4rem; }
 
+    @media (max-width: 1280px) {
+        .table-ledger th:nth-child(6), .table-ledger td:nth-child(6) { display: none; }
+        .table-ledger th:nth-child(1), .table-ledger td:nth-child(1) { width: 28%; }
+        .table-ledger th:nth-child(2), .table-ledger td:nth-child(2) { width: 11%; }
+        .table-ledger th:nth-child(3), .table-ledger td:nth-child(3) { width: 12%; }
+        .table-ledger th:nth-child(4), .table-ledger td:nth-child(4) { width: 11%; }
+        .table-ledger th:nth-child(5), .table-ledger td:nth-child(5) { width: 8%; }
+        .table-ledger th:nth-child(7), .table-ledger td:nth-child(7) { width: 12%; }
+        .table-ledger th:nth-child(8), .table-ledger td:nth-child(8) { width: 10%; }
+        .table-ledger th:nth-child(9), .table-ledger td:nth-child(9) { width: 8%; }
+        .alert-line { font-size: 0.7rem; }
+    }
+
+    @media (max-width: 1120px) {
+        .table-ledger th:nth-child(5), .table-ledger td:nth-child(5) { display: none; }
+        .table-ledger th:nth-child(1), .table-ledger td:nth-child(1) { width: 30%; }
+        .table-ledger th:nth-child(2), .table-ledger td:nth-child(2) { width: 12%; }
+        .table-ledger th:nth-child(3), .table-ledger td:nth-child(3) { width: 13%; }
+        .table-ledger th:nth-child(4), .table-ledger td:nth-child(4) { width: 12%; }
+        .table-ledger th:nth-child(7), .table-ledger td:nth-child(7) { width: 14%; }
+        .table-ledger th:nth-child(8), .table-ledger td:nth-child(8) { width: 10%; }
+        .table-ledger th:nth-child(9), .table-ledger td:nth-child(9) { width: 9%; }
+    }
+
     @media (max-width: 1180px) {
         .ledger-hero { grid-template-columns: 1fr; }
+        .ledger-hero-side { grid-template-columns: repeat(3, minmax(0, 1fr)); }
         .ledger-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 860px) {
+        .ledger-table-card { border-radius: 22px; overflow: visible; }
+        .ledger-table-head { border-bottom: 0; }
+        .table-responsive-ledger { max-height: none; overflow: visible; padding: 0 12px 14px; }
+        .table-ledger, .table-ledger tbody, .table-ledger tr, .table-ledger td { display: block; width: 100% !important; }
+        .table-ledger thead { display: none; }
+        .table-ledger tbody { display: grid; gap: 14px; }
+        .table-ledger tbody tr {
+            background: linear-gradient(180deg, #ffffff 0%, #f9fcfe 100%);
+            border: 1px solid var(--ledger-line);
+            border-radius: 20px;
+            box-shadow: 0 12px 26px rgba(6,35,63,0.07);
+            cursor: pointer;
+            display: grid;
+            gap: 0;
+            overflow: hidden;
+            padding: 14px;
+        }
+        .table-ledger tbody tr:hover { background: #ffffff; }
+        .table-ledger tbody td {
+            align-items: center;
+            border-bottom: 1px solid #edf3f8;
+            display: flex !important;
+            gap: 14px;
+            justify-content: space-between;
+            padding: 11px 0;
+            text-align: right !important;
+        }
+        .table-ledger tbody td::before {
+            color: var(--ledger-muted);
+            content: attr(data-label);
+            flex: 0 0 96px;
+            font-size: 0.68rem;
+            font-weight: 950;
+            letter-spacing: 0.08em;
+            text-align: left;
+            text-transform: uppercase;
+        }
+        .table-ledger tbody td.contract-cell {
+            align-items: flex-start;
+            display: block !important;
+            padding-top: 2px;
+            text-align: left !important;
+        }
+        .table-ledger tbody td.contract-cell::before { display: none; }
+        .contract-link { font-size: 1.18rem; }
+        .contract-desc { font-size: 0.86rem; -webkit-line-clamp: 3; }
+        .date-chip, .owner-line, .alert-line, .days-chip, .status-chip { justify-content: flex-end; text-align: right; }
+        .agency-stack { text-align: right; }
+        .value-cell { color: var(--ledger-navy); font-size: 1rem !important; }
+        .action-cell { border-bottom: 0 !important; padding-bottom: 0 !important; }
+        .action-cell .action-pack { justify-content: flex-end; width: 100%; }
+        .empty-ledger { min-height: 120px; }
     }
 
     @media (max-width: 680px) {
         .ledger-hero { border-radius: 22px; }
+        .ledger-hero-side { grid-template-columns: 1fr; }
+        .ledger-title { font-size: clamp(2rem, 12vw, 3.2rem); }
         .ledger-actions { display: grid; }
         .ledger-btn { width: 100%; }
         .ledger-kpis { grid-template-columns: 1fr; }
@@ -312,13 +531,18 @@
 </style>
 {% endblock %}
 
+{% block content_wrapper_open %}
+<div class="container-fluid py-4 py-lg-5 px-2 px-sm-3 px-xxl-4">
+{% endblock %}
+
 {% block content %}
+<div class="contracts-shell">
 <div class="contracts-page">
     <section class="ledger-hero no-print">
         <div class="ledger-hero-main">
-            <div class="ledger-kicker">Central operacional</div>
-            <h1 class="ledger-title">A base de contratos com leitura rápida e ação direta.</h1>
-            <p class="ledger-copy">Filtre, ordene e abra o dossiê de cada contrato sem perder o contexto da lista. A tela agora prioriza prazo, risco e valor.</p>
+            <div class="ledger-kicker"><i class="bi bi-command"></i> Central operacional</div>
+            <h1 class="ledger-title">Central de contratos</h1>
+            <p class="ledger-copy">Consulte, filtre e acompanhe contratos com foco em prazo, valor e risco operacional.</p>
             <div class="ledger-actions">
                 <a href="{% url 'contratos:criar' %}" class="ledger-btn ledger-btn-primary"><i class="bi bi-plus-lg"></i> Novo registro</a>
                 <a href="{% url 'contratos:relatorios' %}" class="ledger-btn ledger-btn-light"><i class="bi bi-bar-chart"></i> Relatórios</a>
@@ -326,9 +550,16 @@
             </div>
         </div>
         <aside class="ledger-hero-side">
-            <div class="ledger-side-item"><span>Resultado filtrado</span><strong>{{ kpis.total }}</strong></div>
-            <div class="ledger-side-item"><span>Valor consolidado</span><strong>R$ {{ kpis.valor|floatformat:0|intcomma }}</strong></div>
-            <div class="ledger-side-item"><span>Janela crítica</span><strong>{{ kpis.vencendo_30 }} em 30d</strong></div>
+            <div class="ledger-side-item feature">
+                <span>Valor consolidado</span>
+                <strong>R$ {{ kpis.valor|floatformat:0|intcomma }}</strong>
+                <small>Base financeira monitorada</small>
+                <div class="ledger-mini-chart" aria-hidden="true">
+                    <i style="height: 42%;"></i><i style="height: 68%;"></i><i style="height: 52%;"></i><i style="height: 86%;"></i><i style="height: 62%;"></i>
+                </div>
+            </div>
+            <div class="ledger-side-item"><span>Resultado filtrado</span><strong>{{ kpis.total }}</strong><small>Registros na tela</small></div>
+            <div class="ledger-side-item"><span>Janela crítica</span><strong class="metric-inline">{{ kpis.vencendo_30 }} <em>em 30d</em></strong><small>Vencimentos próximos</small></div>
         </aside>
     </section>
 
@@ -444,6 +675,7 @@
         {% endif %}
     </div>
 </div>
+</div>
 
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
@@ -458,6 +690,69 @@
                 <form id="deleteForm" method="post" class="flex-grow-1">{% csrf_token %}<button type="button" id="confirmDeleteButton" class="btn btn-danger rounded-pill w-100 fw-bold py-2">Confirmar exclusão</button></form>
             </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="renewModal" tabindex="-1" aria-labelledby="renewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 24px;">
+            <form id="renewForm" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="modal-header border-0 px-4 pt-4 pb-0">
+                    <div>
+                        <h5 class="modal-title fw-bold text-dark" id="renewModalLabel">Renovar contrato</h5>
+                        <p class="text-muted small mb-0">Atualize vencimento, valor e registre o documento comprobatório.</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-light border rounded-4 mb-4">
+                        <div class="d-flex flex-wrap gap-3 justify-content-between">
+                            <div><span class="text-muted small fw-bold d-block">Contrato</span><strong id="renewContractNumber">-</strong></div>
+                            <div><span class="text-muted small fw-bold d-block">Fornecedor</span><strong id="renewContractCompany">-</strong></div>
+                            <div><span class="text-muted small fw-bold d-block">Vencimento atual</span><strong id="renewCurrentDue">-</strong></div>
+                            <div><span class="text-muted small fw-bold d-block">Valor atual</span><strong id="renewCurrentValue">-</strong></div>
+                        </div>
+                    </div>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="field-label" for="renewDueDate">Nova vigência</label>
+                            <input type="date" class="form-control form-control-ledger" id="renewDueDate" name="vencimento_novo" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="field-label" for="renewValue">Novo valor</label>
+                            <input type="text" class="form-control form-control-ledger" id="renewValue" name="valor_novo" placeholder="0,00" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="field-label" for="renewType">Tipo</label>
+                            <select class="form-select form-control-ledger" id="renewType" name="tipo_renovacao" required>
+                                <option value="RENOVACAO">Renovação</option>
+                                <option value="ADITIVO">Termo Aditivo</option>
+                                <option value="PRORROGACAO">Prorrogação</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="field-label" for="renewDocument">Documento PDF</label>
+                            <input type="file" class="form-control form-control-ledger" id="renewDocument" name="documento" accept="application/pdf,.pdf">
+                        </div>
+                        <div class="col-12">
+                            <label class="field-label" for="renewNotes">Observações</label>
+                            <textarea class="form-control form-control-ledger" id="renewNotes" name="observacoes" rows="3"></textarea>
+                        </div>
+                        <div class="col-12">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" role="switch" id="renewAuto" name="renovacao_automatica">
+                                <label class="form-check-label fw-bold" for="renewAuto">Marcar como renovação automática</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pb-4 px-4 gap-2">
+                    <button type="button" class="btn btn-light rounded-pill flex-grow-1 fw-bold py-2" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" id="confirmRenewButton" class="btn btn-primary rounded-pill flex-grow-1 fw-bold py-2"><i class="bi bi-check2-circle me-1"></i> Confirmar renovação</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -584,6 +879,69 @@
         });
         deleteModal.addEventListener('hidden.bs.modal', () => startRealtimeUpdates());
         confirmDeleteButton.addEventListener('click', () => deleteForm.requestSubmit());
+    }
+
+    const renewModal = document.getElementById('renewModal');
+    if (renewModal) {
+        const renewForm = renewModal.querySelector('#renewForm');
+        const confirmRenewButton = renewModal.querySelector('#confirmRenewButton');
+        const dueInput = renewModal.querySelector('#renewDueDate');
+        const valueInput = renewModal.querySelector('#renewValue');
+        const typeInput = renewModal.querySelector('#renewType');
+        const notesInput = renewModal.querySelector('#renewNotes');
+        const docInput = renewModal.querySelector('#renewDocument');
+        const autoInput = renewModal.querySelector('#renewAuto');
+
+        function formatCurrency(value) {
+            const number = Number(value || 0);
+            return number.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function addYearsToDate(dateText, years) {
+            const date = new Date(`${dateText}T00:00:00`);
+            if (Number.isNaN(date.getTime())) return '';
+            date.setFullYear(date.getFullYear() + years);
+            return date.toISOString().split('T')[0];
+        }
+
+        renewModal.addEventListener('show.bs.modal', async event => {
+            stopRealtimeUpdates();
+            const button = event.relatedTarget;
+            const renewUrl = button.getAttribute('data-renew-url');
+            renewForm.action = renewUrl;
+            renewForm.reset();
+            renewModal.querySelector('#renewContractNumber').textContent = button.getAttribute('data-contract-number') || '-';
+            confirmRenewButton.disabled = true;
+
+            try {
+                const response = await fetch(renewUrl, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                if (!response.ok) throw new Error('Falha ao carregar contrato');
+                const data = await response.json();
+
+                renewModal.querySelector('#renewContractNumber').textContent = data.numero || '-';
+                renewModal.querySelector('#renewContractCompany').textContent = data.empresa || '-';
+                renewModal.querySelector('#renewCurrentDue').textContent = data.vencimento_atual ? data.vencimento_atual.split('-').reverse().join('/') : '-';
+                renewModal.querySelector('#renewCurrentValue').textContent = formatCurrency(data.valor_atual);
+                dueInput.value = addYearsToDate(data.vencimento_atual, 1);
+                valueInput.value = Number(data.valor_atual || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                typeInput.value = 'RENOVACAO';
+                confirmRenewButton.disabled = false;
+            } catch (error) {
+                renewModal.querySelector('#renewContractCompany').textContent = 'Erro ao carregar dados';
+                renewModal.querySelector('#renewCurrentDue').textContent = '-';
+                renewModal.querySelector('#renewCurrentValue').textContent = '-';
+                console.error(error);
+            }
+        });
+
+        renewModal.addEventListener('hidden.bs.modal', () => {
+            startRealtimeUpdates();
+            renewForm.reset();
+            notesInput.value = '';
+            docInput.value = '';
+            autoInput.checked = false;
+            confirmRenewButton.disabled = false;
+        });
     }
 
     document.querySelectorAll('.date-preset').forEach(btn => {

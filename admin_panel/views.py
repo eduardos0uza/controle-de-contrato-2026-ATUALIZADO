@@ -583,8 +583,9 @@ def audit_log_list(request):
             try:
                 import csv
                 from django.http import HttpResponse
-                response = HttpResponse(content_type='text/csv')
+                response = HttpResponse(content_type='text/csv; charset=utf-8')
                 response['Content-Disposition'] = 'attachment; filename="logs_auditoria.csv"'
+                response.write('\ufeff'.encode('utf8'))
                 writer = csv.writer(response)
                 writer.writerow(['Data/Hora', 'Usuário', 'Ação', 'Tabela', 'Descrição', 'IP', 'Dados Antigos', 'Dados Novos'])
                 for log in logs:
@@ -600,7 +601,7 @@ def audit_log_list(request):
                     ])
                 return response
             except Exception as e_csv:
-                print(f"Erro ao exportar CSV de logs: {e_csv}")
+                print(f"ERRO ao exportar CSV de logs: {e_csv}")
                 messages.error(request, "Erro ao gerar arquivo CSV.")
 
         # Estatísticas Rápidas
@@ -744,8 +745,9 @@ def admin_contratos_list(request):
             try:
                 import csv
                 from django.http import HttpResponse
-                response = HttpResponse(content_type='text/csv')
+                response = HttpResponse(content_type='text/csv; charset=utf-8')
                 response['Content-Disposition'] = f'attachment; filename="auditoria_contratos_{timezone.now():%Y%m%d}.csv"'
+                response.write('\ufeff'.encode('utf8'))
                 
                 writer = csv.writer(response, delimiter=';', quoting=csv.QUOTE_MINIMAL)
                 writer.writerow([
@@ -768,7 +770,7 @@ def admin_contratos_list(request):
                     ])
                 return response
             except Exception as e_csv:
-                print(f"Erro ao exportar CSV de contratos: {e_csv}")
+                print(f"ERRO ao exportar CSV de contratos: {e_csv}")
                 messages.error(request, "Erro ao gerar arquivo CSV.")
 
         contratos_filtrados = contratos

@@ -1,8 +1,9 @@
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
+from django.utils import timezone
 from django import forms
 from django.contrib.auth import get_user_model
 from django.forms import inlineformset_factory
-from .models import Contract, ContractItem
+from .models import Contract, ContractItem, ContractRenewal, ControleMensal
 from admin_panel.models import Secretaria, UserProfile
 
 
@@ -128,6 +129,7 @@ class ContractForm(forms.ModelForm):
         # Estilização específica para secretaria se presente
         if 'secretaria' in self.fields:
             self.fields['secretaria'].widget.attrs.update({'class': 'form-select'})
+            self.fields['secretaria'].required = True
             
         # Restrição de secretaria para não-superusers
         if self.request_user and not self.request_user.is_superuser:
@@ -136,9 +138,8 @@ class ContractForm(forms.ModelForm):
                 if user_secretaria:
                     self.fields['secretaria'].queryset = Secretaria.objects.filter(id=user_secretaria.id)
                     self.fields['secretaria'].initial = user_secretaria
-                    # Opcional: Ocultar o campo se ele só tem uma opção
-                    # self.fields['secretaria'].widget = forms.HiddenInput()
-            except UserProfile.DoesNotExist:
+                    self.fields['secretaria'].disabled = True  # Native Django field lock!
+            except (UserProfile.DoesNotExist, AttributeError):
                 self.fields['secretaria'].queryset = Secretaria.objects.none()
 
     class Meta:
@@ -171,3 +172,180 @@ class ContractForm(forms.ModelForm):
             'data_vencimento': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date'}),
             'secretaria': forms.Select(attrs={'class': 'form-select'}),
         }
+
+
+class ContractRenewalForm(forms.ModelForm):
+    valor_novo = forms.CharField(
+        label="Valor Novo",
+        widget=forms.TextInput(attrs={'class': 'money-mask form-control', 'placeholder': '0,00'})
+    )
+
+    class Meta:
+        model = ContractRenewal
+        fields = [
+            'vencimento_novo',
+            'valor_novo',
+            'tipo_renovacao',
+            'observacoes',
+            'documento',
+        ]
+        widgets = {
+            'vencimento_novo': forms.DateInput(format='%Y-%m-%d', attrs={'type': 'date', 'class': 'form-control'}),
+            'valor_novo': forms.TextInput(attrs={'class': 'money-mask form-control', 'placeholder': '0,00'}),
+            'tipo_renovacao': forms.Select(attrs={'class': 'form-select'}),
+            'observacoes': forms.Textarea(attrs={'rows': 3, 'class': 'form-control'}),
+            'documento': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
+    def clean_valor_novo(self):
+        data = self.cleaned_data.get('valor_novo')
+        if not data:
+            raise forms.ValidationError("O valor da renovação é obrigatório.")
+        
+        try:
+            if isinstance(data, str):
+                # Limpeza robusta: remove R$, espaços, pontos de milhar e troca vírgula por ponto
+                clean_data = data.replace('R$', '').replace(' ', '').replace('.', '').replace(',', '.').strip()
+                decimal_value = Decimal(clean_data)
+            else:
+                decimal_value = Decimal(data)
+                
+            if decimal_value <= 0:
+                raise forms.ValidationError("O valor da renovação deve ser maior que zero.")
+            return decimal_value
+        except (ValueError, TypeError, InvalidOperation):
+            raise forms.ValidationError("Informe um valor numérico válido (ex: 1.500,50).")
+
+    def clean_documento(self):
+        doc = self.cleaned_data.get('documento')
+        if doc:
+            if not doc.name.lower().endswith('.pdf'):
+                raise forms.ValidationError("O arquivo comprobatório deve estar no formato PDF.")
+            if doc.size > 10 * 1024 * 1024:  # 10MB
+                raise forms.ValidationError("O arquivo é muito grande. O limite é 10MB.")
+        return doc
+
+    def clean(self):
+        cleaned_data = super().clean()
+        vencimento_novo = cleaned_data.get('vencimento_novo')
+        
+        # Log de auditoria para debug profissional
+        print(f"[AUDITORIA RENOVACAO] Dados: {cleaned_data}")
+        
+        if vencimento_novo and vencimento_novo < timezone.localdate():
+            self.add_error('vencimento_novo', "A nova vigência deve ser uma data futura. Não é permitido renovar com data retroativa.")
+            
+        return cleaned_data
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# FORM — CONTROLE MENSAL
+# ─────────────────────────────────────────────────────────────────────────────
+
+class ControleMensalForm(forms.ModelForm):
+    """Formulário para criar/editar um registro de controle mensal."""
+
+    valor_previsto = forms.CharField(
+        label='Valor Previsto (R$)',
+        widget=forms.TextInput(attrs={
+            'class': 'money-mask form-control',
+            'placeholder': '0,00',
+        }),
+        required=True,
+    )
+    valor_utilizado = forms.CharField(
+        label='Valor Utilizado (R$)',
+        widget=forms.TextInput(attrs={
+            'class': 'money-mask form-control',
+            'placeholder': '0,00',
+        }),
+        required=False,
+    )
+
+    class Meta:
+        model  = ControleMensal
+        fields = [
+            'valor_previsto',
+            'valor_utilizado',
+            'status',
+            'observacao',
+            'data_vencimento',
+            'data_pagamento',
+            'anexo',
+        ]
+        widgets = {
+            'status': forms.Select(attrs={'class': 'form-select'}),
+            'observacao': forms.Textarea(attrs={
+                'rows': 3, 'class': 'form-control',
+                'placeholder': 'Observações sobre a execução deste mês...',
+            }),
+            'data_vencimento': forms.DateInput(
+                format='%Y-%m-%d',
+                attrs={'type': 'date', 'class': 'form-control'},
+            ),
+            'data_pagamento': forms.DateInput(
+                format='%Y-%m-%d',
+                attrs={'type': 'date', 'class': 'form-control'},
+            ),
+            'anexo': forms.ClearableFileInput(attrs={'class': 'form-control'}),
+        }
+
+    # ── formatação de valores iniciais ────────────────────────────────────
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        def format_br(val):
+            if val is None:
+                return ''
+            try:
+                return f'{float(val):,.2f}'.replace(',', 'X').replace('.', ',').replace('X', '.')
+            except Exception:
+                return str(val)
+
+        if self.instance.pk:
+            if self.instance.valor_previsto is not None:
+                self.fields['valor_previsto'].initial  = format_br(self.instance.valor_previsto)
+            if self.instance.valor_utilizado is not None:
+                self.fields['valor_utilizado'].initial = format_br(self.instance.valor_utilizado)
+
+    # ── clean helpers ─────────────────────────────────────────────────────
+
+    def _clean_money(self, field_name, required=False):
+        from decimal import Decimal, InvalidOperation
+        raw = self.data.get(self.add_prefix(field_name), '')
+        if not raw:
+            if required:
+                raise forms.ValidationError('Este campo é obrigatório.')
+            return Decimal('0.00')
+        try:
+            clean = str(raw).replace('.', '').replace(',', '.').strip()
+            value = Decimal(clean)
+            if required and value <= 0:
+                raise forms.ValidationError('O valor deve ser maior que zero.')
+            if value < 0:
+                raise forms.ValidationError('O valor não pode ser negativo.')
+            return value
+        except (ValueError, TypeError, InvalidOperation):
+            raise forms.ValidationError('Informe um valor numérico válido (ex: 1.500,00).')
+
+    def clean_valor_previsto(self):
+        return self._clean_money('valor_previsto', required=True)
+
+    def clean_valor_utilizado(self):
+        return self._clean_money('valor_utilizado', required=False)
+
+    def clean_anexo(self):
+        anexo = self.cleaned_data.get('anexo')
+        if anexo and hasattr(anexo, 'name'):
+            allowed_exts = ['.pdf', '.xml', '.jpg', '.jpeg', '.png', '.gif']
+            import os
+            ext = os.path.splitext(anexo.name)[1].lower()
+            if ext not in allowed_exts:
+                raise forms.ValidationError(
+                    'Tipo de arquivo não permitido. Use: PDF, XML, JPG, PNG.'
+                )
+            if anexo.size > 15 * 1024 * 1024:  # 15 MB
+                raise forms.ValidationError('O arquivo é muito grande. Limite: 15 MB.')
+        return anexo
+

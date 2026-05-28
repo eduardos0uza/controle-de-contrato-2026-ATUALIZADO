@@ -1,0 +1,1084 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+  :root {
+    --cm-navy: #003b70;
+    --cm-navy-dark: #002244;
+    --cm-navy-light: #e0f2fe;
+    --cm-navy-text: #0369a1;
+    --cm-bg-light: #f8fafc;
+    --cm-border: #cbd5e1;
+    --cm-border-light: #e2e8f0;
+    --cm-text-dark: #0f172a;
+    --cm-text-muted: #64748b;
+  }
+
+  /* Compensate for the fixed navbar at the top of the page */
+  .planilha-page-container {
+    padding-top: 110px !important;
+    padding-bottom: 24px !important;
+  }
+
+  body {
+    background-color: #f1f5f9;
+    color: var(--cm-text-dark);
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .calc-card {
+    border-radius: 16px;
+    border: 1px solid var(--cm-border-light);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    background-color: #fff;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  /* Planilha container with only horizontal scroll, letting the page scroll vertically naturally */
+  .planilha-container {
+    overflow-x: auto;
+    overflow-y: visible;
+    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scroll-behavior: smooth;
+  }
+
+  /* Sleek custom scrollbars */
+  .planilha-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .planilha-container::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+  }
+  .planilha-container::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+  }
+  .planilha-container::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+  }
+
+  .planilha-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 0.85rem;
+    white-space: nowrap;
+  }
+
+  /* Sticky Header rules */
+  .planilha-table thead th {
+    position: sticky;
+    top: 0;
+    background-color: #f8fafc;
+    color: var(--cm-navy);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+    padding: 16px;
+    border-bottom: 2px solid var(--cm-border);
+    border-right: 1px solid var(--cm-border-light);
+    z-index: 10;
+    box-shadow: inset 0 -2px 0 var(--cm-border);
+    text-align: center;
+    transition: background-color 0.2s ease;
+  }
+
+  .planilha-table thead th:first-child,
+  .planilha-table thead th:nth-child(2),
+  .planilha-table thead th:nth-child(3),
+  .planilha-table thead th:nth-child(4) {
+    text-align: left;
+  }
+
+  .planilha-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--cm-border-light);
+    border-right: 1px solid #f1f5f9;
+    vertical-align: middle;
+    background-color: #fff;
+    transition: background-color 0.15s ease;
+  }
+
+  /* Alternating row colors (Zebra rows) */
+  .planilha-table tbody tr:nth-child(even) td {
+    background-color: var(--cm-bg-light);
+  }
+
+  /* Sticky First Column Rules - Reinforced Shadow & Guaranteed Visibility */
+  .planilha-table th:first-child,
+  .planilha-table td:first-child {
+    position: sticky;
+    left: 0;
+    z-index: 9; /* High enough to stay above row highlights and other cells */
+    border-right: 2px solid var(--cm-border) !important;
+    box-shadow: 6px 0 12px -3px rgba(0, 0, 0, 0.14) !important; /* Elegant reinforced lateral shadow */
+  }
+
+  .planilha-table th:first-child {
+    z-index: 19; /* Corner header keeps absolute priority */
+    background-color: #f8fafc !important;
+  }
+
+  /* Keep first column row backgrounds solid so elements scrolling behind never show */
+  .planilha-table tbody tr:nth-child(odd) td:first-child {
+    background-color: #ffffff !important;
+  }
+
+  .planilha-table tbody tr:nth-child(even) td:first-child {
+    background-color: var(--cm-bg-light) !important;
+  }
+
+  .planilha-table tbody tr:hover td:first-child {
+    background-color: #e2e8f0 !important;
+  }
+
+  /* Footer (TOTAL GERAL row) rules - Height & Font size enhanced (NOT sticky vertically) */
+  .planilha-table .row-totais td {
+    background-color: var(--cm-navy) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important; /* Extra bold numbers */
+    padding: 16px 20px !important; /* Enhanced vertical space */
+    border-top: 3px solid #0284c7 !important; /* Vibrant institutional blue separators */
+    border-bottom: 3px solid var(--cm-navy-dark) !important;
+    font-size: 1rem; /* Larger font size */
+    box-shadow: 0 -6px 15px rgba(0, 0, 0, 0.18) !important;
+    letter-spacing: 0.02em;
+  }
+
+  /* Make footer's first cell sticky ONLY horizontally to align with first column during scroll */
+  .planilha-table .row-totais td:first-child {
+    position: sticky !important;
+    left: 0 !important; /* STICK HORIZONTALLY! Keeps it aligned with Contrato column */
+    z-index: 13 !important; /* Higher than other cells */
+    background-color: var(--cm-navy) !important;
+    border-right: 2px solid var(--cm-border) !important;
+    box-shadow: 6px 0 12px -3px rgba(0, 0, 0, 0.14) !important; /* Match lateral shadow of body's first column */
+  }
+
+  /* Keep Valor Global total with unified style in footer */
+  .planilha-table .row-totais td.col-valor-global {
+    background-color: var(--cm-navy) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    border-right: 1px solid var(--cm-border-light) !important;
+  }
+
+  /* Highlight/Emphasis for Valor Global column */
+  .planilha-table td.col-valor-global {
+    font-weight: 700;
+    color: var(--cm-navy) !important;
+    background-color: #f0f7ff !important; /* Premium soft blue tint */
+    border-right: 2px solid var(--cm-border) !important;
+    font-size: 0.88rem;
+  }
+  
+  .planilha-table th.col-hdr-valor-global {
+    background-color: #e0f2fe !important;
+    color: var(--cm-navy) !important;
+    font-weight: 800 !important;
+    border-right: 2px solid var(--cm-border) !important;
+  }
+
+  /* Highlight for the current month column */
+  .planilha-table th.col-mes-atual {
+    background-color: #bae6fd !important; /* Soft sky blue */
+    color: #0369a1 !important;
+    border-bottom: 2px solid #0284c7 !important;
+    box-shadow: inset 0 -2px 0 #0284c7;
+    font-weight: 800 !important;
+  }
+  
+  .planilha-table td.col-mes-atual {
+    background-color: #f0f9ff !important;
+    border-left: 1px solid #bae6fd !important;
+    border-right: 1px solid #bae6fd !important;
+    font-weight: 600;
+  }
+  
+  .planilha-table tr:nth-child(even) td.col-mes-atual {
+    background-color: #e0f2fe !important;
+  }
+
+  .planilha-table .row-totais td.col-mes-atual {
+    background-color: #0284c7 !important; /* Keep current month footer highlighted */
+    color: #ffffff !important;
+  }
+
+  /* Interactive dynamic column hover styles */
+  .planilha-table .col-hover {
+    background-color: #f1f5f9 !important;
+  }
+
+  .planilha-table tbody tr:hover td {
+    background-color: #e2e8f0 !important; /* Intersection highlight when hovering row */
+  }
+
+  .planilha-table tbody tr:hover td.col-hover {
+    background-color: #cbd5e1 !important; /* Deeper intersection highlight */
+  }
+
+  /* Style for empty/outside vigencia cells using a premium pill badge */
+  .badge-fora-vigencia {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: #94a3b8;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 9999px;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    user-select: none;
+  }
+
+  .val-currency {
+    font-family: 'Outfit', sans-serif;
+    text-align: right;
+    font-weight: 500;
+  }
+
+  .val-currency-active {
+    color: var(--cm-text-dark);
+  }
+
+  /* Drawer Interactive Clickable Row */
+  tr.contrato-row {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+  }
+
+  /* SJB Premium Offcanvas Drawer Styling */
+  .sjb-drawer {
+    width: 480px !important;
+    max-width: 95vw !important;
+    border-left: 1px solid var(--cm-border) !important;
+    box-shadow: -10px 0 30px rgba(0, 59, 112, 0.08) !important;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  .drawer-hero {
+    background-color: var(--cm-bg-light) !important;
+  }
+
+  .drawer-info-item {
+    border-color: var(--cm-border-light) !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .drawer-info-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 59, 112, 0.04);
+  }
+
+  .drawer-table-wrapper {
+    scrollbar-width: thin;
+  }
+
+  .drawer-table-wrapper::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .drawer-table-wrapper::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+
+  .drawer-table-wrapper::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+  }
+
+  .filter-bar {
+    background-color: #fff;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--cm-border-light);
+  }
+
+  .filter-bar .form-select,
+  .filter-bar .btn {
+    border-radius: 8px;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+  }
+
+  .filter-bar .form-select:focus {
+    border-color: var(--cm-navy);
+    box-shadow: 0 0 0 0.25rem rgba(0, 59, 112, 0.15);
+  }
+
+  .filter-bar .btn-primary {
+    background-color: var(--cm-navy);
+    border-color: var(--cm-navy);
+  }
+  .filter-bar .btn-primary:hover {
+    background-color: var(--cm-navy-dark);
+    border-color: var(--cm-navy-dark);
+  }
+
+  /* Sleek summary banner styling */
+  .calc-summary-banner {
+    display: flex;
+    flex-wrap: wrap;
+    background-color: var(--cm-bg-light);
+    border-bottom: 1px solid var(--cm-border-light);
+    padding: 14px 24px;
+    gap: 24px;
+    align-items: center;
+  }
+
+  .summary-banner-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.84rem;
+  }
+
+  .summary-banner-item i {
+    font-size: 1.2rem;
+    color: var(--cm-navy);
+    background-color: var(--cm-navy-light);
+    padding: 8px;
+    border-radius: 8px;
+  }
+
+  .summary-banner-item .item-value {
+    font-weight: 700;
+    color: var(--cm-navy);
+    font-size: 0.95rem;
+  }
+
+  /* Standard print-table is hidden on screen */
+  .print-table {
+    display: none;
+  }
+
+  /* Print and PDF Media Layout A4 Landscape overrides */
+  @page {
+    size: A4 landscape;
+    margin: 6mm;
+  }
+
+  @media print {
+    html, body {
+      width: 297mm;
+      height: auto;
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff !important;
+      color: #000000 !important;
+    }
+
+    /* Hide navbars, footers, filter controls, action buttons and the screen table */
+    nav, 
+    footer, 
+    header, 
+    .navbar, 
+    .navbar-top-strip,
+    .footer-elite, 
+    .filter-bar, 
+    .btn,
+    .no-print,
+    .d-flex.flex-wrap.align-items-center.justify-content-between.mb-3,
+    .screen-table {
+      display: none !important;
+    }
+
+    /* Set full width container and remove spacing card decorators */
+    .container-fluid,
+    main {
+      padding: 0 !important;
+      margin: 0 !important;
+      width: 100% !important;
+    }
+
+    .print-area {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 auto !important;
+    }
+
+    .calc-card {
+      border: none !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      background-color: transparent !important;
+    }
+
+    .calc-summary-banner {
+      background-color: #f8fafc !important;
+      border: 1px solid #cbd5e1 !important;
+      padding: 6px 12px !important;
+      margin-bottom: 12px !important;
+      border-radius: 6px !important;
+      display: flex !important;
+      flex-direction: row !important;
+      width: 100% !important;
+      gap: 15px !important;
+    }
+
+    .calc-summary-banner .summary-banner-item {
+      font-size: 8px !important;
+    }
+
+    .calc-summary-banner .summary-banner-item i {
+      padding: 2px !important;
+      background-color: #e0f2fe !important;
+      border-radius: 4px !important;
+    }
+
+    /* Print-only Table styling (active only in printing, taking 100% page width) */
+    .print-table {
+      display: table !important;
+      width: 100% !important;
+      table-layout: fixed !important;
+      border-collapse: collapse !important;
+      font-size: 7.5px !important;
+      border: 1px solid #94a3b8 !important;
+      margin-top: 10px !important;
+    }
+
+    .print-table th,
+    .print-table td {
+      padding: 2px 3px !important;
+      line-height: 1.15 !important;
+      white-space: normal !important;
+      word-break: break-word !important;
+      border: 1px solid #cbd5e1 !important;
+      font-size: 7.5px !important;
+      vertical-align: middle !important;
+    }
+
+    .print-table th {
+      background-color: #003b70 !important;
+      color: #ffffff !important;
+      font-weight: bold !important;
+      text-transform: uppercase !important;
+      text-align: center;
+    }
+
+    .print-table th:first-child,
+    .print-table th:nth-child(2),
+    .print-table th:nth-child(3),
+    .print-table th:nth-child(4) {
+      text-align: left;
+    }
+
+    .print-table td {
+      background-color: #ffffff !important;
+    }
+
+    .print-table td.col-valor-global {
+      background-color: #f0f7ff !important;
+      color: #003b70 !important;
+      font-weight: bold !important;
+    }
+
+    .print-table .row-totais td {
+      background-color: #003b70 !important;
+      color: #ffffff !important;
+      font-weight: bold !important;
+      font-size: 7.5px !important;
+    }
+
+    .print-table .badge,
+    .print-table .fora-vigencia {
+      display: none !important;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content_wrapper_open %}<div class="container-fluid planilha-page-container px-md-4">{% endblock %}
+{% block content_wrapper_close %}</div>{% endblock %}
+
+{% block content %}
+  <div class="print-area">
+    <!-- Header Title & Export Buttons -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between mb-3 gap-3">
+      <div>
+        <h1 class="h4 fw-bold text-dark mb-1"><i class="bi bi-file-earmark-spreadsheet me-2 text-primary"></i>Distribuição Mensal de Contratos</h1>
+        <p class="text-muted small mb-0">Planilha de planejamento financeiro com a distribuição mensal em tempo real de todos os contratos ativos.</p>
+      </div>
+      
+      <!-- Premium Export Action Pack -->
+      <div class="d-flex gap-2">
+        <!-- Imprimir e PDF (Print/A4 Landscape engine integration) -->
+        <button onclick="window.print();" class="btn btn-outline-danger btn-sm rounded-pill fw-bold px-3 d-flex align-items-center gap-1 shadow-sm no-print">
+          <i class="bi bi-file-earmark-pdf-fill"></i> PDF
+        </button>
+        <button onclick="window.print();" class="btn btn-outline-primary btn-sm rounded-pill fw-bold px-3 d-flex align-items-center gap-1 shadow-sm no-print">
+          <i class="bi bi-printer-fill"></i> Imprimir
+        </button>
+        
+        <!-- Excel e CSV -->
+        <a href="?{{ request.GET.urlencode }}&export=excel" class="btn btn-outline-success btn-sm rounded-pill fw-bold px-3 d-flex align-items-center gap-1 shadow-sm no-print">
+          <i class="bi bi-file-earmark-excel-fill"></i> Exportar Excel
+        </a>
+        <a href="?{{ request.GET.urlencode }}&export=csv" class="btn btn-outline-secondary btn-sm rounded-pill fw-bold px-3 d-flex align-items-center gap-1 shadow-sm no-print">
+          <i class="bi bi-file-earmark-text-fill"></i> Exportar CSV
+        </a>
+      </div>
+    </div>
+
+    <!-- Main Planilha Card -->
+    <div class="calc-card">
+      
+      <!-- Filter Bar (Selected Period) -->
+      <div class="filter-bar no-print">
+        <form method="get" class="row g-2 align-items-end">
+          <div class="col-lg-3 col-md-2 col-sm-6">
+            <label class="form-label fw-bold text-muted mb-1" style="font-size: 0.78rem;" for="mes_inicio">Mês Inicial</label>
+            <select name="mes_inicio" id="mes_inicio" class="form-select form-select-sm">
+              {% for num, nome in meses_list %}
+                <option value="{{ num }}" {% if num == mes_inicio %}selected{% endif %}>{{ nome }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-lg-2 col-md-2 col-sm-6">
+            <label class="form-label fw-bold text-muted mb-1" style="font-size: 0.78rem;" for="ano_inicio">Ano Inicial</label>
+            <select name="ano_inicio" id="ano_inicio" class="form-select form-select-sm">
+              {% for ano in anos_list %}
+                <option value="{{ ano }}" {% if ano == ano_inicio %}selected{% endif %}>{{ ano }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-lg-3 col-md-2 col-sm-6">
+            <label class="form-label fw-bold text-muted mb-1" style="font-size: 0.78rem;" for="mes_fim">Mês Final</label>
+            <select name="mes_fim" id="mes_fim" class="form-select form-select-sm">
+              {% for num, nome in meses_list %}
+                <option value="{{ num }}" {% if num == mes_fim %}selected{% endif %}>{{ nome }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-lg-2 col-md-2 col-sm-6">
+            <label class="form-label fw-bold text-muted mb-1" style="font-size: 0.78rem;" for="ano_fim">Ano Final</label>
+            <select name="ano_fim" id="ano_fim" class="form-select form-select-sm">
+              {% for ano in anos_list %}
+                <option value="{{ ano }}" {% if ano == ano_fim %}selected{% endif %}>{{ ano }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-lg-2 col-md-4 d-flex gap-2">
+            <button type="button" id="btn-limpar-filtros" class="btn btn-outline-secondary btn-sm w-100 fw-bold py-1 px-2 d-flex align-items-center justify-content-center gap-1" style="border-radius: 6px; height: 31px;" onclick="limparFiltros()">
+              <i class="bi bi-filter-x" style="font-size: 1.1rem;"></i> Limpar
+            </button>
+            <button type="submit" class="btn btn-primary btn-sm w-100 fw-bold py-1 px-2 d-flex align-items-center justify-content-center gap-1" style="border-radius: 6px; height: 31px; background-color: var(--cm-navy); border-color: var(--cm-navy);">
+              <i class="bi bi-calculator"></i> Calcular
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Sleek banner-like summary bar -->
+      <div class="calc-summary-banner">
+        <div class="summary-banner-item">
+          <i class="bi bi-file-earmark-check"></i>
+          <span>Contratos Ativos: <span class="item-value">{{ dados_tabela|length }}</span></span>
+        </div>
+        <div class="vr text-muted d-none d-sm-block" style="opacity: 0.3;"></div>
+        <div class="summary-banner-item">
+          <i class="bi bi-wallet2"></i>
+          <span>Valor Global Acumulado: <span class="item-value">{{ total_global_acumulado }}</span></span>
+        </div>
+        <div class="vr text-muted d-none d-sm-block" style="opacity: 0.3;"></div>
+        <div class="summary-banner-item">
+          <i class="bi bi-calendar3"></i>
+          <span>Período Selecionado: <span class="item-value">{{ total_meses_periodo }} meses</span></span>
+        </div>
+      </div>
+
+      <!-- Scrollable planilha container (SCREEN ONLY) -->
+      <div class="planilha-container screen-table">
+        <table class="planilha-table">
+          <thead>
+            <tr>
+              <th scope="col" style="min-width: 150px; text-align: left;">Contrato</th>
+              <th scope="col" style="min-width: 220px; text-align: left;">Fornecedor</th>
+              <th scope="col" style="min-width: 200px; text-align: left;">Secretaria</th>
+              <th scope="col" class="text-end col-hdr-valor-global" style="min-width: 150px;">Valor Global</th>
+              {% for col in colunas_meses %}
+                <th scope="col" class="text-end {% if col.is_current %}col-mes-atual{% endif %}" style="min-width: 110px; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.02em;">
+                  {{ col.label_compacto }}
+                  {% if col.is_current %}
+                    <span class="badge bg-primary text-white d-block mt-1 no-print" style="font-size: 0.55rem; padding: 2px 4px;">Mês Atual</span>
+                  {% endif %}
+                </th>
+              {% endfor %}
+            </tr>
+          </thead>
+          <tbody>
+            {% if dados_tabela %}
+              {% for row in dados_tabela %}
+                <tr class="contrato-row"
+                    data-id="{{ row.contrato.id }}"
+                    data-numero="{{ row.numero }}"
+                    data-fornecedor="{{ row.contrato.empresa|default:'-' }}"
+                    data-secretaria="{{ row.secretaria }}"
+                    data-valor-global="{{ row.valor_global }}"
+                    data-data-inicio="{{ row.contrato.data_inicio|date:'d/m/Y' }}"
+                    data-data-fim="{{ row.contrato.data_vencimento|date:'d/m/Y' }}"
+                    data-objeto="{{ row.contrato.objeto|default:'' }}"
+                    data-status="{{ row.contrato.get_status_display }}"
+                    data-processo="{{ row.contrato.processo_administrativo|default:'Não informado' }}"
+                    data-modalidade="{% if row.contrato.numero_pregao %}Pregão nº {{ row.contrato.numero_pregao }}{% else %}Não informada{% endif %}"
+                    data-url-detalhe="{% url 'contratos:detalhe' row.contrato.id %}"
+                    data-url-editar="{% url 'contratos:editar' row.contrato.id %}">
+                  <!-- Sticky first column (contrato) -->
+                  <td class="fw-bold" style="text-align: left;">
+                    <a href="{% url 'contratos:detalhe' row.contrato.id %}" class="text-decoration-none text-navy contrato-link">
+                      {{ row.numero }}
+                    </a>
+                  </td>
+                  <td style="text-align: left;" title="{{ row.fornecedor }}">{{ row.fornecedor|truncatechars:32 }}</td>
+                  <td style="text-align: left;">{{ row.secretaria }}</td>
+                  <!-- Bold highlight for Valor Global column -->
+                  <td class="val-currency col-valor-global">{{ row.valor_global }}</td>
+                  {% for val in row.valores_meses %}
+                    <!-- Highlight cell if corresponding column is current month -->
+                    <td class="val-currency {% if val.is_current %}col-mes-atual{% endif %}">
+                      {% if val.is_active %}
+                        <span class="val-currency-active">{{ val.formatted }}</span>
+                      {% else %}
+                        <span class="badge-fora-vigencia">Fora da vigência</span>
+                      {% endif %}
+                    </td>
+                  {% endfor %}
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="{{ colunas_meses|length|add:4 }}" class="text-center py-5 text-muted">
+                  <i class="bi bi-folder-x fs-2 d-block mb-3" style="color: var(--cm-border);"></i>
+                  Nenhum contrato ativo encontrado com valores orçados na vigência selecionada.
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+          
+          {% if dados_tabela %}
+          <!-- Sticky Totalizer Footer (<tfoot>) aligned perfectly with grid -->
+          <tfoot>
+            <tr class="row-totais">
+              <td style="text-align: left; text-transform: uppercase; letter-spacing: 0.05em; vertical-align: middle;">TOTAL GERAL</td>
+              <td style="text-align: left; text-transform: uppercase; letter-spacing: 0.05em; vertical-align: middle;">POR MÊS</td>
+              <td style="vertical-align: middle;"></td>
+              <td class="val-currency col-valor-global" style="vertical-align: middle; text-align: right;">{{ total_global_acumulado }}</td>
+              {% for total_mes_formatted in valores_totais_rodape %}
+                <td class="val-currency {% for c in colunas_meses %}{% if forloop.counter0 == forloop.parentloop.counter0 and c.is_current %}col-mes-atual{% endif %}{% endfor %}" style="vertical-align: middle;">
+                  {{ total_mes_formatted }}
+                </td>
+              {% endfor %}
+            </tr>
+          </tfoot>
+          {% endif %}
+        </table>
+      </div>
+
+      <!-- Ultra-compact Print-only Table (PRINT ONLY) -->
+      <table class="print-table">
+        <colgroup>
+          <col style="width: 8%;"> <!-- Contrato -->
+          <col style="width: 18%;"> <!-- Fornecedor -->
+          <col style="width: 14%;"> <!-- Secretaria -->
+          <col style="width: 10%;"> <!-- Valor Global -->
+          {% for col in colunas_meses %}
+            <col> <!-- Dynamic month columns distribute remaining 50% evenly -->
+          {% endfor %}
+        </colgroup>
+        <thead>
+          <tr>
+            <th>Contrato</th>
+            <th>Fornecedor</th>
+            <th>Secretaria</th>
+            <th style="text-align: right;">Valor Global</th>
+            {% for col in colunas_meses %}
+              <th style="text-align: right;">{{ col.label_very_compact }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% if dados_tabela %}
+            {% for row in dados_tabela %}
+              <tr>
+                <td class="fw-bold" style="text-align: left;">{{ row.numero }}</td>
+                <td style="text-align: left;">{{ row.fornecedor }}</td>
+                <td style="text-align: left;">{{ row.secretaria }}</td>
+                <td style="text-align: right;" class="col-valor-global">{{ row.valor_global }}</td>
+                {% for val in row.valores_meses %}
+                  <td style="text-align: right;">
+                    {% if val.is_active %}
+                      {{ val.formatted }}
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="row-totais">
+              <td style="text-align: left;">TOTAL GERAL</td>
+              <td style="text-align: left;">POR MÊS</td>
+              <td></td>
+              <td style="text-align: right;" class="col-valor-global">{{ total_global_acumulado }}</td>
+              {% for total_mes_formatted in valores_totais_rodape %}
+                <td style="text-align: right;">{{ total_mes_formatted }}</td>
+              {% endfor %}
+            </tr>
+          </tfoot>
+          {% endif %}
+      </table>
+
+    </div>
+  </div>
+
+<!-- SJB Premium Offcanvas Drawer -->
+<div class="offcanvas offcanvas-end sjb-drawer" tabindex="-1" id="drawerContrato" aria-labelledby="drawerContratoLabel">
+  <div class="offcanvas-header text-white d-flex align-items-center justify-content-between p-3" style="background-color: var(--cm-navy) !important;">
+    <div class="d-flex align-items-center gap-2">
+      <i class="bi bi-file-earmark-spreadsheet-fill text-primary" style="font-size: 1.25rem;"></i>
+      <h5 class="offcanvas-title fw-bold m-0" id="drawerContratoLabel">Visualização do Contrato</h5>
+    </div>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body p-4">
+    <!-- Header Hero Block -->
+    <div class="drawer-hero mb-4 p-3 rounded-3 border-start border-4 border-primary">
+      <div class="d-flex justify-content-between align-items-start mb-2">
+        <span class="badge bg-primary text-white px-2 py-1 fw-bold rounded-pill" id="drawer-badge-numero" style="font-size: 0.72rem;">CONTRATO Nº 00/00</span>
+        <span class="badge text-white px-2 py-1 fw-bold rounded-pill" id="drawer-badge-status" style="font-size: 0.72rem;">ATIVO</span>
+      </div>
+      <h5 class="fw-bold text-navy mb-2" id="drawer-fornecedor">Fornecedor Nome</h5>
+      <p class="text-muted small mb-0 lh-base" id="drawer-objeto">Objeto do contrato...</p>
+    </div>
+
+    <!-- Details Grid -->
+    <h6 class="fw-bold text-muted text-uppercase mb-3" style="font-size: 0.75rem; letter-spacing: 0.05em;">Informações Principais</h6>
+    <div class="row row-cols-2 g-3 mb-4">
+      <div class="col">
+        <div class="drawer-info-item p-2 rounded border bg-white">
+          <label class="d-block text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem;">Secretaria</label>
+          <span class="fw-semibold text-dark" style="font-size: 0.85rem;" id="drawer-secretaria">Secretaria</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="drawer-info-item p-2 rounded border bg-white">
+          <label class="d-block text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem;">Valor Global</label>
+          <span class="fw-bold text-primary" style="font-size: 0.85rem;" id="drawer-valor-global">R$ 0,00</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="drawer-info-item p-2 rounded border bg-white">
+          <label class="d-block text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem;">Início da Vigência</label>
+          <span class="fw-semibold text-dark" style="font-size: 0.85rem;" id="drawer-data-inicio">00/00/0000</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="drawer-info-item p-2 rounded border bg-white">
+          <label class="d-block text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem;">Fim da Vigência</label>
+          <span class="fw-semibold text-dark" style="font-size: 0.85rem;" id="drawer-data-fim">00/00/0000</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="drawer-info-item p-2 rounded border bg-white">
+          <label class="d-block text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem;">Processo Adm.</label>
+          <span class="fw-semibold text-dark" style="font-size: 0.85rem;" id="drawer-processo">0000/2026</span>
+        </div>
+      </div>
+      <div class="col">
+        <div class="drawer-info-item p-2 rounded border bg-white">
+          <label class="d-block text-muted text-uppercase fw-bold mb-1" style="font-size: 0.65rem;">Pregão / Modalidade</label>
+          <span class="fw-semibold text-dark" style="font-size: 0.85rem;" id="drawer-modalidade">Pregão</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Monthly Table Section -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="fw-bold text-muted text-uppercase m-0" style="font-size: 0.75rem; letter-spacing: 0.05em;">Cronograma de Execução</h6>
+      <span class="text-muted fw-semibold" style="font-size: 0.75rem;" id="drawer-total-periodo-label">Período: R$ 0,00</span>
+    </div>
+    <div class="drawer-table-wrapper rounded border bg-white mb-4" style="max-height: 220px; overflow-y: auto;">
+      <table class="table table-sm table-hover align-middle mb-0" style="font-size: 0.78rem;">
+        <thead class="bg-light sticky-top" style="top: 0; z-index: 1;">
+          <tr>
+            <th class="ps-3 py-2 text-muted fw-bold">Mês</th>
+            <th class="py-2 text-end text-muted fw-bold">Valor Previsto</th>
+            <th class="pe-3 py-2 text-center text-muted fw-bold">Situação</th>
+          </tr>
+        </thead>
+        <tbody id="drawer-tbody-valores">
+          <!-- Dynamically populated -->
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="d-grid gap-2 pt-3 border-top">
+      <a href="#" class="btn btn-primary d-flex align-items-center justify-content-center gap-2 fw-bold" id="drawer-btn-completo" style="border-radius: 8px; background-color: var(--cm-navy); border-color: var(--cm-navy);">
+        <i class="bi bi-layout-text-window"></i> Ver contrato completo
+      </a>
+      <a href="#" class="btn btn-outline-secondary d-flex align-items-center justify-content-center gap-2 fw-bold" id="drawer-btn-editar" style="border-radius: 8px;">
+        <i class="bi bi-pencil-square"></i> Editar contrato
+      </a>
+      <button type="button" class="btn btn-light border fw-semibold" data-bs-dismiss="offcanvas" style="border-radius: 8px;">
+        Fechar
+      </button>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    
+    // 1. Delegar eventos de hover e clique ao Planilha Container (.planilha-container)
+    // Isso garante robustez após atualizações parciais de AJAX, sem perder os listeners!
+    const tableContainer = document.querySelector('.planilha-container');
+    if (tableContainer) {
+      
+      // Hover na coluna (efeito de interseção)
+      tableContainer.addEventListener('mouseover', function(e) {
+        const cell = e.target.closest('td, th');
+        if (!cell) return;
+        
+        const index = cell.cellIndex;
+        if (index >= 3) {
+          const table = tableContainer.querySelector('.planilha-table');
+          if (table) {
+            const rows = table.rows;
+            for (let i = 0; i < rows.length; i++) {
+              const rowCell = rows[i].cells[index];
+              if (rowCell && !rows[i].classList.contains('row-totais') && rows[i].parentElement.tagName !== 'THEAD') {
+                rowCell.classList.add('col-hover');
+              }
+            }
+          }
+        }
+      });
+
+      tableContainer.addEventListener('mouseout', function(e) {
+        const cell = e.target.closest('td, th');
+        if (!cell) return;
+        
+        const index = cell.cellIndex;
+        if (index >= 3) {
+          const table = tableContainer.querySelector('.planilha-table');
+          if (table) {
+            const rows = table.rows;
+            for (let i = 0; i < rows.length; i++) {
+              const rowCell = rows[i].cells[index];
+              if (rowCell) {
+                rowCell.classList.remove('col-hover');
+              }
+            }
+          }
+        }
+      });
+
+      // Clique na linha do contrato para abrir o drawer (Offcanvas)
+      tableContainer.addEventListener('click', function(e) {
+        const row = e.target.closest('tr.contrato-row');
+        if (!row) return;
+
+        // Ignora cliques se forem em botões de exportação ou outros links
+        if (e.target.closest('a') && !e.target.closest('.contrato-link')) {
+          return;
+        }
+        
+        // Se clicou no link do número do contrato, previne o comportamento padrão
+        if (e.target.closest('.contrato-link')) {
+          e.preventDefault();
+        }
+        
+        abrirDrawer(row);
+      });
+    }
+
+    // 2. Interceptar submissão do formulário para atualização em tempo real (AJAX)
+    const form = document.querySelector('.filter-bar form');
+    if (form) {
+      form.addEventListener('submit', function(e) {
+        e.preventDefault(); // Impede recarregamento total
+        
+        const formData = new FormData(this);
+        const params = new URLSearchParams(formData).toString();
+        const url = `${window.location.pathname}?${params}`;
+        
+        executeAjaxUpdate(url);
+      });
+    }
+
+    // Função centralizada para executar atualização AJAX parcial
+    function executeAjaxUpdate(url) {
+      // Exibir visual sutil de carregamento se desejar
+      const planillaContainer = document.querySelector('.planilha-container');
+      if (planillaContainer) {
+        planillaContainer.style.opacity = '0.5';
+      }
+
+      fetch(url)
+        .then(response => response.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          
+          // Substituir a tabela visível de tela
+          const newScreenTable = doc.querySelector('.screen-table');
+          const currentScreenTable = document.querySelector('.screen-table');
+          if (newScreenTable && currentScreenTable) {
+            currentScreenTable.innerHTML = newScreenTable.innerHTML;
+            currentScreenTable.style.opacity = '1';
+          }
+
+          // Substituir a tabela oculta de impressão
+          const newPrintTable = doc.querySelector('.print-table');
+          const currentPrintTable = document.querySelector('.print-table');
+          if (newPrintTable && currentPrintTable) {
+            currentPrintTable.innerHTML = newPrintTable.innerHTML;
+          }
+
+          // Substituir a barra de sumário e KPIs superiores
+          const newSummaryBanner = doc.querySelector('.calc-summary-banner');
+          const currentSummaryBanner = document.querySelector('.calc-summary-banner');
+          if (newSummaryBanner && currentSummaryBanner) {
+            currentSummaryBanner.innerHTML = newSummaryBanner.innerHTML;
+          }
+          
+          // Atualizar URL na barra de endereços do navegador (mantendo histórico)
+          window.history.pushState({}, '', url);
+        })
+        .catch(err => {
+          console.error('Erro na atualização AJAX:', err);
+          // Fallback seguro: recarrega a página se o fetch falhar
+          window.location.href = url;
+        });
+    }
+
+    // 3. Função global para limpar filtros de forma AJAX
+    window.limparFiltros = function() {
+      const currentYear = new Date().getFullYear();
+      
+      document.getElementById('mes_inicio').value = '6'; // Padrão: Junho
+      document.getElementById('ano_inicio').value = currentYear;
+      document.getElementById('mes_fim').value = '12'; // Padrão: Dezembro
+      document.getElementById('ano_fim').value = currentYear;
+
+      const baseUrl = window.location.pathname;
+      executeAjaxUpdate(baseUrl);
+    };
+
+    // 4. Detalhamento e população do Drawer Lateral (Offcanvas)
+    function abrirDrawer(row) {
+      const id = row.getAttribute('data-id');
+      const numero = row.getAttribute('data-numero');
+      const fornecedor = row.getAttribute('data-fornecedor');
+      const secretaria = row.getAttribute('data-secretaria');
+      const valorGlobal = row.getAttribute('data-valor-global');
+      const dataInicio = row.getAttribute('data-data-inicio');
+      const dataFim = row.getAttribute('data-data-fim');
+      const objeto = row.getAttribute('data-objeto');
+      const status = row.getAttribute('data-status');
+      const processo = row.getAttribute('data-processo');
+      const modalidade = row.getAttribute('data-modalidade');
+      
+      const urlDetalhe = row.getAttribute('data-url-detalhe');
+      const urlEditar = row.getAttribute('data-url-editar');
+
+      document.getElementById('drawer-badge-numero').innerText = `CONTRATO № ${numero}`;
+      document.getElementById('drawer-fornecedor').innerText = fornecedor || '-';
+      document.getElementById('drawer-objeto').innerText = objeto || 'Sem objeto cadastrado.';
+      document.getElementById('drawer-secretaria').innerText = secretaria || 'Não informado';
+      document.getElementById('drawer-valor-global').innerText = valorGlobal || 'R$ 0,00';
+      document.getElementById('drawer-data-inicio').innerText = dataInicio || '-';
+      document.getElementById('drawer-data-fim').innerText = dataFim || '-';
+      document.getElementById('drawer-processo').innerText = processo || 'Não informado';
+      document.getElementById('drawer-modalidade').innerText = modalidade || 'Não informada';
+
+      document.getElementById('drawer-btn-completo').setAttribute('href', urlDetalhe);
+      document.getElementById('drawer-btn-editar').setAttribute('href', urlEditar);
+
+      const badgeStatus = document.getElementById('drawer-badge-status');
+      badgeStatus.innerText = status.toUpperCase();
+      
+      const statusLower = status.toLowerCase();
+      if (statusLower === 'ativo' || statusLower === 'renovado') {
+        badgeStatus.className = 'badge bg-success text-white px-2 py-1 fw-bold rounded-pill';
+      } else if (statusLower === 'suspenso' || statusLower === 'em renovação' || statusLower === 'próximo do vencimento') {
+        badgeStatus.className = 'badge bg-warning text-dark px-2 py-1 fw-bold rounded-pill';
+      } else {
+        badgeStatus.className = 'badge bg-danger text-white px-2 py-1 fw-bold rounded-pill';
+      }
+
+      const tbody = document.getElementById('drawer-tbody-valores');
+      tbody.innerHTML = '';
+
+      const monthHeaders = [];
+      const theadThs = document.querySelectorAll('.planilha-table thead th');
+      theadThs.forEach((th, index) => {
+        if (index >= 4) {
+          let label = th.innerText.replace('Mês Atual', '').trim();
+          monthHeaders.push(label);
+        }
+      });
+
+      let totalPeriodo = 0;
+      const tds = row.querySelectorAll('td');
+      tds.forEach((td, index) => {
+        if (index >= 4) {
+          const monthLabel = monthHeaders[index - 4];
+          const isOutOfVigencia = td.querySelector('.badge-fora-vigencia') !== null;
+          
+          let valorFormatted = 'R$ 0,00';
+          let situacaoHtml = '';
+          
+          if (!isOutOfVigencia) {
+            const valSpan = td.querySelector('.val-currency-active');
+            if (valSpan) {
+              valorFormatted = valSpan.innerText;
+              let rawNum = parseFloat(valorFormatted.replace('R$', '').replace(/\./g, '').replace(',', '.').trim());
+              if (!isNaN(rawNum)) {
+                totalPeriodo += rawNum;
+              }
+            }
+            situacaoHtml = '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.65rem;">Vigente</span>';
+          } else {
+            situacaoHtml = '<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.65rem;">Fora da vigência</span>';
+          }
+
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="ps-3 py-2 fw-semibold text-navy">${monthLabel}</td>
+            <td class="py-2 text-end fw-semibold text-dark">${valorFormatted}</td>
+            <td class="pe-3 py-2 text-center">${situacaoHtml}</td>
+          `;
+          tbody.appendChild(tr);
+        }
+      });
+
+      const formattedTotalPeriodo = new Intl.NumberFormat('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+      }).format(totalPeriodo);
+
+      document.getElementById('drawer-total-periodo-label').innerText = `Total no Período: ${formattedTotalPeriodo}`;
+
+      const offcanvasEl = document.getElementById('drawerContrato');
+      const bsOffcanvas = new bootstrap.Offcanvas(offcanvasEl);
+      bsOffcanvas.show();
+    }
+  });
+</script>
+{% endblock %}

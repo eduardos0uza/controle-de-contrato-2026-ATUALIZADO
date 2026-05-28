@@ -3,46 +3,151 @@
 
 {% block extra_css %}
 <style>
+    body {
+        background:
+            linear-gradient(180deg, #eaf1fb 0%, #f3f6fb 260px, #f3f6fb 100%);
+    }
+
+    .contract-form-shell {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 24px;
+        position: relative;
+    }
+
+    .contract-form-shell::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 24px;
+        right: 24px;
+        height: 170px;
+        border-radius: 0 0 28px 28px;
+        background:
+            linear-gradient(135deg, rgba(0,59,112,0.96), rgba(37,99,235,0.86)),
+            radial-gradient(circle at 88% 20%, rgba(56,189,248,0.35), transparent 22rem);
+        box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+        z-index: 0;
+    }
+
+    .contract-form-shell > * {
+        position: relative;
+        z-index: 1;
+    }
+
+    .contract-form-main {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
+
     .form-card-elite {
-        background: #ffffff;
-        border-radius: 28px;
-        border: 1px solid #f1f5f9;
-        box-shadow: 0 15px 35px rgba(0, 59, 112, 0.04);
-        padding: 2.5rem;
-        margin-bottom: 2.5rem;
-        transition: all 0.3s ease;
+        background: rgba(255,255,255,0.98);
+        border-radius: 18px;
+        border: 1px solid #dbe5f0;
+        box-shadow: 0 14px 38px rgba(15, 23, 42, 0.08);
+        padding: 0;
+        margin-bottom: 1.25rem;
+        overflow: hidden;
+        transition: box-shadow 0.2s ease, border-color 0.2s ease;
     }
     .form-card-elite:hover {
-        box-shadow: 0 20px 50px rgba(0, 59, 112, 0.06);
+        border-color: #cbd8e6;
+        box-shadow: 0 18px 46px rgba(15, 23, 42, 0.1);
     }
     .section-header-elite {
         display: flex;
         align-items: center;
-        gap: 16px;
-        margin-bottom: 2.5rem;
-        padding-bottom: 1.25rem;
-        border-bottom: 2px solid #f8fafc;
+        gap: 14px;
+        margin-bottom: 0;
+        padding: 1.3rem 1.75rem;
+        border-bottom: 1px solid #edf2f7;
+        background: linear-gradient(180deg, #f8fbff, #ffffff);
+    }
+    .section-header-elite + .row,
+    .form-card-elite > #itens-container,
+    .form-card-elite > .row,
+    .form-card-elite > .d-flex:not(.section-header-elite) {
+        padding: 1.5rem 1.75rem 1.75rem;
     }
     .section-icon-wrapper {
-        width: 48px;
-        height: 48px;
-        background: var(--primary-navy);
+        width: 46px;
+        height: 46px;
+        background: linear-gradient(135deg,#1e3a8a,#2563eb);
         color: white;
         border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
         font-size: 1.2rem;
-        box-shadow: 0 8px 16px rgba(0, 59, 112, 0.2);
+        box-shadow: 0 8px 18px rgba(37,99,235,.18);
+        flex: 0 0 auto;
+    }
+    .section-icon-wrapper.bg-secondary,
+    .section-icon-wrapper.bg-success,
+    .section-icon-wrapper.bg-warning {
+        background: linear-gradient(135deg,#1e3a8a,#2563eb) !important;
     }
     .form-label-elite {
-        font-size: 0.7rem;
-        font-weight: 800;
+        font-size: 12px;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: #94a3b8;
-        margin-bottom: 10px;
+        letter-spacing: .08em;
+        color: #64748b;
+        margin-bottom: 8px;
         display: block;
+    }
+    .form-card-elite .form-control,
+    .form-card-elite .form-select,
+    .item-card-premium .form-control,
+    .item-card-premium .form-select {
+        min-height: 52px;
+        border-radius: 12px !important;
+        border: 2px solid #8ea4bd !important;
+        background-color: #eef4fa !important;
+        color: #0f172a !important;
+        padding: 0 16px !important;
+        font-size: 15px;
+        font-weight: 600;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.06), 0 2px 8px rgba(15, 23, 42, 0.045);
+        transition: border-color .2s ease, box-shadow .2s ease, background-color .2s ease;
+    }
+    .form-card-elite .form-control:hover,
+    .form-card-elite .form-select:hover,
+    .item-card-premium .form-control:hover,
+    .item-card-premium .form-select:hover {
+        border-color: #647b96 !important;
+        background-color: #ffffff !important;
+        box-shadow: inset 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px rgba(15, 23, 42, 0.07);
+    }
+    .form-card-elite .form-control::placeholder,
+    .item-card-premium .form-control::placeholder {
+        color: #8a9ab0;
+        opacity: 1;
+    }
+    .form-card-elite textarea.form-control,
+    .item-card-premium textarea.form-control {
+        min-height: 96px;
+        padding: 14px 16px !important;
+        line-height: 1.45;
+    }
+    .form-card-elite input[type="file"].form-control {
+        padding: 12px 16px !important;
+        height: auto;
+    }
+    .form-card-elite .form-control:focus,
+    .form-card-elite .form-select:focus,
+    .item-card-premium .form-control:focus,
+    .item-card-premium .form-select:focus {
+        border-color: #1d4ed8 !important;
+        box-shadow: 0 0 0 4px rgba(37,99,235,.2), 0 6px 16px rgba(37, 99, 235, 0.12), inset 0 1px 2px rgba(15, 23, 42, 0.03) !important;
+        background: #ffffff !important;
+        outline: none;
+    }
+    .form-card-elite .form-control[readonly],
+    .item-card-premium .form-control[readonly] {
+        background: #dde7f2 !important;
+        border-color: #9fb0c3 !important;
+        color: #334155 !important;
     }
     .btn-save-elite {
         background: linear-gradient(135deg, #003B70 0%, #0056a3 100%) !important;
@@ -61,15 +166,15 @@
         filter: brightness(1.1);
     }
     .item-card-premium {
-        background: #fbfcfe;
-        border: 1px solid #e2e8f0;
-        border-radius: 24px;
-        transition: all 0.3s ease;
+        background: #f8fafc;
+        border: 1px solid #e5e7eb;
+        border-radius: 16px;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     }
     .item-card-premium:hover {
-        background: white;
-        border-color: var(--primary-navy);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        background: #ffffff;
+        border-color: #d8e1ec;
+        box-shadow: 0 10px 28px rgba(15, 23, 42, 0.05);
     }
     .total-footer-elite {
         background: var(--primary-navy);
@@ -79,15 +184,115 @@
         border-radius: 24px;
         box-shadow: 0 15px 40px rgba(0, 59, 112, 0.2);
     }
+    .contract-form-header {
+        margin-bottom: 1.25rem !important;
+        color: #ffffff;
+        min-height: 146px;
+        align-items: center;
+        padding: 24px 18px 24px;
+    }
+    .contract-form-header .breadcrumb a,
+    .contract-form-header .breadcrumb-item,
+    .contract-form-header .breadcrumb-item.active {
+        color: rgba(255,255,255,0.8) !important;
+    }
+    .contract-form-header .breadcrumb-item + .breadcrumb-item::before {
+        color: rgba(255,255,255,0.62);
+    }
+    .contract-form-header h1 {
+        color: #ffffff !important;
+        font-size: clamp(1.9rem, 3vw, 2.8rem);
+        letter-spacing: -0.045em !important;
+    }
+    .contract-form-header h1::after {
+        content: "Cadastro e controle administrativo";
+        display: block;
+        margin-top: 10px;
+        color: rgba(255,255,255,0.74);
+        font-size: 0.88rem;
+        font-weight: 700;
+        letter-spacing: 0;
+        line-height: 1.25;
+    }
+    .contract-back-btn {
+        border-color: rgba(255,255,255,0.22) !important;
+        background: rgba(255,255,255,0.16) !important;
+        color: #ffffff !important;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.16) !important;
+    }
+    .contract-back-btn i {
+        color: #ffffff !important;
+    }
+    .file-upload-panel {
+        background: #f8fafc !important;
+        border: 1px dashed #cbd5e1 !important;
+        border-radius: 16px !important;
+    }
+    @media (max-width: 991.98px) {
+        .contract-form-shell {
+            padding: 18px;
+        }
+        .contract-form-shell::before {
+            left: 18px;
+            right: 18px;
+            height: 178px;
+        }
+        .form-card-elite {
+            border-radius: 16px;
+        }
+        .section-header-elite,
+        .section-header-elite + .row,
+        .form-card-elite > #itens-container,
+        .form-card-elite > .row,
+        .form-card-elite > .d-flex:not(.section-header-elite) {
+            padding-left: 1.25rem;
+            padding-right: 1.25rem;
+        }
+    }
+    @media (max-width: 767.98px) {
+        .contract-form-shell {
+            padding: 14px;
+        }
+        .contract-form-shell::before {
+            left: 14px;
+            right: 14px;
+            height: 214px;
+        }
+        .contract-form-header {
+            min-height: 178px;
+            padding-inline: 8px;
+        }
+        .contract-form-header .col-12 {
+            gap: 14px !important;
+        }
+        .section-header-elite {
+            align-items: flex-start;
+        }
+        .section-header-elite h5 {
+            font-size: 1rem;
+            line-height: 1.25;
+        }
+        .form-card-elite .form-control,
+        .form-card-elite .form-select,
+        .item-card-premium .form-control,
+        .item-card-premium .form-select {
+            min-height: 50px;
+            font-size: 14px;
+        }
+        .btn-save-elite {
+            width: 100%;
+            padding-inline: 1.25rem !important;
+        }
+    }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="container py-4">
+<div class="contract-form-shell">
     <!-- Header de Navegação -->
-    <div class="row mb-5 no-print">
+    <div class="row contract-form-header no-print">
         <div class="col-12 d-flex align-items-center gap-4">
-            <a href="{% url 'contratos:lista' %}" class="btn btn-white border shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center card-hover" style="width: 54px; height: 54px; min-width: 54px; background: white;">
+            <a href="{% url 'contratos:lista' %}" class="btn btn-white border shadow-sm rounded-circle p-0 d-flex align-items-center justify-content-center card-hover contract-back-btn" style="width: 54px; height: 54px; min-width: 54px; background: white;">
                 <i class="bi bi-arrow-left fs-4 text-navy"></i>
             </a>
             <div>
@@ -106,7 +311,7 @@
         {% csrf_token %}
         
         <div class="row justify-content-center">
-            <div class="col-lg-10">
+            <div class="col-12 contract-form-main">
                 
                 <!-- Sessão 1: Identificação Fundamental -->
                 <div class="form-card-elite">
@@ -118,12 +323,17 @@
                     </div>
                     
                     <div class="row g-4">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <label for="{{ form.numero_contrato.id_for_label }}" class="form-label-elite">Nº Contrato (Gabinete)</label>
                             {{ form.numero_contrato }}
                             {% if form.numero_contrato.errors %}<div class="invalid-feedback d-block">{{ form.numero_contrato.errors }}</div>{% endif %}
                         </div>
-                        <div class="col-md-8">
+                        <div class="col-md-4">
+                            <label for="{{ form.secretaria.id_for_label }}" class="form-label-elite">Secretaria / Setor Responsável</label>
+                            {{ form.secretaria }}
+                            {% if form.secretaria.errors %}<div class="invalid-feedback d-block">{{ form.secretaria.errors }}</div>{% endif %}
+                        </div>
+                        <div class="col-md-5">
                             <label for="{{ form.empresa.id_for_label }}" class="form-label-elite">Empresa / Fornecedor Selecionado</label>
                             {{ form.empresa }}
                             {% if form.empresa.errors %}<div class="invalid-feedback d-block">{{ form.empresa.errors }}</div>{% endif %}
@@ -311,7 +521,7 @@
                             {{ form.responsavel }}
                         </div>
                         <div class="col-12 mt-4">
-                            <div class="p-4 bg-light rounded-4 border border-dashed text-center">
+                            <div class="p-4 bg-light rounded-4 border border-dashed text-center file-upload-panel">
                                 <label for="{{ form.arquivo.id_for_label }}" class="form-label-elite d-block mb-3">Arquivo Original do Contrato (Digitalizado)</label>
                                 <div class="d-inline-block">
                                     {{ form.arquivo }}

@@ -28,14 +28,17 @@
         font-family: 'Outfit', sans-serif;
     }
 
+    .ops-shell {
+        margin-inline: auto;
+        max-width: 100%;
+        width: 100%;
+    }
+
     .ops-page {
         color: var(--ops-ink);
         display: grid;
         gap: 32px;
-        padding: 20px;
-        max-width: 1600px;
-        margin: 0 auto;
-        overflow-x: hidden;
+        width: 100%;
     }
 
     .ops-hero {
@@ -58,6 +61,8 @@
         background-image: radial-gradient(circle at 2px 2px, rgba(255,255,255,0.05) 1px, transparent 0);
         background-size: 24px 24px;
         opacity: 1;
+        pointer-events: none;
+        z-index: 0;
     }
 
     .ops-hero::after {
@@ -67,6 +72,11 @@
         background: radial-gradient(circle, rgba(54, 183, 215, 0.1) 0%, transparent 70%);
         z-index: 1;
         pointer-events: none;
+    }
+
+    .ops-hero > * {
+        position: relative;
+        z-index: 2;
     }
 
     .ops-hero-content {
@@ -115,17 +125,57 @@
         display: flex;
         flex-wrap: wrap;
         gap: 12px;
+        position: relative;
+        z-index: 3;
     }
 
     .ops-btn {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
+        min-height: 48px;
         padding: 12px 24px;
         border-radius: 12px;
+        border: 0;
+        cursor: pointer;
         font-weight: 600;
-        transition: all 0.2s ease;
+        line-height: 1;
+        position: relative;
         text-decoration: none;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, opacity 0.18s ease;
+        user-select: none;
+        white-space: nowrap;
+    }
+
+    .ops-btn i {
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    .ops-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(37,99,235,.15);
+    }
+
+    .ops-btn:focus-visible {
+        outline: 3px solid rgba(96, 165, 250, 0.55);
+        outline-offset: 3px;
+    }
+
+    .ops-btn.is-loading {
+        cursor: wait;
+        opacity: 0.68;
+        pointer-events: none;
+        transform: none;
+    }
+
+    .ops-btn.is-loading i {
+        animation: ops-spin 0.8s linear infinite;
+    }
+
+    @keyframes ops-spin {
+        to { transform: rotate(360deg); }
     }
 
     .ops-btn-primary {
@@ -136,7 +186,6 @@
 
     .ops-btn-primary:hover {
         background: #f8fafc;
-        transform: translateY(-2px);
         box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
@@ -318,6 +367,17 @@
         box-shadow: 0 20px 40px -15px rgba(6, 35, 63, 0.08);
     }
 
+    .radar-card {
+        background:
+            radial-gradient(circle at 0% 0%, rgba(54,183,215,0.08), transparent 22rem),
+            #f7fbfd;
+        overflow: hidden;
+    }
+
+    .radar-card .ops-card-head {
+        background: linear-gradient(180deg, #ffffff, #f8fbfd);
+    }
+
     .ops-card-head {
         padding: 32px;
         border-bottom: 1px solid #f8fafc;
@@ -407,35 +467,55 @@
         overflow: hidden;
     }
 
+    .ops-table-wrap {
+        background: #f7fbfd;
+        padding: 12px;
+    }
+
     .ops-table {
         width: 100%;
-        border-collapse: collapse;
+        border-collapse: separate;
+        border-spacing: 0 8px;
+        table-layout: fixed;
     }
 
     .ops-table th {
-        background: #f8fafc;
-        padding: 16px 24px;
+        background: transparent;
+        padding: 4px 14px 8px;
         text-align: left;
-        font-size: 0.75rem;
-        font-weight: 700;
+        font-size: 0.68rem;
+        font-weight: 950;
         text-transform: uppercase;
         color: var(--ops-muted);
-        letter-spacing: 0.05em;
+        letter-spacing: 0.09em;
     }
 
     .ops-table td {
-        padding: 16px 24px;
-        border-bottom: 1px solid #f8fafc;
+        background: #ffffff;
+        border-bottom: 1px solid var(--ops-line);
+        border-top: 1px solid var(--ops-line);
+        padding: 13px 14px;
         vertical-align: middle;
+        overflow-wrap: anywhere;
     }
 
+    .ops-table td:first-child { border-left: 1px solid var(--ops-line); border-radius: 17px 0 0 17px; }
+    .ops-table td:last-child { border-right: 1px solid var(--ops-line); border-radius: 0 17px 17px 0; }
+
+    .ops-table th:nth-child(1), .ops-table td:nth-child(1) { width: 24%; padding-left: 24px; }
+    .ops-table th:nth-child(2), .ops-table td:nth-child(2) { width: 22%; }
+    .ops-table th:nth-child(3), .ops-table td:nth-child(3) { width: 15%; }
+    .ops-table th:nth-child(4), .ops-table td:nth-child(4) { width: 17%; }
+    .ops-table th:nth-child(5), .ops-table td:nth-child(5) { width: 22%; padding-right: 24px; }
+
     .ops-table tr {
-        transition: all 0.2s ease;
+        transition: filter 160ms ease, transform 160ms ease;
         cursor: pointer;
     }
 
     .ops-table tr:hover {
-        background: #fcfdfe;
+        filter: drop-shadow(0 12px 20px rgba(6,35,63,0.08));
+        transform: translateY(-1px);
     }
 
     .contract-info {
@@ -445,11 +525,22 @@
     }
 
     .contract-code {
+        align-items: center;
         font-weight: 700;
         color: var(--ops-navy);
+        display: inline-flex;
+        gap: 10px;
         text-decoration: none;
         font-size: 0.95rem;
         transition: color 0.2s;
+    }
+
+    .contract-code::before {
+        background: linear-gradient(180deg, var(--ops-navy), var(--ops-blue));
+        border-radius: 99px;
+        content: "";
+        height: 28px;
+        width: 4px;
     }
 
     .contract-code:hover {
@@ -463,21 +554,29 @@
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        max-width: 300px;
+        max-width: 100%;
     }
 
     .owner-chip {
         display: inline-flex;
         align-items: center;
         gap: 10px;
-        padding: 6px 14px;
-        background: #f1f5f9;
-        border-radius: 12px;
+        padding: 6px 12px;
+        background: #f1f6fa;
+        border-radius: 999px;
         font-size: 0.85rem;
         font-weight: 600;
         color: var(--ops-navy);
-        border: 1px solid transparent;
+        border: 1px solid var(--ops-line);
         transition: all 0.2s;
+        max-width: 100%;
+    }
+
+    .owner-chip strong {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     .ops-table tr:hover .owner-chip {
@@ -491,7 +590,7 @@
         height: 24px;
         background: var(--ops-blue);
         color: white;
-        border-radius: 6px;
+        border-radius: 9px;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -503,12 +602,12 @@
         display: inline-flex;
         align-items: center;
         gap: 8px;
-        padding: 8px 16px;
-        border-radius: 12px;
+        padding: 7px 12px;
+        border-radius: 999px;
         font-size: 0.75rem;
         font-weight: 700;
-        background: #ffffff;
-        border: 1px solid #eef2f6;
+        background: #f9fbfd;
+        border: 1px solid var(--ops-line);
         box-shadow: 0 2px 4px rgba(0,0,0,0.02);
         color: var(--ops-navy);
     }
@@ -536,37 +635,184 @@
         font-size: 0.9rem;
     }
 
+    .radar-link {
+        align-items: center;
+        background: #ffffff;
+        border: 1px solid var(--ops-line);
+        border-radius: 999px;
+        color: var(--ops-navy);
+        display: inline-flex;
+        font-weight: 900;
+        gap: 8px;
+        padding: 10px 16px;
+        text-decoration: none;
+    }
+
+    .radar-link:hover {
+        background: var(--ops-navy);
+        border-color: var(--ops-navy);
+        color: #ffffff;
+    }
+
     @media (max-width: 1024px) {
         .ops-kpi-grid { grid-template-columns: repeat(2, 1fr); }
         .ops-grid { grid-template-columns: 1fr; }
+        .ops-table th:nth-child(2), .ops-table td:nth-child(2) { display: none; }
+        .ops-table th:nth-child(1), .ops-table td:nth-child(1) { width: 27%; }
+        .ops-table th:nth-child(3), .ops-table td:nth-child(3) { width: 19%; }
+        .ops-table th:nth-child(4), .ops-table td:nth-child(4) { width: 22%; }
+        .ops-table th:nth-child(5), .ops-table td:nth-child(5) { width: 32%; }
+    }
+
+    @media (max-width: 860px) {
+        .ops-card { overflow: visible; }
+        .ops-card-head { align-items: flex-start; flex-direction: column; gap: 14px; padding: 24px; }
+        .ops-table-wrap { padding: 0 12px 14px; }
+        .ops-table, .ops-table tbody, .ops-table tr, .ops-table td { display: block; width: 100% !important; }
+        .ops-table thead { display: none; }
+        .ops-table tbody { display: grid; gap: 14px; }
+        .ops-table tbody tr {
+            background: linear-gradient(180deg, #ffffff 0%, #f9fcfe 100%);
+            border: 1px solid var(--ops-line);
+            border-radius: 20px;
+            box-shadow: 0 12px 26px rgba(6,35,63,0.07);
+            display: grid;
+            overflow: hidden;
+            padding: 14px;
+        }
+        .ops-table td {
+            align-items: center;
+            border-bottom: 1px solid #edf3f8;
+            display: flex !important;
+            gap: 14px;
+            justify-content: space-between;
+            padding: 11px 0 !important;
+            text-align: right !important;
+        }
+        .ops-table td::before {
+            color: var(--ops-muted);
+            content: attr(data-label);
+            flex: 0 0 96px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-align: left;
+            text-transform: uppercase;
+        }
+        .ops-table td:first-child {
+            align-items: flex-start;
+            display: block !important;
+            text-align: left !important;
+        }
+        .ops-table td:first-child::before { display: none; }
+        .contract-code { font-size: 1.18rem; }
+        .contract-sub { font-size: 0.86rem; white-space: normal; }
+        .owner-chip, .alert-chip, .time-badge { justify-content: flex-end; text-align: right; }
+        .ops-table td:last-child { border-bottom: 0; }
     }
 
     @media (max-width: 768px) {
         .ops-hero { grid-template-columns: 1fr; padding: 32px; }
+        .ops-actions { display: grid; grid-template-columns: 1fr; }
+        .ops-btn { width: 100%; }
         .ops-kpi-grid { grid-template-columns: 1fr; }
-        .ops-page { padding: 12px; gap: 20px; }
+        .ops-page { gap: 20px; }
     }
 
     @media print {
-        .no-print, .navbar-elite, .footer-elite { display: none !important; }
-        body { background: #fff !important; }
-        .ops-card, .ops-kpi, .ops-hero { box-shadow: none !important; }
+        @page { margin: 14mm; }
+        html, body {
+            background: #fff !important;
+            color: #111827 !important;
+            font-size: 11pt;
+        }
+        .navbar-top-strip,
+        .navbar-elite,
+        .footer-elite,
+        .ops-actions,
+        .radar-link,
+        .no-print,
+        button,
+        [role="button"] {
+            display: none !important;
+        }
+        .container-fluid {
+            padding: 0 !important;
+            width: 100% !important;
+        }
+        .ops-page {
+            display: block !important;
+            gap: 0 !important;
+        }
+        .ops-hero,
+        .ops-card,
+        .ops-kpi,
+        .ops-table td {
+            background: #fff !important;
+            color: #111827 !important;
+            box-shadow: none !important;
+            border-color: #d1d5db !important;
+        }
+        .ops-hero {
+            display: block !important;
+            border: 1px solid #d1d5db !important;
+            padding: 18px !important;
+            margin-bottom: 14px !important;
+        }
+        .ops-hero::before,
+        .ops-hero::after {
+            display: none !important;
+        }
+        .ops-title {
+            color: #111827 !important;
+            -webkit-text-fill-color: #111827 !important;
+            background: none !important;
+        }
+        .ops-lead,
+        .ops-kicker,
+        .ops-signal span,
+        .ops-card-head p {
+            color: #4b5563 !important;
+        }
+        .ops-kpi-grid,
+        .ops-grid {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 10px !important;
+            margin-bottom: 12px !important;
+        }
+        .ops-card,
+        .ops-kpi {
+            break-inside: avoid;
+            page-break-inside: avoid;
+            border: 1px solid #d1d5db !important;
+            margin-bottom: 10px !important;
+        }
+        .ops-card-head,
+        .ops-card-body {
+            padding: 12px !important;
+        }
     }
 </style>
 {% endblock %}
 
+{% block content_wrapper_open %}
+<div class="container-fluid py-4 py-lg-5 px-2 px-sm-3 px-xxl-4">
+{% endblock %}
+
 {% block content %}
+<div class="ops-shell">
 <div class="ops-page">
-    <section class="ops-hero no-print">
+    <section class="ops-hero">
         <div>
             <div class="ops-kicker">Monitoramento municipal</div>
             <h1 class="ops-title">Contratos sob controle, sem ruído.</h1>
             <p class="ops-lead">Uma visão executiva para identificar prazos críticos, acompanhar alertas e agir antes que o vencimento vire problema administrativo.</p>
-            <div class="ops-actions">
-                <a href="{% url 'contratos:lista' %}" class="ops-btn ops-btn-primary"><i class="bi bi-search"></i> Abrir central</a>
-                <a href="{% url 'contratos:relatorios' %}" class="ops-btn ops-btn-ghost"><i class="bi bi-graph-up-arrow"></i> Ver relatórios</a>
-                <button onclick="window.print()" class="ops-btn ops-btn-ghost" type="button"><i class="bi bi-printer"></i> Imprimir resumo</button>
-                <a href="{% url 'contratos:criar' %}" class="ops-btn ops-btn-ghost"><i class="bi bi-plus-lg"></i> Novo contrato</a>
+            <div class="ops-actions" aria-label="Ações rápidas do dashboard">
+                <a href="{% url 'contratos:lista' %}" class="ops-btn ops-btn-primary" data-dashboard-action="navigate" data-loading-label="Abrindo..." aria-label="Abrir a central de contratos" title="Abrir central de contratos"><i class="bi bi-search" aria-hidden="true"></i><span>Abrir central</span></a>
+                <a href="{% url 'contratos:relatorios' %}" class="ops-btn ops-btn-ghost" data-dashboard-action="navigate" data-loading-label="Abrindo..." aria-label="Ver relatórios BI de contratos" title="Ver relatórios BI"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i><span>Ver relatórios</span></a>
+                <button class="ops-btn ops-btn-ghost" type="button" data-dashboard-action="print" data-loading-label="Preparando..." aria-label="Imprimir resumo do dashboard" title="Imprimir resumo"><i class="bi bi-printer" aria-hidden="true"></i><span>Imprimir resumo</span></button>
+                <a href="{% url 'contratos:criar' %}" class="ops-btn ops-btn-ghost" data-dashboard-action="navigate" data-loading-label="Abrindo..." aria-label="Criar novo contrato" title="Novo contrato"><i class="bi bi-plus-lg" aria-hidden="true"></i><span>Novo contrato</span></a>
             </div>
         </div>
         <aside class="ops-hero-panel" aria-label="Sinais do sistema">
@@ -651,13 +897,13 @@
         </div>
     </section>
 
-    <section class="ops-card">
+    <section class="ops-card radar-card">
         <div class="ops-card-head">
             <div>
                 <h2>Radar dos próximos vencimentos</h2>
                 <p>Contratos ordenados pela urgência de prazo.</p>
             </div>
-            <a href="{% url 'contratos:lista' %}?sort=dias_restantes&direction=asc" class="btn btn-light border rounded-pill fw-bold px-4 no-print">Ver base completa <i class="bi bi-arrow-right ms-1"></i></a>
+            <a href="{% url 'contratos:lista' %}?sort=dias_restantes&direction=asc" class="radar-link no-print">Ver base completa <i class="bi bi-arrow-right"></i></a>
         </div>
         <div class="ops-table-wrap">
             <table class="ops-table">
@@ -673,13 +919,13 @@
                 <tbody>
                     {% for contrato in proximos_vencimento %}
                     <tr data-detail-url="{% url 'contratos:detalhe' contrato.id %}">
-                        <td>
+                        <td data-label="Contrato">
                             <div class="contract-info">
                                 <a href="{% url 'contratos:detalhe' contrato.id %}" class="contract-code">{{ contrato.numero_contrato }}</a>
                                 <span class="contract-sub" title="{{ contrato.empresa|default:contrato.objeto }}">{{ contrato.empresa|default:contrato.objeto|default:"Contrato sem descrição" }}</span>
                             </div>
                         </td>
-                        <td>
+                        <td data-label="Responsavel">
                             {% if contrato.responsavel %}
                             <span class="owner-chip">
                                 <span class="owner-avatar">{{ contrato.responsavel|slice:":1"|upper }}</span>
@@ -689,8 +935,8 @@
                             <span class="text-muted small fw-bold">Não atribuído</span>
                             {% endif %}
                         </td>
-                        <td><span class="date-cell">{{ contrato.data_vencimento|date:"d/m/Y" }}</span></td>
-                        <td>
+                        <td data-label="Data limite"><span class="date-cell">{{ contrato.data_vencimento|date:"d/m/Y" }}</span></td>
+                        <td data-label="Tempo">
                             {% if contrato.dias_restantes == None %}
                                 <span class="text-muted small fw-bold">Sem data</span>
                             {% elif contrato.dias_restantes < 0 %}
@@ -703,7 +949,7 @@
                                 <span class="time-badge"><i class="bi bi-calendar-check"></i> {{ contrato.dias_restantes }} dias</span>
                             {% endif %}
                         </td>
-                        <td class="text-end">
+                        <td class="text-end" data-label="Alerta">
                             <span class="alert-chip" title="{{ contrato.alerta_info.description }}">
                                 <span class="risk-dot" style="background: {{ contrato.alerta_info.color }};"></span>
                                 {{ contrato.alerta_info.label }}
@@ -717,6 +963,7 @@
             </table>
         </div>
     </section>
+</div>
 </div>
 
     <div class="modal fade" id="modalDetalhe" tabindex="-1" aria-labelledby="modalDetalheLabel" aria-hidden="true">
@@ -742,6 +989,54 @@ document.addEventListener('DOMContentLoaded', function() {
     const modalEl = document.getElementById('modalDetalhe');
     const modalContent = document.getElementById('modalContent');
     const modalLoading = document.getElementById('modalLoading');
+
+    function setButtonLoading(button, isLoading) {
+        if (!button) return;
+        const label = button.querySelector('span');
+        if (isLoading) {
+            button.dataset.originalLabel = label ? label.textContent : button.textContent.trim();
+            if (label && button.dataset.loadingLabel) label.textContent = button.dataset.loadingLabel;
+            button.classList.add('is-loading');
+            button.setAttribute('aria-busy', 'true');
+            if (button.tagName === 'BUTTON') button.disabled = true;
+            return;
+        }
+        if (label && button.dataset.originalLabel) label.textContent = button.dataset.originalLabel;
+        button.classList.remove('is-loading');
+        button.removeAttribute('aria-busy');
+        if (button.tagName === 'BUTTON') button.disabled = false;
+    }
+
+    document.querySelectorAll('[data-dashboard-action]').forEach(button => {
+        button.addEventListener('click', event => {
+            const action = button.dataset.dashboardAction;
+            if (button.classList.contains('is-loading')) {
+                event.preventDefault();
+                return;
+            }
+
+            if (action === 'print') {
+                event.preventDefault();
+                setButtonLoading(button, true);
+                window.setTimeout(() => {
+                    window.print();
+                    window.setTimeout(() => setButtonLoading(button, false), 350);
+                }, 120);
+                return;
+            }
+
+            if (action === 'navigate') {
+                setButtonLoading(button, true);
+            }
+        });
+
+        button.addEventListener('keydown', event => {
+            if ((event.key === 'Enter' || event.key === ' ') && button.tagName !== 'A') {
+                event.preventDefault();
+                button.click();
+            }
+        });
+    });
 
     if (modalEl && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
         const modal = new bootstrap.Modal(modalEl);

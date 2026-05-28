@@ -14,7 +14,7 @@
         :root {
             --primary-navy: #003B70;
             --accent-blue: #38bdf8;
-            --soft-bg: #f8fafc;
+            --soft-bg: #f3f6fb;
             --glass-white: rgba(255, 255, 255, 0.95);
             
             /* Cores de Alerta do Sistema */
@@ -31,10 +31,24 @@
             flex-direction: column;
         }
         .navbar-elite {
-            background: white;
-            box-shadow: 0 4px 15px rgba(0, 59, 112, 0.05);
-            padding: 0.6rem 0;
-            border-bottom: 1px solid #f1f5f9;
+            min-height: 78px;
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.96), rgba(248,251,255,0.94));
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+            padding: 0.55rem 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .navbar-elite::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #003b70 0%, #2563eb 42%, #38bdf8 100%);
+            opacity: 0.72;
         }
         .navbar-top-strip {
             height: 4px;
@@ -54,46 +68,84 @@
         .navbar-brand-logo {
             height: 50px;
             width: auto;
-            border-radius: 10px;
+            border-radius: 12px;
             padding: 2px;
             background: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #e5edf6;
+            box-shadow: 0 10px 24px rgba(15, 23, 42, 0.1);
+        }
+        .navbar-brand {
+            border-radius: 18px;
+            padding: 6px 10px 6px 6px;
+            transition: background .2s ease, box-shadow .2s ease;
+        }
+        .navbar-brand:hover {
+            background: rgba(239, 246, 255, 0.7);
         }
         .nav-link-elite {
-            font-weight: 600;
-            color: #64748b;
-            padding: 0.75rem 1.5rem !important;
-            border-radius: 14px;
-            margin: 0 8px;
+            font-weight: 700;
+            color: #52637a;
+            padding: 0.72rem 1.05rem !important;
+            border-radius: 12px;
+            margin: 0 3px;
             transition: all 0.2s ease;
             display: flex;
             align-items: center;
-            gap: 12px;
-            font-size: 1.1rem;
+            gap: 10px;
+            font-size: 0.98rem;
+            border: 1px solid transparent;
+            position: relative;
+        }
+        .nav-link-elite i {
+            color: #64748b;
+            font-size: 1.05rem;
+            transition: color .2s ease, transform .2s ease;
         }
         .nav-link-elite:hover {
-            color: var(--primary-navy);
-            background: rgba(0, 59, 112, 0.04);
+            color: #2563eb;
+            background: #f8fbff;
+            border-color: #dbeafe;
+            box-shadow: 0 8px 18px rgba(37, 99, 235, 0.08);
+        }
+        .nav-link-elite:hover i {
+            color: #2563eb;
+            transform: translateY(-1px);
         }
         .nav-link-elite.active {
-            color: var(--primary-navy) !important;
-            background: rgba(0, 59, 112, 0.08);
+            color: #0f3f8a !important;
+            background: linear-gradient(180deg, #eff6ff, #e8f1ff);
+            border-color: #bfdbfe;
+            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.13), inset 0 1px 0 rgba(255,255,255,0.9);
+        }
+        .nav-link-elite.active i {
+            color: #2563eb;
+        }
+        .nav-link-elite.active::after {
+            content: "";
+            position: absolute;
+            left: 14px;
+            right: 14px;
+            bottom: -8px;
+            height: 3px;
+            border-radius: 99px;
+            background: #2563eb;
         }
         .user-dropdown-elite {
-            border: 1px solid #e2e8f0;
+            border: 1px solid #dbe2ea;
             border-radius: 50px;
             padding: 8px 20px 8px 8px;
-            background: white;
+            background: rgba(255,255,255,0.95);
             transition: all 0.2s;
+            box-shadow: 0 8px 22px rgba(15, 23, 42, 0.05);
         }
         .user-dropdown-elite:hover {
-            border-color: var(--primary-navy);
-            box-shadow: 0 4px 12px rgba(0, 59, 112, 0.08);
+            border-color: #bfdbfe;
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.1);
         }
         .avatar-circle {
             width: 44px;
             height: 44px;
-            background: var(--primary-navy);
+            background: linear-gradient(135deg, #003b70, #0b5fb3);
             color: white;
             border-radius: 50%;
             display: flex;
@@ -101,6 +153,7 @@
             justify-content: center;
             font-weight: 800;
             font-size: 1.1rem;
+            box-shadow: 0 8px 18px rgba(0, 59, 112, 0.22);
         }
         
         /* Novo Rodapé */
@@ -342,8 +395,13 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link-elite {% if 'lista' in request.path or 'detalhe' in request.path %}active{% endif %}" href="{% url 'contratos:lista' %}">
+                    <a class="nav-link-elite {% if '/contratos/' in request.path and 'dashboard' not in request.path %}active{% endif %}" href="{% url 'contratos:lista' %}">
                         <i class="bi bi-file-earmark-text-fill"></i>Central de Contratos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link-elite {% if 'controle-mensal' in request.path %}active{% endif %}" href="{% url 'contratos:controle_mensal_dashboard' %}">
+                        <i class="bi bi-calendar2-check-fill"></i>Controle Mensal
                     </a>
                 </li>
                 <li class="nav-item">

@@ -13,6 +13,11 @@ class ContractStatus(models.TextChoices):
     ATIVO = 'ativo', 'Ativo'
     SUSPENSO = 'suspenso', 'Suspenso'
     ENCERRADO = 'encerrado', 'Encerrado'
+    VENCENDO = 'vencendo', 'Próximo do Vencimento'
+    RENOVACAO = 'renovacao', 'Em Renovação'
+    RENOVADO = 'renovado', 'Renovado'
+    EXPIRADO = 'expirado', 'Expirado'
+    CANCELADO = 'cancelado', 'Cancelado'
 
 
 class AlertStatus(models.TextChoices):
@@ -48,6 +53,7 @@ class Contract(models.Model):
     arquivo = models.FileField(upload_to='contratos/', blank=True, null=True, verbose_name="Arquivo do Contrato")
     dias_restantes = models.IntegerField(default=0)
     alerta = models.CharField(max_length=20, choices=AlertStatus.choices, default=AlertStatus.NORMAL)
+    renovacao_automatica = models.BooleanField(default=False, verbose_name="Renovação Automática")
     criado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='contratos_criados', verbose_name="Criado por")
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
@@ -196,8 +202,11 @@ class ContractItem(models.Model):
                 pass
              
              # Taxa e Desconto agora são porcentagens
-             valor_taxa = total * ((self.taxa_servico or 0) / 100)
-             valor_desconto = total * ((self.desconto or 0) / 100)
+             from decimal import Decimal
+             val_taxa_pct = self.taxa_servico if self.taxa_servico is not None else Decimal('0')
+             val_desc_pct = self.desconto if self.desconto is not None else Decimal('0')
+             valor_taxa = total * (val_taxa_pct / Decimal('100'))
+             valor_desconto = total * (val_desc_pct / Decimal('100'))
              
              total = total + valor_taxa - valor_desconto
              self.valor_total = total
@@ -224,3 +233,217 @@ class ContractHistory(models.Model):
 
     def __str__(self):
         return f'{self.contrato.numero_contrato} - {self.get_acao_display()} - {self.alterado_em:%Y-%m-%d %H:%M}'
+
+
+class ContractNotification(models.Model):
+    LEVEL_CHOICES = [
+        ('INFO', 'Informação'),
+        ('WARNING', 'Aviso'),
+        ('CRITICAL', 'Crítico'),
+    ]
+    
+    contrato = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name='notificacoes')
+    mensagem = models.CharField(max_length=255)
+    nivel = models.CharField(max_length=10, choices=LEVEL_CHOICES, default='INFO')
+    lida = models.BooleanField(default=False)
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-data_criacao']
+
+    def __str__(self):
+        return f"Notificação: {self.contrato.numero_contrato} - {self.mensagem}"
+
+
+class ContractRenewal(models.Model):
+    contrato = models.ForeignKey(Contract, on_delete=models.CASCADE, related_name='renovacoes')
+    responsavel = models.ForeignKey(User, null=True, on_delete=models.SET_NULL, related_name='renovacoes_realizadas')
+    data_renovacao = models.DateTimeField(auto_now_add=True)
+    vencimento_anterior = models.DateField()
+    vencimento_novo = models.DateField()
+    valor_anterior = models.DecimalField(decimal_places=2, max_digits=12)
+    valor_novo = models.DecimalField(decimal_places=2, max_digits=12)
+    tipo_renovacao = models.CharField(max_length=20, choices=[('ADITIVO', 'Termo Aditivo'), ('RENOVACAO', 'Renovação'), ('PRORROGACAO', 'Prorrogação')])
+    observacoes = models.TextField(blank=True, null=True)
+    documento = models.FileField(blank=True, null=True, upload_to='renovacoes/')
+
+    class Meta:
+        verbose_name = 'Renovação de Contrato'
+        verbose_name_plural = 'Renovações de Contrato'
+        ordering = ['-data_renovacao']
+
+    def __str__(self):
+        return f"Renovação: {self.contrato.numero_contrato} - {self.data_renovacao}"
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# CONTROLE MENSAL DE EXECUÇÃO CONTRATUAL
+# ─────────────────────────────────────────────────────────────────────────────
+
+class StatusMensal(models.TextChoices):
+    PENDENTE  = 'pendente',  'Pendente'
+    PARCIAL   = 'parcial',   'Parcial'
+    PAGO      = 'pago',      'Pago'
+    ATRASADO  = 'atrasado',  'Atrasado'
+    CANCELADO = 'cancelado', 'Cancelado'
+
+
+MESES_PT = [
+    '', 'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+    'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro',
+]
+
+MESES_PT_ABREV = [
+    '', 'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
+]
+
+
+class ControleMensal(models.Model):
+    """
+    Registro de execução orçamentária mensal de um contrato.
+    Um registro por (contrato × mês × ano), garantido por unique_together.
+    """
+    contrato         = models.ForeignKey(
+        Contract, on_delete=models.CASCADE,
+        related_name='controle_mensal',
+        verbose_name='Contrato'
+    )
+    secretaria       = models.ForeignKey(
+        'admin_panel.Secretaria', on_delete=models.SET_NULL,
+        null=True, blank=True,
+        related_name='controle_mensal',
+        verbose_name='Secretaria'
+    )
+    referencia_mes   = models.IntegerField(verbose_name='Mês de Referência')   # 1–12
+    referencia_ano   = models.IntegerField(verbose_name='Ano de Referência')
+    valor_previsto   = models.DecimalField(
+        max_digits=14, decimal_places=2, default=0,
+        verbose_name='Valor Previsto (R$)'
+    )
+    valor_utilizado  = models.DecimalField(
+        max_digits=14, decimal_places=2, default=0,
+        verbose_name='Valor Utilizado (R$)'
+    )
+    saldo            = models.DecimalField(
+        max_digits=14, decimal_places=2, default=0,
+        verbose_name='Saldo (R$)'
+    )
+    percentual_executado = models.DecimalField(
+        max_digits=6, decimal_places=2, default=0,
+        verbose_name='% Executado'
+    )
+    status           = models.CharField(
+        max_length=20, choices=StatusMensal.choices,
+        default=StatusMensal.PENDENTE,
+        verbose_name='Status'
+    )
+    observacao       = models.TextField(blank=True, null=True, verbose_name='Observação')
+    data_vencimento  = models.DateField(null=True, blank=True, verbose_name='Data de Vencimento')
+    data_pagamento   = models.DateField(null=True, blank=True, verbose_name='Data de Pagamento')
+    anexo            = models.FileField(
+        upload_to='controle_mensal/', blank=True, null=True,
+        verbose_name='Comprovante / Anexo'
+    )
+    criado_por       = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='controle_mensal_criados',
+        verbose_name='Criado por'
+    )
+    criado_em        = models.DateTimeField(auto_now_add=True)
+    atualizado_em    = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name          = 'Controle Mensal'
+        verbose_name_plural   = 'Controles Mensais'
+        unique_together       = [('contrato', 'referencia_mes', 'referencia_ano')]
+        ordering              = ['referencia_ano', 'referencia_mes']
+        indexes = [
+            models.Index(fields=['contrato'],        name='cm_contrato_idx'),
+            models.Index(fields=['secretaria'],      name='cm_secretaria_idx'),
+            models.Index(fields=['referencia_mes'],  name='cm_mes_idx'),
+            models.Index(fields=['referencia_ano'],  name='cm_ano_idx'),
+            models.Index(fields=['status'],          name='cm_status_idx'),
+        ]
+
+    # ── propriedades de conveniência ──────────────────────────────────────
+
+    @property
+    def mes_nome(self):
+        return MESES_PT[self.referencia_mes] if 1 <= self.referencia_mes <= 12 else str(self.referencia_mes)
+
+    @property
+    def mes_nome_abrev(self):
+        return MESES_PT_ABREV[self.referencia_mes] if 1 <= self.referencia_mes <= 12 else str(self.referencia_mes)
+
+    @property
+    def periodo_label(self):
+        return f"{self.mes_nome}/{self.referencia_ano}"
+
+    @property
+    def status_info(self):
+        """Retorna cor e ícone Bootstrap para uso nos templates."""
+        mapping = {
+            'pendente':  {'color': '#6b7280', 'bg': '#f3f4f6', 'icon': 'bi-clock',              'label': 'Pendente'},
+            'parcial':   {'color': '#d97706', 'bg': '#fffbeb', 'icon': 'bi-exclamation-circle', 'label': 'Parcial'},
+            'pago':      {'color': '#059669', 'bg': '#ecfdf5', 'icon': 'bi-check-circle-fill',  'label': 'Pago'},
+            'atrasado':  {'color': '#dc2626', 'bg': '#fef2f2', 'icon': 'bi-x-circle-fill',      'label': 'Atrasado'},
+            'cancelado': {'color': '#374151', 'bg': '#f9fafb', 'icon': 'bi-slash-circle',       'label': 'Cancelado'},
+        }
+        return mapping.get(self.status, mapping['pendente'])
+
+    # ── lógica de negócio ─────────────────────────────────────────────────
+
+    def calcular_status_automatico(self):
+        """
+        Aplica as regras de status automaticamente.
+        Não sobrescreve se status = cancelado (status manual).
+        """
+        if self.status == StatusMensal.CANCELADO:
+            return
+
+        hoje = timezone.localdate()
+        utilizado = self.valor_utilizado or 0
+        previsto  = self.valor_previsto  or 0
+
+        if utilizado <= 0:
+            # Sem nenhuma execução
+            if self.data_vencimento and self.data_vencimento < hoje:
+                self.status = StatusMensal.ATRASADO
+            else:
+                self.status = StatusMensal.PENDENTE
+        elif utilizado < previsto:
+            self.status = StatusMensal.PARCIAL
+        else:
+            self.status = StatusMensal.PAGO
+
+    def save(self, *args, **kwargs):
+        # Herdar secretaria do contrato se não definida
+        if not self.secretaria_id and self.contrato_id:
+            try:
+                self.secretaria = self.contrato.secretaria
+            except Exception:
+                pass
+
+        # Recalcular saldo
+        previsto  = self.valor_previsto  or 0
+        utilizado = self.valor_utilizado or 0
+        self.saldo = previsto - utilizado
+
+        # Percentual executado em relação ao valor global do contrato
+        try:
+            valor_contrato = self.contrato.valor
+            if valor_contrato and valor_contrato > 0:
+                self.percentual_executado = (utilizado / valor_contrato) * 100
+            else:
+                self.percentual_executado = 0
+        except Exception:
+            self.percentual_executado = 0
+
+        # Aplicar regra de status automático
+        self.calcular_status_automatico()
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.contrato.numero_contrato} — {self.periodo_label}"

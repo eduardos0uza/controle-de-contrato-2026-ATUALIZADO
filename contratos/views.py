@@ -402,6 +402,84 @@ def duplicar_contrato(request, contrato_id):
 
 
 @login_required
+def renovar_contrato(request, contrato_id):
+    contratos_permitidos = get_user_contracts(request.user)
+    contrato = get_object_or_404(contratos_permitidos, pk=contrato_id)
+    
+    if request.method == 'POST':
+        from django.contrib import messages
+        from django.db import transaction
+        from contratos.forms import ContractRenewalForm
+        from contratos.models import ContractItem
+        
+        form = ContractRenewalForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                with transaction.atomic():
+                    # 1. Obter os dados do formulário
+                    renovacao = form.save(commit=False)
+                    renovacao.contrato = contrato
+                    renovacao.responsavel = request.user
+                    
+                    # 2. Registrar valores anteriores
+                    renovacao.vencimento_anterior = contrato.data_vencimento
+                    renovacao.valor_anterior = contrato.valor
+                    
+                    # 3. Salvar o registro de renovação
+                    renovacao.save()
+                    
+                    # 4. Atualizar o contrato real com os novos dados
+                    contrato.data_vencimento = renovacao.vencimento_novo
+                    
+                    # Adicionar item orçamentário se houver diferença
+                    valor_diferenca = renovacao.valor_novo - renovacao.valor_anterior
+                    if valor_diferenca != 0:
+                        ContractItem.objects.create(
+                            contrato=contrato,
+                            tipo_item='SERVICO',
+                            descricao=f"Aditivo/Renovação — {renovacao.get_tipo_renovacao_display()}",
+                            quantidade=1,
+                            valor_unitario=valor_diferenca,
+                            valor_total=valor_diferenca
+                        )
+                    
+                    # Atualiza a preferência de renovação automática
+                    contrato.renovacao_automatica = 'renovacao_automatica' in request.POST
+                    contrato.save()
+                    
+                    messages.success(request, f"Contrato {contrato.numero_contrato} renovado com sucesso!")
+                    return redirect('contratos:lista')
+            except Exception as e:
+                import traceback
+                print(f"CRITICAL ERROR RENOVACAO_CONTRATO: {str(e)}")
+                print(traceback.format_exc())
+                messages.error(request, f"Erro interno ao processar renovação: {str(e)}")
+                return redirect('contratos:lista')
+        else:
+            # Captura erros específicos do form para mostrar ao usuário
+            error_msgs = []
+            for field, errors in form.errors.items():
+                field_name = form.fields[field].label if field in form.fields else field
+                error_msgs.append(f"{field_name}: {', '.join(errors)}")
+            
+            error_text = " Erro nos campos: " + " | ".join(error_msgs)
+            print(f"FORM INVALID RENOVACAO_CONTRATO: {error_text}")
+            messages.error(request, f"Não foi possível renovar o contrato.{error_text}")
+            return redirect('contratos:lista')
+            
+    # GET request para dados do modal (JSON)
+    return JsonResponse({
+        'id': contrato.id,
+        'numero': contrato.numero_contrato,
+        'empresa': contrato.empresa,
+        'valor_atual': float(contrato.valor),
+        'vencimento_atual': contrato.data_vencimento.strftime('%Y-%m-%d'),
+        'dias_restantes': contrato.dias_restantes,
+        'status': contrato.get_status_display(),
+    })
+
+
+@login_required
 @_roles_required(['administrador', 'gestor'])
 def excluir_contrato(request, contrato_id):
     try:
@@ -678,3 +756,352 @@ def relatorios(request):
         'status_choices': ContractStatus.choices,
     }
     return render(request, 'contratos/relatorios.html', context)
+
+
+
+
+# =============================================================================
+# MÓDULO — CALCULADORA GERENCIAL DE DISTRIBUIÇÃO MENSAL
+# =============================================================================
+
+from decimal import Decimal, ROUND_HALF_UP
+from dateutil.relativedelta import relativedelta
+from datetime import date
+from .models import MESES_PT, MESES_PT_ABREV
+
+
+def _format_currency_br(val):
+    if val is None:
+        return 'R$ 0,00'
+    try:
+        formatted = f"{float(val):.2f}"
+        parts = formatted.split('.')
+        integer_part = parts[0]
+        decimal_part = parts[1]
+        
+        # Add thousands separator
+        reversed_integer = integer_part[::-1]
+        chunks = [reversed_integer[i:i+3] for i in range(0, len(reversed_integer), 3)]
+        integer_with_sep = ".".join(chunks)[::-1]
+        
+        return f"R$ {integer_with_sep},{decimal_part}"
+    except Exception:
+        return 'R$ 0,00'
+
+
+@login_required
+def controle_mensal_calculo(request):
+    """
+    Visualização simplificada da distribuição gerencial mensal de contratos ativos.
+    Busca todos os contratos ativos, lê o valor global (soma dos itens),
+    permite selecionar mês/ano inicial e final, calcula a quantidade de meses do período
+    e exibe uma tabela tipo planilha gerencial com colunas para cada mês.
+    """
+    # 1. Buscar todos os contratos ativos
+    contratos_qs = get_user_contracts(request.user).filter(status='ativo').prefetch_related('itens')
+    
+    # 2. Obter período selecionado ou definir padrão (junho a dezembro de 2026)
+    hoje = timezone.localdate()
+    
+    # Valores padrão de acordo com o exemplo solicitado
+    mes_inicio_padrao = 6
+    ano_inicio_padrao = 2026
+    mes_fim_padrao = 12
+    ano_fim_padrao = 2026
+    
+    try:
+        mes_inicio = int(request.GET.get('mes_inicio') or mes_inicio_padrao)
+        ano_inicio = int(request.GET.get('ano_inicio') or ano_inicio_padrao)
+        mes_fim    = int(request.GET.get('mes_fim') or mes_fim_padrao)
+        ano_fim    = int(request.GET.get('ano_fim') or ano_fim_padrao)
+    except (ValueError, TypeError):
+        mes_inicio = mes_inicio_padrao
+        ano_inicio = ano_inicio_padrao
+        mes_fim = mes_fim_padrao
+        ano_fim = ano_fim_padrao
+
+    try:
+        start_date = date(ano_inicio, mes_inicio, 1)
+        end_date   = date(ano_fim, mes_fim, 1)
+    except Exception:
+        start_date = date(2026, 6, 1)
+        end_date   = date(2026, 12, 1)
+        mes_inicio, ano_inicio = 6, 2026
+        mes_fim, ano_fim = 12, 2026
+
+    if start_date > end_date:
+        start_date, end_date = end_date, start_date
+        mes_inicio, mes_fim = mes_fim, mes_inicio
+        ano_inicio, ano_fim = ano_fim, ano_inicio
+
+    # 3. Gerar lista de meses/colunas do período selecionado
+    colunas_meses = []
+    temp_date = start_date
+    while temp_date <= end_date:
+        label_compacto = f"{MESES_PT_ABREV[temp_date.month].upper()}/{temp_date.year}"
+        label_very_compact = f"{MESES_PT_ABREV[temp_date.month].upper()}/{str(temp_date.year)[2:]}"
+        colunas_meses.append({
+            'mes': temp_date.month,
+            'ano': temp_date.year,
+            'label': f"{MESES_PT[temp_date.month]}/{temp_date.year}",
+            'label_compacto': label_compacto,
+            'label_very_compact': label_very_compact,
+            'mes_nome': MESES_PT[temp_date.month],
+            'is_current': (temp_date.month == hoje.month and temp_date.year == hoje.year)
+        })
+        temp_date += relativedelta(months=1)
+
+    total_meses_periodo = len(colunas_meses)
+    if total_meses_periodo <= 0:
+        total_meses_periodo = 1
+
+    # 4. Processar contratos
+    dados_tabela = []
+    totais_por_mes = {f"{c['mes']}_{c['ano']}": Decimal('0.00') for c in colunas_meses}
+    total_global_acumulado = Decimal('0.00')
+
+    for contrato in contratos_qs:
+        valor_global = Decimal(str(contrato.valor or 0))
+        if valor_global <= 0:
+            continue  # ignorar contratos sem valor
+
+        # Calcular valor mensal = valor global / quantidade de meses do período
+        valor_mensal = (valor_global / total_meses_periodo).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        
+        # Obter os valores distribuídos para cada coluna de mês
+        valores_distribuidos = {}
+        is_active_dict = {}
+        for col in colunas_meses:
+            col_key = f"{col['mes']}_{col['ano']}"
+            col_date = date(col['ano'], col['mes'], 1)
+            
+            # Verificar se o mês da coluna está dentro da vigência do contrato
+            is_active = False
+            if contrato.data_inicio and contrato.data_vencimento:
+                contrato_start = contrato.data_inicio.replace(day=1)
+                contrato_end = contrato.data_vencimento.replace(day=1)
+                is_active = (contrato_start <= col_date <= contrato_end)
+            
+            is_active_dict[col_key] = is_active
+            if is_active:
+                valores_distribuidos[col_key] = valor_mensal
+                totais_por_mes[col_key] += valor_mensal
+            else:
+                valores_distribuidos[col_key] = Decimal('0.00')
+
+        total_global_acumulado += valor_global
+        
+        dados_tabela.append({
+            'contrato': contrato,
+            'numero': contrato.numero_contrato,
+            'fornecedor': contrato.empresa or '-',
+            'secretaria': contrato.secretaria.nome if contrato.secretaria else 'Não informado',
+            'valor_global_raw': valor_global,
+            'valor_global': _format_currency_br(valor_global),
+            'valores_meses': [
+                {
+                    'raw': valores_distribuidos[f"{c['mes']}_{c['ano']}"],
+                    'formatted': _format_currency_br(valores_distribuidos[f"{c['mes']}_{c['ano']}"]),
+                    'is_active': is_active_dict[f"{c['mes']}_{c['ano']}"],
+                    'is_current': c['is_current']
+                }
+                for c in colunas_meses
+            ]
+        })
+
+    # Preparar rodapé com totais por mês
+    valores_totais_rodape = [
+        _format_currency_br(totais_por_mes[f"{c['mes']}_{c['ano']}"]) 
+        for c in colunas_meses
+    ]
+
+    anos_disponiveis = list(range(2024, 2033))
+    
+    total_global_acumulado_formatted = _format_currency_br(total_global_acumulado)
+
+    context = {
+        'dados_tabela':          dados_tabela,
+        'colunas_meses':         colunas_meses,
+        'valores_totais_rodape': valores_totais_rodape,
+        'total_global_acumulado': total_global_acumulado_formatted,
+        'total_meses_periodo':   total_meses_periodo,
+        'mes_inicio':            mes_inicio,
+        'ano_inicio':            ano_inicio,
+        'mes_fim':               mes_fim,
+        'ano_fim':               ano_fim,
+        'meses_list':            [(i, MESES_PT[i]) for i in range(1, 13)],
+        'anos_list':             anos_disponiveis,
+    }
+
+    # --- EXPORT HANDLERS ---
+    export_format = request.GET.get('export')
+    
+    if export_format == 'csv':
+        import csv
+        response = HttpResponse(content_type='text/csv; charset=utf-8')
+        response['Content-Disposition'] = f'attachment; filename="distribuicao_mensal_{mes_inicio}_{ano_inicio}_a_{mes_fim}_{ano_fim}.csv"'
+        response.write('\ufeff'.encode('utf8')) # UTF-8 BOM for Excel
+        
+        writer = csv.writer(response, delimiter=';', quoting=csv.QUOTE_MINIMAL)
+        
+        # Header Row
+        headers = ['Contrato', 'Fornecedor', 'Secretaria', 'Valor Global']
+        for col in colunas_meses:
+            headers.append(col['label_compacto'])
+        writer.writerow(headers)
+        
+        # Data Rows
+        for row in dados_tabela:
+            row_data = [row['numero'], row['fornecedor'], row['secretaria'], row['valor_global']]
+            for val in row['valores_meses']:
+                if val['is_active']:
+                    row_data.append(val['formatted'])
+                else:
+                    row_data.append('Fora da vigência')
+            writer.writerow(row_data)
+            
+        # Footer Totals Row
+        footer = ['TOTAL GERAL POR MÊS', '', '', total_global_acumulado_formatted]
+        for total_mes_formatted in valores_totais_rodape:
+            footer.append(total_mes_formatted)
+        writer.writerow(footer)
+        
+        return response
+
+    if export_format == 'excel':
+        import openpyxl
+        from openpyxl.styles import Font, Alignment, PatternFill, Border, Side
+        from openpyxl.utils import get_column_letter
+
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Distribuição Mensal"
+
+        # Enable grid lines
+        ws.views.sheetView[0].showGridLines = True
+
+        # Styles
+        font_header = Font(name='Arial', size=10, bold=True, color='FFFFFF')
+        fill_header = PatternFill(start_color='003B70', end_color='003B70', fill_type='solid') # Navy primary
+        
+        font_data = Font(name='Arial', size=10)
+        font_valor_global = Font(name='Arial', size=10, bold=True, color='003B70')
+        font_zero = Font(name='Arial', size=9, color='94A3B8') # soft gray for out of vigencia
+        
+        font_footer = Font(name='Arial', size=10, bold=True, color='FFFFFF')
+        fill_footer = PatternFill(start_color='003B70', end_color='003B70', fill_type='solid') # institutional navy for totals
+        
+        border_thin = Border(
+            left=Side(style='thin', color='CBD5E1'),
+            right=Side(style='thin', color='CBD5E1'),
+            top=Side(style='thin', color='CBD5E1'),
+            bottom=Side(style='thin', color='CBD5E1')
+        )
+        border_footer = Border(
+            top=Side(style='medium', color='002244'),
+            bottom=Side(style='medium', color='002244')
+        )
+
+        # Header Row
+        headers = ['Contrato', 'Fornecedor', 'Secretaria', 'Valor Global']
+        for col in colunas_meses:
+            headers.append(col['label_compacto'])
+            
+        ws.append(headers)
+        
+        # Style Header
+        for col_idx in range(1, len(headers) + 1):
+            cell = ws.cell(row=1, column=col_idx)
+            cell.font = font_header
+            cell.fill = fill_header
+            cell.alignment = Alignment(horizontal='center' if col_idx > 3 else 'left', vertical='center')
+            cell.border = border_thin
+        
+        # Data Rows
+        row_num = 2
+        for row in dados_tabela:
+            # Write Contract Metadata
+            ws.cell(row=row_num, column=1, value=row['numero']).alignment = Alignment(horizontal='left')
+            ws.cell(row=row_num, column=2, value=row['fornecedor']).alignment = Alignment(horizontal='left')
+            ws.cell(row=row_num, column=3, value=row['secretaria']).alignment = Alignment(horizontal='left')
+            
+            # Valor Global (number formatted)
+            cell_vg = ws.cell(row=row_num, column=4, value=float(row['valor_global_raw']))
+            cell_vg.number_format = 'R$ #,##0.00'
+            cell_vg.font = font_valor_global
+            cell_vg.alignment = Alignment(horizontal='right')
+            
+            col_idx = 5
+            for val in row['valores_meses']:
+                cell_val = ws.cell(row=row_num, column=col_idx)
+                if val['is_active']:
+                    cell_val.value = float(val['raw'])
+                    cell_val.number_format = 'R$ #,##0.00'
+                    cell_val.font = font_data
+                    cell_val.alignment = Alignment(horizontal='right')
+                else:
+                    cell_val.value = "Fora da vigência"
+                    cell_val.font = font_zero
+                    cell_val.alignment = Alignment(horizontal='center')
+                cell_val.border = border_thin
+                col_idx += 1
+                
+            # Apply general border to data columns 1-4
+            for c in range(1, 5):
+                ws.cell(row=row_num, column=c).border = border_thin
+                if c < 4:
+                    ws.cell(row=row_num, column=c).font = font_data
+            
+            row_num += 1
+            
+        # Totalizer Footer Row
+        ws.cell(row=row_num, column=1, value="TOTAL GERAL POR MÊS").alignment = Alignment(horizontal='left')
+        
+        # Merge first 3 columns of footer row
+        ws.merge_cells(start_row=row_num, start_column=1, end_row=row_num, end_column=3)
+        
+        ws.cell(row=row_num, column=4, value=float(total_global_acumulado)).number_format = 'R$ #,##0.00'
+        
+        col_idx = 5
+        for col in colunas_meses:
+            col_key = f"{col['mes']}_{col['ano']}"
+            ws.cell(row=row_num, column=col_idx, value=float(totais_por_mes[col_key])).number_format = 'R$ #,##0.00'
+            col_idx += 1
+            
+        # Style Totalizer Footer Row
+        for col_idx in range(1, len(headers) + 1):
+            cell = ws.cell(row=row_num, column=col_idx)
+            cell.font = font_footer
+            cell.fill = fill_footer
+            cell.border = border_footer
+            if col_idx >= 4:
+                cell.alignment = Alignment(horizontal='right')
+            else:
+                cell.alignment = Alignment(horizontal='left')
+                
+        # Auto-adjust columns width
+        for col in ws.columns:
+            max_len = 0
+            col_letter = get_column_letter(col[0].column)
+            # Find the max string length
+            for cell in col:
+                val_str = str(cell.value or '')
+                if cell.number_format == 'R$ #,##0.00' and isinstance(cell.value, (int, float)):
+                    # Format approximation for width calculation
+                    val_str = f"R$ {cell.value:,.2f}".replace(',', 'x').replace('.', ',').replace('x', '.')
+                if len(val_str) > max_len:
+                    max_len = len(val_str)
+            ws.column_dimensions[col_letter].width = max(max_len + 4, 12)
+            
+        # Specific overrides for widths
+        ws.column_dimensions['A'].width = 16 # Contrato
+        ws.column_dimensions['B'].width = 30 # Fornecedor
+        ws.column_dimensions['C'].width = 25 # Secretaria
+        ws.column_dimensions['D'].width = 18 # Valor Global
+        
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="distribuicao_mensal_{mes_inicio}_{ano_inicio}_a_{mes_fim}_{ano_fim}.xlsx"'
+        wb.save(response)
+        return response
+    
+    return render(request, 'contratos/controle_mensal/calculo.html', context)

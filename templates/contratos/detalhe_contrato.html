@@ -84,6 +84,19 @@
     .timeline-item.status .timeline-content { border-left-color: #ffc107; }
     .timeline-item.alerta .timeline-marker { border-color: #dc3545; color: #dc3545; }
     .timeline-item.alerta .timeline-content { border-left-color: #dc3545; }
+    .contract-alert-badge { background-color: #ccc; }
+    .contract-progress-track { height: 10px; }
+    .contract-progress-bar { width: 0%; }
+    .timeline-history-scroll { max-height: 500px; overflow-y: auto; }
+    .timeline-icon-xs { font-size: 10px; }
+    .timeline-title-sm { font-size: 0.85rem; }
+    .timeline-date-xs,
+    .timeline-detail-toggle,
+    .timeline-detail-box { font-size: 0.7rem; }
+    .timeline-user-name { font-size: 0.75rem; }
+    .timeline-field-label { font-size: 0.65rem; }
+    .avatar-sm-fixed { width: 20px; height: 20px; }
+    .renewal-file-btn { font-size: 0.7rem; }
 </style>
 {% endblock %}
 
@@ -196,8 +209,8 @@
                 <h5 class="fw-bold mb-4 border-bottom pb-2">Acompanhamento</h5>
                 
                 <span class="t-label mb-2 text-center">Status de Alerta</span>
-                <div class="badge-status text-white d-flex align-items-center justify-content-center gap-2" 
-                     style="background-color: {{ contrato.alerta_info.color }};"
+                <div class="badge-status contract-alert-badge text-white d-flex align-items-center justify-content-center gap-2"
+                     data-bg-color="{{ contrato.alerta_info.color|default:'#ccc' }}"
                      title="{{ contrato.alerta_info.description }}">
                     <i class="bi {{ contrato.alerta_info.icon }}"></i>
                     {{ contrato.alerta_info.label }}
@@ -218,7 +231,7 @@
                     <h6 class="fw-bold small text-muted text-uppercase border-bottom pb-2 mb-3">Origem do Registro</h6>
                     <div class="mb-2">
                         <span class="t-label">Secretaria Responsável</span>
-                        <span class="fw-bold text-primary">{{ contrato.secretaria.nome|default:"Administração Geral" }}</span>
+                        <span class="fw-bold text-primary">{{ contrato.secretaria.nome|default:"Não informado" }}</span>
                     </div>
                     <div class="mb-2">
                         <span class="t-label">Criado por</span>
@@ -241,8 +254,9 @@
                         <span class="t-label">Progresso</span>
                         <span class="fw-bold small text-primary">{{ contrato.progresso|default:0 }}%</span>
                     </div>
-                    <div class="progress" style="height: 10px;">
-                        <div class="progress-bar bg-primary" style="width: {{ contrato.progresso|default:0 }}%;"></div>
+                    <div class="progress contract-progress-track">
+                        <div class="progress-bar bg-primary contract-progress-bar"
+                             data-width-percent="{{ contrato.progresso|default:0 }}"></div>
                     </div>
                 </div>
 
@@ -254,27 +268,27 @@
 
             <div class="box-contrato">
                 <h5 class="fw-bold mb-4 border-bottom pb-2">Histórico do Dossiê</h5>
-                <div class="timeline-history" style="max-height: 500px; overflow-y: auto;">
+                <div class="timeline-history timeline-history-scroll">
                     {% for h in historico %}
                     <div class="timeline-item {% if h.acao == 'CREATE' %}create{% elif h.acao == 'STATUS' %}status{% elif h.acao == 'ALERTA' %}alerta{% endif %}">
                         <div class="timeline-marker">
                             {% if h.acao == 'CREATE' %}<i class="bi bi-plus-circle-fill small"></i>
                             {% elif h.acao == 'STATUS' %}<i class="bi bi-arrow-repeat small"></i>
-                            {% elif h.acao == 'ALERTA' %}<i class="bi bi-exclamation-triangle-fill small" style="font-size: 10px;"></i>
-                            {% else %}<i class="bi bi-pencil-fill small" style="font-size: 10px;"></i>{% endif %}
+                            {% elif h.acao == 'ALERTA' %}<i class="bi bi-exclamation-triangle-fill small timeline-icon-xs"></i>
+                            {% else %}<i class="bi bi-pencil-fill small timeline-icon-xs"></i>{% endif %}
                         </div>
                         <div class="timeline-content shadow-sm">
                             <div class="d-flex justify-content-between align-items-start mb-1">
-                                <span class="fw-bold text-dark" style="font-size: 0.85rem;">{{ h.get_acao_display }}</span>
-                                <span class="text-muted small" style="font-size: 0.7rem;">{{ h.alterado_em|date:"d/m/y H:i" }}</span>
+                                <span class="fw-bold text-dark timeline-title-sm">{{ h.get_acao_display }}</span>
+                                <span class="text-muted small timeline-date-xs">{{ h.alterado_em|date:"d/m/y H:i" }}</span>
                             </div>
                             <p class="mb-2 text-secondary small">{{ h.descricao|default:"Alteração no contrato" }}</p>
                             
                             <div class="d-flex align-items-center gap-2">
-                                <div class="avatar-sm bg-white rounded-circle d-flex align-items-center justify-content-center border" style="width: 20px; height: 20px;">
-                                    <i class="bi bi-person text-primary" style="font-size: 10px;"></i>
+                                <div class="avatar-sm bg-white rounded-circle d-flex align-items-center justify-content-center border avatar-sm-fixed">
+                                    <i class="bi bi-person text-primary timeline-icon-xs"></i>
                                 </div>
-                                <span class="fw-bold text-muted" style="font-size: 0.75rem;">
+                                <span class="fw-bold text-muted timeline-user-name">
                                     {% if h.alterado_por %}
                                         {{ h.alterado_por.get_full_name|default:h.alterado_por.username }}
                                     {% else %}
@@ -284,17 +298,16 @@
                             </div>
 
                             {% if h.alteracoes %}
-                            <button class="btn btn-link btn-sm p-0 mt-2 text-primary fw-bold text-decoration-none" 
-                                    style="font-size: 0.7rem;" 
+                            <button class="btn btn-link btn-sm p-0 mt-2 text-primary fw-bold text-decoration-none timeline-detail-toggle"
                                     data-bs-toggle="collapse" 
                                     data-bs-target="#detail{{ h.id }}">
                                 <i class="bi bi-info-circle me-1"></i> Ver detalhes da alteração <i class="bi bi-chevron-down ms-1"></i>
                             </button>
                             <div class="collapse" id="detail{{ h.id }}">
-                                <div class="bg-white border rounded p-2 mt-2 shadow-sm" style="font-size: 0.7rem;">
+                                <div class="bg-white border rounded p-2 mt-2 shadow-sm timeline-detail-box">
                                     {% for campo, valores in h.alteracoes.items %}
                                     <div class="mb-1 pb-1 {% if not forloop.last %}border-bottom{% endif %}">
-                                        <span class="fw-bold text-dark text-uppercase" style="font-size: 0.65rem;">{{ campo }}:</span>
+                                        <span class="fw-bold text-dark text-uppercase timeline-field-label">{{ campo }}:</span>
                                         <div class="d-flex align-items-center gap-2 mt-1">
                                             <span class="text-danger text-decoration-line-through bg-danger bg-opacity-10 px-1 rounded">{{ valores.antes|default:"--" }}</span>
                                             <i class="bi bi-arrow-right text-muted"></i>
@@ -315,6 +328,43 @@
                     {% endfor %}
                 </div>
             </div>
+
+            {% if renovacoes %}
+            <div class="box-contrato">
+                <h5 class="fw-bold mb-4 border-bottom pb-2 text-primary"><i class="bi bi-arrow-repeat me-2"></i>Histórico de Renovações</h5>
+                <div class="list-group list-group-flush">
+                    {% for r in renovacoes %}
+                    <div class="list-group-item border-0 px-0 mb-3 bg-light bg-opacity-25 rounded p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="badge bg-primary rounded-pill">{{ r.get_tipo_renovacao_display }}</span>
+                            <span class="small text-muted fw-bold">{{ r.data_renovacao|date:"d/m/Y" }}</span>
+                        </div>
+                        <div class="row g-2 mb-2">
+                            <div class="col-6">
+                                <span class="t-label">Vigência Nova</span>
+                                <span class="t-value text-success">{{ r.vencimento_novo|date:"d/m/Y" }}</span>
+                            </div>
+                            <div class="col-6 text-end">
+                                <span class="t-label">Novo Valor</span>
+                                <span class="t-value">R$ {{ r.valor_novo|floatformat:2|intcomma }}</span>
+                            </div>
+                        </div>
+                        {% if r.observacoes %}
+                        <p class="small text-muted mb-2 italic">"{{ r.observacoes }}"</p>
+                        {% endif %}
+                        <div class="d-flex justify-content-between align-items-center mt-2 pt-2 border-top">
+                            <span class="small text-muted">Por: <strong>{{ r.responsavel.username }}</strong></span>
+                            {% if r.documento %}
+                            <a href="{{ r.documento.url }}" target="_blank" class="btn btn-sm btn-outline-primary py-0 px-2 fw-bold renewal-file-btn">
+                                <i class="bi bi-file-earmark-pdf"></i> Ver PDF
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
 
             <button type="button" class="btn btn-outline-danger w-100 fw-bold rounded mt-3" data-bs-toggle="modal" data-bs-target="#deleteModal">
                 Remover Dossiê
@@ -341,4 +391,26 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const normalizePercent = function(value) {
+        const number = Number.parseFloat(String(value || '0').replace(',', '.'));
+        if (!Number.isFinite(number)) return 0;
+        return Math.min(100, Math.max(0, number));
+    };
+
+    document.querySelectorAll('[data-width-percent]').forEach(function(element) {
+        element.style.width = normalizePercent(element.dataset.widthPercent) + '%';
+    });
+
+    document.querySelectorAll('[data-bg-color]').forEach(function(element) {
+        const color = element.dataset.bgColor || '#ccc';
+        if (window.CSS && CSS.supports && !CSS.supports('background-color', color)) return;
+        element.style.backgroundColor = color;
+    });
+});
+</script>
 {% endblock %}

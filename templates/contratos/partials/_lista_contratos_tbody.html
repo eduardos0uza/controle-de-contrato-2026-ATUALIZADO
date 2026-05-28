@@ -1,7 +1,7 @@
 {% load humanize %}
 {% for contrato in contratos %}
 <tr data-detail-url="{% url 'contratos:detalhe' contrato.id %}">
-    <td class="ps-4">
+    <td class="ps-4 contract-cell" data-label="Contrato">
         <a href="{% url 'contratos:detalhe' contrato.id %}" class="contract-link">{{ contrato.numero_contrato }}</a>
         <div class="contract-desc">
             {% if contrato.empresa or contrato.objeto %}
@@ -13,10 +13,10 @@
             {% endif %}
         </div>
     </td>
-    <td>
+    <td data-label="Vencimento">
         <span class="date-chip"><i class="bi bi-calendar3"></i>{{ contrato.data_vencimento|date:"d/m/Y" }}</span>
     </td>
-    <td>
+    <td data-label="Prazo">
         {% if contrato.dias_restantes < 0 %}
             <span class="days-chip danger">Vencido há {{ contrato.dias_vencido }} dias</span>
         {% elif contrato.dias_restantes <= 30 %}
@@ -27,13 +27,13 @@
             <span class="days-chip calm">{{ contrato.dias_restantes }} dias</span>
         {% endif %}
     </td>
-    <td class="text-end fw-bold text-nowrap">R$ {{ contrato.valor_contrato|floatformat:2|intcomma }}</td>
-    <td>
+    <td class="text-end fw-bold value-cell" data-label="Valor">R$ {{ contrato.valor_contrato|floatformat:2|intcomma }}</td>
+    <td data-label="Status">
         <span class="status-chip {% if contrato.status == 'ativo' %}ok{% elif contrato.status == 'encerrado' %}muted{% else %}hold{% endif %}">{{ contrato.get_status_display }}</span>
     </td>
-    <td>
+    <td data-label="Secretaria">
         <div class="agency-stack">
-            <strong>{{ contrato.secretaria.nome|default:"-" }}</strong>
+            <strong>{{ contrato.secretaria.nome|default:"Não informado" }}</strong>
             <span>
                 {% if contrato.criado_por %}
                     {{ contrato.criado_por.get_full_name|default:contrato.criado_por.username }}
@@ -43,20 +43,21 @@
             </span>
         </div>
     </td>
-    <td>
+    <td data-label="Responsável">
         {% if contrato.responsavel %}
-        <span class="owner-line"><span>{{ contrato.responsavel|make_list|first|upper }}</span>{{ contrato.responsavel }}</span>
+        <span class="owner-line"><span class="owner-avatar">{{ contrato.responsavel|make_list|first|upper }}</span><span class="owner-name">{{ contrato.responsavel }}</span></span>
         {% else %}
         <span class="text-muted small fw-bold">-</span>
         {% endif %}
     </td>
-    <td>
+    <td data-label="Alerta">
         <span class="alert-line" title="{{ contrato.alerta_info.description }}"><i style="background: {{ contrato.alerta_info.color }};"></i>{{ contrato.alerta_info.label }}</span>
     </td>
-    <td class="text-end pe-4 no-print">
+    <td class="text-end pe-4 no-print action-cell" data-label="Ações">
         <div class="actions action-pack">
             <a href="{% url 'contratos:detalhe' contrato.id %}" class="action-btn" data-bs-toggle="tooltip" title="Visualizar"><i class="bi bi-eye"></i></a>
             <a href="{% url 'contratos:editar' contrato.id %}" class="action-btn" data-bs-toggle="tooltip" title="Editar"><i class="bi bi-pencil"></i></a>
+            <button type="button" class="action-btn" data-bs-toggle="modal" data-bs-target="#renewModal" data-contract-id="{{ contrato.id }}" data-contract-number="{{ contrato.numero_contrato }}" data-renew-url="{% url 'contratos:renovar' contrato.id %}" title="Renovar"><i class="bi bi-arrow-repeat"></i></button>
             <button type="button" class="action-btn danger" data-bs-toggle="modal" data-bs-target="#deleteModal" data-contract-id="{{ contrato.id }}" data-contract-number="{{ contrato.numero_contrato }}" data-delete-url="{% url 'contratos:excluir' contrato.id %}" title="Excluir"><i class="bi bi-trash"></i></button>
         </div>
     </td>

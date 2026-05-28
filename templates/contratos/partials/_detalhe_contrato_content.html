@@ -507,7 +507,13 @@
             </div>
             <div class="kpi-card">
                 <span class="kpi-label"><i class="bi bi-building"></i> Secretaria</span>
-                <span class="kpi-value">{{ contrato.secretaria.sigla|default:contrato.secretaria.nome|truncatechars:18 }}</span>
+                <span class="kpi-value">
+                    {% if contrato.secretaria %}
+                        {% if contrato.secretaria.sigla %}{{ contrato.secretaria.sigla|truncatechars:18 }}{% else %}{{ contrato.secretaria.nome|truncatechars:18 }}{% endif %}
+                    {% else %}
+                        Não informado
+                    {% endif %}
+                </span>
             </div>
         </div>
     </div>
@@ -616,7 +622,7 @@
                     </div>
                     <div class="info-item">
                         <label>Secretaria</label>
-                        <span>{{ contrato.secretaria.nome }}</span>
+                        <span>{% if contrato.secretaria %}{{ contrato.secretaria.nome }}{% else %}Não informado{% endif %}</span>
                     </div>
                     <div class="info-item">
                         <label>Ficha</label>
@@ -732,7 +738,11 @@
                         </div>
                         <div class="small text-muted fw-bold">
                             <i class="bi bi-person-circle me-1"></i> 
-                            {{ log.alterado_por.get_full_name|default:log.alterado_por.username }}
+                            {% if log.alterado_por %}
+                                {% if log.alterado_por.get_full_name %}{{ log.alterado_por.get_full_name }}{% else %}{{ log.alterado_por.username }}{% endif %}
+                            {% else %}
+                                Sistema
+                            {% endif %}
                         </div>
                     </div>
                     {% empty %}

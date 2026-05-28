@@ -28,24 +28,32 @@
         font-family: 'Outfit', sans-serif;
     }
 
+    .bi-shell {
+        margin-inline: auto;
+        max-width: 100%;
+        width: 100%;
+    }
+
     .bi-page {
         color: var(--bi-ink);
         display: grid;
-        gap: 24px;
+        gap: 18px;
+        width: 100%;
     }
 
     .bi-hero {
+        align-items: center;
         background:
             linear-gradient(135deg, rgba(6,35,63,0.98), rgba(11,79,134,0.9)),
             radial-gradient(circle at 82% 20%, rgba(50,183,212,0.28), transparent 22rem);
-        border-radius: 30px;
+        border-radius: 26px;
         box-shadow: var(--bi-shadow);
         color: #ffffff;
         display: grid;
-        gap: 24px;
+        gap: 18px;
         grid-template-columns: minmax(0, 1fr) auto;
         overflow: hidden;
-        padding: clamp(24px, 4vw, 42px);
+        padding: clamp(22px, 3vw, 34px);
         position: relative;
     }
 
@@ -59,9 +67,9 @@
     }
 
     .bi-hero > * { position: relative; z-index: 1; }
-    .bi-kicker { color: #9cf2ff; font-size: 0.74rem; font-weight: 950; letter-spacing: 0.14em; margin-bottom: 12px; text-transform: uppercase; }
-    .bi-title { font-size: clamp(2.2rem, 5vw, 4.4rem); font-weight: 950; letter-spacing: -0.06em; line-height: 0.95; margin: 0; max-width: 850px; }
-    .bi-copy { color: rgba(255,255,255,0.76); font-size: 1.02rem; font-weight: 650; line-height: 1.65; margin: 16px 0 0; max-width: 720px; }
+    .bi-kicker { color: #9cf2ff; font-size: 0.72rem; font-weight: 950; letter-spacing: 0.14em; margin-bottom: 10px; text-transform: uppercase; }
+    .bi-title { font-size: clamp(2rem, 3.6vw, 3.55rem); font-weight: 950; letter-spacing: -0.055em; line-height: 0.98; margin: 0; max-width: 900px; }
+    .bi-copy { color: rgba(255,255,255,0.76); font-size: 0.98rem; font-weight: 650; line-height: 1.55; margin: 12px 0 0; max-width: 790px; }
     .bi-actions { align-content: start; display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; }
     .bi-btn { align-items: center; border-radius: 16px; display: inline-flex; font-weight: 900; gap: 9px; justify-content: center; min-height: 46px; padding: 12px 18px; text-decoration: none; }
     .bi-btn-light { background: #ffffff; color: var(--bi-navy); }
@@ -81,52 +89,214 @@
     .form-select.form-control-bi { background-color: #f6fafc !important; border: 1px solid var(--bi-line) !important; border-radius: 15px !important; color: var(--bi-ink) !important; font-weight: 750 !important; min-height: 48px; padding: 0.72rem 0.95rem !important; }
     .form-control-bi:focus { background: #ffffff !important; border-color: var(--bi-blue) !important; box-shadow: 0 0 0 4px rgba(11,79,134,0.1) !important; }
 
-    .bi-kpis { display: grid; gap: 16px; grid-template-columns: repeat(12, minmax(0, 1fr)); }
-    .bi-kpi { background: var(--bi-card); border: 1px solid var(--bi-line); border-radius: 24px; box-shadow: 0 12px 32px rgba(6,35,63,0.07); min-height: 154px; overflow: hidden; padding: 20px; position: relative; }
+    .bi-kpis { display: grid; gap: 14px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .bi-kpi { background: var(--bi-card); border: 1px solid var(--bi-line); border-radius: 22px; box-shadow: 0 12px 32px rgba(6,35,63,0.07); min-height: 138px; overflow: hidden; padding: 18px; position: relative; }
     .bi-kpi::before { background: var(--tone, var(--bi-blue)); content: ""; height: 5px; inset: 0 0 auto 0; position: absolute; }
-    .bi-kpi.small { grid-column: span 2; }
-    .bi-kpi.wide { background: linear-gradient(135deg, var(--bi-navy), var(--bi-blue)); color: #ffffff; grid-column: span 4; }
-    .bi-kpi i { align-items: center; background: color-mix(in srgb, var(--tone, var(--bi-blue)) 12%, white); border-radius: 16px; color: var(--tone, var(--bi-blue)); display: inline-flex; font-size: 1.25rem; height: 46px; justify-content: center; margin-bottom: 18px; width: 46px; }
+    .bi-kpi.small, .bi-kpi.wide { grid-column: auto; }
+    .bi-kpi.wide { background: linear-gradient(135deg, var(--bi-navy), var(--bi-blue)); color: #ffffff; }
+    .bi-kpi i { align-items: center; background: color-mix(in srgb, var(--tone, var(--bi-blue)) 12%, white); border-radius: 15px; color: var(--tone, var(--bi-blue)); display: inline-flex; font-size: 1.12rem; height: 42px; justify-content: center; margin-bottom: 14px; width: 42px; }
     .bi-kpi.wide i { background: rgba(255,255,255,0.13); color: #ffffff; }
     .bi-kpi span { color: var(--bi-muted); display: block; font-size: 0.68rem; font-weight: 950; letter-spacing: 0.09em; text-transform: uppercase; }
     .bi-kpi.wide span { color: rgba(255,255,255,0.68); }
-    .bi-kpi strong { display: block; font-size: clamp(1.9rem, 4vw, 2.8rem); font-weight: 950; letter-spacing: -0.05em; line-height: 1; margin-top: 4px; overflow-wrap: anywhere; }
-    .bi-kpi.wide strong { font-size: clamp(1.8rem, 4vw, 2.4rem); }
-    .bi-kpi p { color: var(--bi-muted); font-size: 0.8rem; font-weight: 800; margin: 14px 0 0; text-transform: uppercase; }
+    .bi-kpi strong { display: block; font-size: clamp(1.75rem, 2.8vw, 2.35rem); font-weight: 950; letter-spacing: -0.05em; line-height: 1; margin-top: 4px; overflow-wrap: anywhere; }
+    .bi-kpi.wide strong { font-size: clamp(1.55rem, 2.5vw, 2.05rem); }
+    .bi-kpi p { color: var(--bi-muted); font-size: 0.75rem; font-weight: 800; margin: 12px 0 0; text-transform: uppercase; }
     .bi-kpi.wide p { color: rgba(255,255,255,0.72); }
-    .risk-value-box { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); border-radius: 16px; margin-top: 16px; padding: 12px; }
+    .risk-value-box { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.14); border-radius: 14px; margin-top: 12px; padding: 10px; }
 
-    .bi-grid { display: grid; gap: 24px; grid-template-columns: minmax(0, 1.45fr) minmax(340px, 0.55fr); }
-    .bi-grid-2 { display: grid; gap: 24px; grid-template-columns: minmax(340px, 0.55fr) minmax(0, 1.45fr); }
-    .bi-card { background: rgba(255,255,255,0.94); border: 1px solid var(--bi-line); border-radius: 28px; box-shadow: 0 14px 36px rgba(6,35,63,0.07); overflow: hidden; }
+    .bi-chart-grid, .bi-chart-grid-2 { display: grid; gap: 18px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .bi-card { background: rgba(255,255,255,0.96); border: 1px solid var(--bi-line); border-radius: 24px; box-shadow: 0 14px 36px rgba(6,35,63,0.07); overflow: hidden; }
     .bi-card-head { align-items: center; border-bottom: 1px solid var(--bi-line); display: flex; gap: 16px; justify-content: space-between; padding: 20px 22px; }
     .bi-card-head h2 { font-size: 1.05rem; font-weight: 950; margin: 0; }
     .bi-card-head p { color: var(--bi-muted); font-size: 0.86rem; font-weight: 650; margin: 4px 0 0; }
-    .bi-card-body { padding: 22px; }
-    .chart-box { height: 320px; position: relative; }
-    .chart-box.short { height: 286px; }
+    .bi-card-body { padding: 20px; }
+    .chart-box { height: 280px; position: relative; }
+    .chart-box.short { height: 280px; }
 
-    .report-table-wrap { max-height: 620px; overflow: auto; }
-    .table-bi { border-collapse: collapse; margin: 0; width: 100%; }
-    .table-bi thead th { background: var(--bi-navy) !important; border: 0; color: #ffffff !important; font-size: 0.66rem; font-weight: 950; letter-spacing: 0.1em; padding: 16px 14px; text-transform: uppercase; white-space: nowrap; }
-    .table-bi tbody td { border-bottom: 1px solid var(--bi-line); color: #2a3a4f; font-size: 0.88rem; padding: 15px 14px; vertical-align: middle; }
-    .table-bi tbody tr:hover { background: #f7fbfd; }
+    .report-card { overflow: hidden; }
+    .report-card .bi-card-head {
+        background:
+            radial-gradient(circle at 8% 0%, rgba(50,183,212,0.1), transparent 18rem),
+            linear-gradient(180deg, #ffffff, #f8fbfd);
+    }
+    .report-count {
+        align-items: center;
+        background: #eaf3ff;
+        border: 1px solid #d9e9ff;
+        border-radius: 999px;
+        color: var(--bi-blue);
+        display: inline-flex;
+        font-size: 0.78rem;
+        font-weight: 950;
+        gap: 8px;
+        padding: 10px 16px;
+        white-space: nowrap;
+    }
+    .report-table-wrap { background: #f7fbfd; max-height: none; overflow: visible; padding: 12px; }
+    .table-bi { border-collapse: separate; border-spacing: 0 8px; margin: 0; table-layout: fixed; width: 100%; }
+    .table-bi thead th { background: transparent !important; border: 0; color: var(--bi-muted) !important; font-size: clamp(0.57rem, 0.55vw, 0.66rem); font-weight: 950; letter-spacing: 0.1em; padding: 4px 12px 8px; text-transform: uppercase; white-space: nowrap; }
+    .table-bi tbody td { background: #ffffff; border-bottom: 1px solid var(--bi-line); border-top: 1px solid var(--bi-line); color: #2a3a4f; font-size: clamp(0.76rem, 0.72vw, 0.88rem); padding: 13px 12px; vertical-align: middle; overflow-wrap: anywhere; }
+    .table-bi tbody td:first-child { border-left: 1px solid var(--bi-line); border-radius: 16px 0 0 16px; }
+    .table-bi tbody td:last-child { border-right: 1px solid var(--bi-line); border-radius: 0 16px 16px 0; }
+    .table-bi th:nth-child(1), .table-bi td:nth-child(1) { width: 18%; padding-left: 24px; }
+    .table-bi th:nth-child(2), .table-bi td:nth-child(2) { width: 28%; }
+    .table-bi th:nth-child(3), .table-bi td:nth-child(3) { width: 22%; }
+    .table-bi th:nth-child(4), .table-bi td:nth-child(4) { width: 17%; }
+    .table-bi th:nth-child(5), .table-bi td:nth-child(5) { width: 15%; padding-right: 24px; }
+    .table-bi tbody tr { transition: transform 160ms ease, filter 160ms ease; }
+    .table-bi tbody tr:hover { filter: drop-shadow(0 10px 18px rgba(6,35,63,0.08)); transform: translateY(-1px); }
     .table-bi a { color: var(--bi-blue); font-weight: 950; text-decoration: none; }
-    .alert-mini { align-items: center; border: 1px solid var(--bi-line); border-radius: 99px; display: inline-flex; font-size: 0.68rem; font-weight: 900; gap: 7px; padding: 6px 9px; white-space: nowrap; }
+    .contract-report-link {
+        align-items: center;
+        display: inline-flex;
+        gap: 10px;
+    }
+    .contract-report-link::before {
+        background: linear-gradient(135deg, var(--bi-navy), var(--bi-blue));
+        border-radius: 8px;
+        content: "";
+        height: 28px;
+        width: 4px;
+    }
+    .date-alert-stack {
+        align-items: center;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .date-alert-stack strong { color: var(--bi-ink); font-weight: 950; }
+    .alert-mini { align-items: center; background: #f9fbfd; border: 1px solid var(--bi-line); border-radius: 99px; display: inline-flex; font-size: 0.68rem; font-weight: 900; gap: 7px; line-height: 1.2; padding: 7px 10px; }
     .alert-mini i { border-radius: 99px; display: inline-block; height: 9px; width: 9px; }
-    .owner-mini { align-items: center; display: inline-flex; gap: 8px; font-weight: 800; }
-    .owner-mini span { align-items: center; background: #eaf5f9; border-radius: 10px; color: var(--bi-blue); display: inline-flex; font-size: 0.7rem; font-weight: 950; height: 28px; justify-content: center; width: 28px; }
-    .legend-panel { background: #f6fafc; border-top: 1px solid var(--bi-line); padding: 18px 22px; }
-    .legend-panel h3 { color: var(--bi-muted); font-size: 0.72rem; font-weight: 950; letter-spacing: 0.1em; margin-bottom: 12px; text-transform: uppercase; }
-    .legend-row { display: flex; flex-wrap: wrap; gap: 16px; }
-    .legend-item { align-items: center; color: var(--bi-muted); display: inline-flex; font-size: 0.8rem; font-weight: 700; gap: 8px; }
-    .legend-item i { border-radius: 99px; display: inline-block; height: 11px; width: 11px; }
+    .owner-mini { align-items: center; display: inline-flex; gap: 8px; font-weight: 800; max-width: 100%; min-width: 0; }
+    .owner-mini span { align-items: center; background: #eaf5f9; border-radius: 10px; color: var(--bi-blue); display: inline-flex; flex: 0 0 28px; font-size: 0.7rem; font-weight: 950; height: 28px; justify-content: center; width: 28px; }
+    .owner-mini strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .investment-value { color: var(--bi-ink); font-weight: 950; letter-spacing: -0.01em; }
+    .status-pill {
+        align-items: center;
+        background: #f8fafc;
+        border: 1px solid var(--bi-line);
+        border-radius: 999px;
+        color: var(--bi-muted);
+        display: inline-flex;
+        font-size: 0.68rem;
+        font-weight: 950;
+        gap: 7px;
+        padding: 8px 13px;
+        text-transform: uppercase;
+    }
+    .status-pill::before {
+        background: var(--bi-green);
+        border-radius: 999px;
+        content: "";
+        height: 7px;
+        width: 7px;
+    }
+    .legend-panel {
+        background:
+            radial-gradient(circle at 8% 0%, rgba(50,183,212,0.12), transparent 18rem),
+            linear-gradient(180deg, #f8fbfd, #ffffff);
+        border-top: 1px solid var(--bi-line);
+        padding: 22px;
+    }
+    .legend-panel h3 { color: var(--bi-ink); font-size: 0.9rem; font-weight: 950; letter-spacing: -0.01em; margin: 0; }
+    .legend-panel p { color: var(--bi-muted); font-size: 0.78rem; font-weight: 750; margin: 4px 0 0; }
+    .legend-head { align-items: center; display: flex; gap: 12px; justify-content: space-between; margin-bottom: 14px; }
+    .legend-head i {
+        align-items: center;
+        background: #eaf5f9;
+        border-radius: 14px;
+        color: var(--bi-blue);
+        display: inline-flex;
+        height: 42px;
+        justify-content: center;
+        width: 42px;
+    }
+    .legend-row { display: grid; gap: 10px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+    .legend-item {
+        align-items: center;
+        background: rgba(255,255,255,0.84);
+        border: 1px solid var(--bi-line);
+        border-radius: 16px;
+        color: var(--bi-muted);
+        display: grid;
+        gap: 7px;
+        font-size: 0.76rem;
+        font-weight: 750;
+        min-height: 82px;
+        padding: 12px;
+    }
+    .legend-item i {
+        border-radius: 999px;
+        box-shadow: 0 0 0 5px color-mix(in srgb, var(--legend-tone, var(--bi-blue)) 12%, transparent);
+        display: inline-block;
+        height: 11px;
+        width: 34px;
+    }
+    .legend-item strong {
+        color: var(--bi-ink);
+        display: block;
+        font-size: 0.78rem;
+        font-weight: 950;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+    }
 
     @media (max-width: 1180px) {
-        .bi-hero, .bi-grid, .bi-grid-2 { grid-template-columns: 1fr; }
+        .bi-hero, .bi-chart-grid, .bi-chart-grid-2 { grid-template-columns: 1fr; }
         .bi-actions { justify-content: flex-start; }
-        .bi-kpi.small { grid-column: span 3; }
-        .bi-kpi.wide { grid-column: span 12; }
+        .bi-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        .bi-kpi.wide { grid-column: span 2; }
+        .table-bi th:nth-child(4), .table-bi td:nth-child(4) { display: none; }
+        .table-bi th:nth-child(1), .table-bi td:nth-child(1) { width: 20%; }
+        .table-bi th:nth-child(2), .table-bi td:nth-child(2) { width: 34%; }
+        .table-bi th:nth-child(3), .table-bi td:nth-child(3) { width: 26%; }
+        .table-bi th:nth-child(5), .table-bi td:nth-child(5) { width: 20%; }
+        .legend-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 860px) {
+        .report-table-wrap { padding: 0 12px 14px; }
+        .table-bi, .table-bi tbody, .table-bi tr, .table-bi td { display: block; width: 100% !important; }
+        .table-bi thead { display: none; }
+        .table-bi tbody { display: grid; gap: 14px; }
+        .table-bi tbody tr {
+            background: linear-gradient(180deg, #ffffff 0%, #f9fcfe 100%);
+            border: 1px solid var(--bi-line);
+            border-radius: 20px;
+            box-shadow: 0 12px 26px rgba(6,35,63,0.07);
+            display: grid;
+            overflow: hidden;
+            padding: 14px;
+        }
+        .table-bi tbody td {
+            align-items: center;
+            border-bottom: 1px solid #edf3f8;
+            display: flex !important;
+            gap: 14px;
+            justify-content: space-between;
+            padding: 11px 0 !important;
+            text-align: right !important;
+        }
+        .table-bi tbody td::before {
+            color: var(--bi-muted);
+            content: attr(data-label);
+            flex: 0 0 96px;
+            font-size: 0.68rem;
+            font-weight: 950;
+            letter-spacing: 0.08em;
+            text-align: left;
+            text-transform: uppercase;
+        }
+        .table-bi tbody td:first-child {
+            display: block !important;
+            text-align: left !important;
+        }
+        .table-bi tbody td:first-child::before { display: none; }
+        .table-bi a { font-size: 1.18rem; }
+        .owner-mini, .alert-mini { justify-content: flex-end; text-align: right; }
+        .table-bi tbody td:last-child { border-bottom: 0; }
+        .legend-row { grid-template-columns: 1fr; }
+        .legend-head { align-items: flex-start; justify-content: flex-start; }
     }
 
     @media (max-width: 760px) {
@@ -147,7 +317,12 @@
 </style>
 {% endblock %}
 
+{% block content_wrapper_open %}
+<div class="container-fluid py-4 py-lg-5 px-2 px-sm-3 px-xxl-4">
+{% endblock %}
+
 {% block content %}
+<div class="bi-shell">
 <div class="bi-page">
     <section class="bi-hero no-print">
         <div>
@@ -181,7 +356,7 @@
         <article class="bi-kpi wide"><div class="d-flex justify-content-between gap-3"><div><span>Patrimônio gerido</span><strong>R$ {{ kpi_valor|floatformat:0|intcomma }}</strong><p>Valor total consolidado</p></div><i class="bi bi-currency-dollar"></i></div><div class="risk-value-box"><span>Capital em risco nos próximos 30 dias</span><strong class="fs-5 mt-1">R$ {{ kpi_valor_vencendo_30d|floatformat:2|intcomma }}</strong></div></article>
     </section>
 
-    <section class="bi-grid">
+    <section class="bi-chart-grid">
         <div class="bi-card">
             <div class="bi-card-head"><div><h2>Dispersão de vigências</h2><p>Volume de contratos por mês de vencimento.</p></div><span class="badge bg-light text-dark border rounded-pill px-3 py-2 fw-bold">Próximos ciclos</span></div>
             <div class="bi-card-body"><div class="chart-box"><canvas id="timelineChart"></canvas></div></div>
@@ -192,7 +367,7 @@
         </div>
     </section>
 
-    <section class="bi-grid-2">
+    <section class="bi-chart-grid-2">
         <div class="bi-card">
             <div class="bi-card-head"><div><h2>Criticidade</h2><p>Alertas por faixa de prazo.</p></div></div>
             <div class="bi-card-body"><div class="chart-box short"><canvas id="alertasChart"></canvas></div></div>
@@ -203,10 +378,10 @@
         </div>
     </section>
 
-    <section class="bi-card">
+    <section class="bi-card report-card">
         <div class="bi-card-head">
             <div><h2>Detalhamento analítico</h2><p>Contratos ordenados por vencimento para conferência.</p></div>
-            <span class="badge bg-primary bg-opacity-10 text-primary px-4 py-2 rounded-pill fw-bold">{{ contratos|length }} contratos analisados</span>
+            <span class="report-count"><i class="bi bi-list-check"></i>{{ contratos|length }} contratos analisados</span>
         </div>
         <div class="report-table-wrap">
             <table class="table-bi">
@@ -222,11 +397,11 @@
                 <tbody>
                     {% for contrato in contratos %}
                     <tr>
-                        <td class="ps-4"><a href="{% url 'contratos:detalhe' contrato.id %}">{{ contrato.numero_contrato }}</a></td>
-                        <td><div class="d-flex align-items-center gap-2"><strong>{{ contrato.data_vencimento|date:"d/m/Y" }}</strong><span class="alert-mini" title="{{ contrato.alerta_info.description }}"><i style="background: {{ contrato.alerta_info.color }};"></i>{{ contrato.alerta_info.label }}</span></div></td>
-                        <td><span class="owner-mini"><span>{{ contrato.responsavel|slice:":1"|upper }}</span>{{ contrato.responsavel|default:"Não atribuído" }}</span></td>
-                        <td class="fw-bold text-dark">R$ {{ contrato.valor_contrato|floatformat:2|intcomma }}</td>
-                        <td class="text-end pe-4"><span class="badge bg-light text-muted border px-3 py-2 rounded-pill fw-bold text-uppercase" style="font-size: 0.65rem;">{{ contrato.get_status_display }}</span></td>
+                        <td class="ps-4" data-label="Contrato"><a href="{% url 'contratos:detalhe' contrato.id %}" class="contract-report-link">{{ contrato.numero_contrato }}</a></td>
+                        <td data-label="Vigencia final"><div class="date-alert-stack"><strong>{{ contrato.data_vencimento|date:"d/m/Y" }}</strong><span class="alert-mini" title="{{ contrato.alerta_info.description }}"><i style="background: {{ contrato.alerta_info.color }};"></i>{{ contrato.alerta_info.label }}</span></div></td>
+                        <td data-label="Responsavel"><span class="owner-mini"><span>{{ contrato.responsavel|slice:":1"|upper }}</span><strong>{{ contrato.responsavel|default:"Não atribuído" }}</strong></span></td>
+                        <td class="investment-value" data-label="Investimento">R$ {{ contrato.valor_contrato|floatformat:2|intcomma }}</td>
+                        <td class="text-end pe-4" data-label="Status"><span class="status-pill">{{ contrato.get_status_display }}</span></td>
                     </tr>
                     {% empty %}
                     <tr><td colspan="5" class="text-center py-5 text-muted fw-bold">Não foram encontrados dados para o período selecionado.</td></tr>
@@ -235,14 +410,26 @@
             </table>
         </div>
         <div class="legend-panel">
-            <h3>Legenda de alertas</h3>
+            <div class="legend-head">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="bi bi-signpost-split"></i>
+                    <div>
+                        <h3>Régua de alertas</h3>
+                        <p>Leitura rápida do risco por prazo de vencimento.</p>
+                    </div>
+                </div>
+            </div>
             <div class="legend-row">
                 {% for config in alertas_config %}
-                <span class="legend-item"><i style="background: {{ config.color }};"></i><strong>{{ config.label }}:</strong> {{ config.desc }}</span>
+                <span class="legend-item" style="--legend-tone: {{ config.color }};">
+                    <i style="background: {{ config.color }};"></i>
+                    <span><strong>{{ config.label }}</strong>{{ config.desc }}</span>
+                </span>
                 {% endfor %}
             </div>
         </div>
     </section>
+</div>
 </div>
 
 <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
@@ -348,3 +535,4 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 </script>
 {% endblock %}
+
