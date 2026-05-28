@@ -30,20 +30,6 @@ try:
     application = app
     handler = app
     
-    # Verificação rápida de secretarias na Vercel (Roda mesmo sem AUTO_MIGRATE para garantir a correção)
-    if os.environ.get('VERCEL'):
-        try:
-            from admin_panel.models import Secretaria
-            if not Secretaria.objects.exists() or Secretaria.objects.filter(nome="Secretaria de Administração").exists():
-                print("Inconsistência nas secretarias detectada. Corrigindo...")
-                from django.core.management import call_command
-                call_command('migrate', 'admin_panel', '0006_normalize_secretarias', '--noinput')
-                
-                import seed_secretarias
-                seed_secretarias.seed_secretarias()
-        except Exception as e:
-            print(f"Erro ao verificar/corrigir secretarias: {e}")
-
     # Executa migracoes somente quando explicitamente solicitado.
     # Rodar migrate em todo cold start da Vercel deixa o painel lento.
     if os.environ.get('VERCEL') and os.environ.get('AUTO_MIGRATE', 'false').lower() == 'true':
