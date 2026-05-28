@@ -8,11 +8,25 @@ django.setup()
 from admin_panel.models import Secretaria
 
 secretarias = [
-    "TRANSPORTE", "COMUNICAÇÃO", "EDUCAÇÃO", "FAZENDA", "OBRAS", "SAÚDE", 
-    "DESENVOLVIMENTO", "SEGURANÇA PUBLICA", "TURISMO E LAZER", "CULTURA", 
-    "MEIO AMBIENTE", "ASSISTENCIA SOCIAL", "ADMINISTRAÇÃO", "PESCA", 
-    "ESPORTE", "GABINETE", "AGRICULTURA", "PROCURADORIA GERAL", 
-    "CONTROLE INTERNO", "SJB PREV", "SERVIÇO PUBLICO"
+    "ADMINISTRAÇÃO",
+    "AGRICULTURA",
+    "ASSISTENCIA SOCIAL",
+    "COMUNICAÇÃO",
+    "CONTROLE INTERNO",
+    "CULTURA",
+    "DESENVOLVIMENTO",
+    "EDUCAÇÃO",
+    "ESPORTE",
+    "FAZENDA",
+    "GABINETE",
+    "MEIO AMBIENTE",
+    "OBRAS",
+    "PESCA",
+    "PROCURADORIA GERAL",
+    "SAÚDE",
+    "SEGURANÇA PÚBLICA",
+    "SERVIÇO PUBLICO",
+    "SJB PREV"
 ]
 
 def seed_secretarias():

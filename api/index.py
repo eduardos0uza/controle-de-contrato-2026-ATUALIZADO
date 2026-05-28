@@ -30,6 +30,20 @@ try:
     application = app
     handler = app
     
+    # Verificação rápida de secretarias na Vercel (Roda mesmo sem AUTO_MIGRATE para garantir a correção)
+    if os.environ.get('VERCEL'):
+        try:
+            from admin_panel.models import Secretaria
+            if not Secretaria.objects.exists() or Secretaria.objects.filter(nome="Secretaria de Administração").exists():
+                print("Inconsistência nas secretarias detectada. Corrigindo...")
+                from django.core.management import call_command
+                call_command('migrate', 'admin_panel', '0006_normalize_secretarias', '--noinput')
+                
+                import seed_secretarias
+                seed_secretarias.seed_secretarias()
+        except Exception as e:
+            print(f"Erro ao verificar/corrigir secretarias: {e}")
+
     # Executa migracoes somente quando explicitamente solicitado.
     # Rodar migrate em todo cold start da Vercel deixa o painel lento.
     if os.environ.get('VERCEL') and os.environ.get('AUTO_MIGRATE', 'false').lower() == 'true':
@@ -37,31 +51,6 @@ try:
             from django.core.management import call_command
             print("Verificando migrações na Vercel...")
             call_command('migrate', '--noinput')
-            
-            # Cria secretarias padrão se não existirem
-            from admin_panel.models import Secretaria
-            if not Secretaria.objects.exists():
-                from django.utils.text import slugify
-                print("Criando secretarias padrão...")
-                secretarias_padrao = [
-                    {"nome": "Gabinete do Prefeito", "icone": "bi-person-badge", "cor": "#003B70"},
-                    {"nome": "Secretaria de Saúde", "icone": "bi-heart-pulse", "cor": "#dc3545"},
-                    {"nome": "Secretaria de Educação", "icone": "bi-book", "cor": "#0d6efd"},
-                    {"nome": "Secretaria de Fazenda", "icone": "bi-cash-coin", "cor": "#198754"},
-                    {"nome": "Secretaria de Obras", "icone": "bi-cone-striped", "cor": "#fd7e14"},
-                    {"nome": "Secretaria de Assistência Social", "icone": "bi-people", "cor": "#6f42c1"},
-                    {"nome": "Secretaria de Administração", "icone": "bi-briefcase", "cor": "#6c757d"},
-                    {"nome": "Procuradoria Geral", "icone": "bi-shield-check", "cor": "#212529"},
-                ]
-                for sec_data in secretarias_padrao:
-                    Secretaria.objects.get_or_create(
-                        nome=sec_data["nome"],
-                        defaults={
-                            "slug": slugify(sec_data["nome"]),
-                            "icone": sec_data["icone"],
-                            "cor": sec_data["cor"]
-                        }
-                    )
             print("Processo de inicialização concluído!")
         except Exception as e_mig:
             print(f"Erro na inicialização (migrações): {e_mig}")
