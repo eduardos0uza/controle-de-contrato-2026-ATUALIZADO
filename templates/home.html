@@ -35,19 +35,19 @@
        ANIMAÇÕES GLOBAIS
        ========================================= */
     @keyframes fadeInUp {
-        0% { opacity: 0; transform: translateY(40px); }
+        0% { opacity: 0; transform: translateY(30px); }
         100% { opacity: 1; transform: translateY(0); }
     }
     
     @keyframes float-gentle { 
         0% { transform: translateY(0px) rotate(0deg); } 
-        50% { transform: translateY(-8px) rotate(0.5deg); } 
+        50% { transform: translateY(-6px) rotate(0.3deg); } 
         100% { transform: translateY(0px) rotate(0deg); } 
     }
 
     @keyframes float-opposed { 
         0% { transform: translateY(0px) rotate(0deg); } 
-        50% { transform: translateY(8px) rotate(-0.5deg); } 
+        50% { transform: translateY(6px) rotate(-0.3deg); } 
         100% { transform: translateY(0px) rotate(0deg); } 
     }
 
@@ -58,149 +58,130 @@
 
     .animate-up {
         opacity: 0;
-        animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.2s; }
-    .delay-3 { animation-delay: 0.3s; }
-    .delay-4 { animation-delay: 0.4s; }
-    .delay-5 { animation-delay: 0.5s; }
+    .delay-1 { animation-delay: 0.08s; }
+    .delay-2 { animation-delay: 0.15s; }
+    .delay-3 { animation-delay: 0.22s; }
+    .delay-4 { animation-delay: 0.3s; }
+    .delay-5 { animation-delay: 0.38s; }
 
     /* =========================================
-       HERO SECTION (PREMIUM & INSTITUCIONAL)
+       NAVBAR ALIGNMENT & INTEGRATION
+       ========================================= */
+    .navbar-elite {
+        top: 4px !important;
+        border-bottom: 1px solid rgba(0, 59, 112, 0.07) !important;
+        background: rgba(255, 255, 255, 0.92) !important;
+        backdrop-filter: blur(12px) !important;
+        -webkit-backdrop-filter: blur(12px) !important;
+        box-shadow: 0 4px 20px rgba(0, 59, 112, 0.02) !important;
+        transition: all 0.3s ease;
+    }
+
+    /* =========================================
+       HERO SECTION (BALANCED 2-COLUMNS)
        ========================================= */
     .hero-section { 
         position: relative; 
-        padding: 180px 24px 110px; 
+        padding: 120px 24px 80px; /* Reduced top/bottom padding to start right below navbar */
         display: flex; 
         align-items: center; 
-        min-height: 95vh; 
+        min-height: 82vh; 
         background-color: #ffffff;
+        /* Extremely subtle and elegant background gradients, no aggressive wireframe grid */
         background-image: 
-            radial-gradient(circle at 80% 20%, rgba(0, 59, 112, 0.05) 0%, rgba(243, 246, 251, 0.4) 50%, #ffffff 100%),
-            linear-gradient(rgba(0, 59, 112, 0.02) 1.5px, transparent 1.5px),
-            linear-gradient(90deg, rgba(0, 59, 112, 0.02) 1.5px, transparent 1.5px);
-        background-size: auto, 50px 50px, 50px 50px;
+            radial-gradient(circle at 85% 30%, rgba(0, 59, 112, 0.04) 0%, rgba(248, 250, 252, 0.4) 50%, #ffffff 100%),
+            linear-gradient(rgba(0, 59, 112, 0.007) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 59, 112, 0.007) 1px, transparent 1px);
+        background-size: auto, 40px 40px, 40px 40px;
         background-position: center, center top, center top;
         border-bottom: 1px solid rgba(0, 59, 112, 0.05);
     }
     
     .hero-glow-1 { 
         position: absolute; 
-        top: -15%; 
+        top: -10%; 
         right: -10%; 
-        width: 850px; 
-        height: 850px; 
-        background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, rgba(0, 59, 112, 0.02) 60%, transparent 80%); 
-        filter: blur(90px); 
-        z-index: 1; 
-        pointer-events: none;
-    }
-
-    .hero-glow-2 { 
-        position: absolute; 
-        bottom: -20%; 
-        left: -10%; 
-        width: 700px; 
-        height: 700px; 
-        background: radial-gradient(circle, rgba(56, 189, 248, 0.06) 0%, transparent 70%); 
-        filter: blur(85px); 
+        width: 750px; 
+        height: 750px; 
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, rgba(0, 59, 112, 0.015) 65%, transparent 80%); 
+        filter: blur(80px); 
         z-index: 1; 
         pointer-events: none;
     }
     
     .hero-container { 
-        max-width: 1340px; 
+        max-width: 1400px; /* Wider layout to reduce lateral dead space */
         margin: 0 auto; 
         display: grid; 
-        grid-template-columns: 1.15fr 0.85fr; 
-        gap: 80px; 
-        align-items: center; 
+        grid-template-columns: 1.1fr 0.9fr; 
+        gap: 50px; /* Balanced spacing */
+        align-items: center; /* Perfect vertical alignment */
         position: relative; 
         z-index: 10; 
         width: 100%;
+        padding: 0 15px;
     }
     
     .hero-badge { 
         display: inline-flex; 
         align-items: center; 
-        gap: 10px; 
-        background: rgba(0, 59, 112, 0.05); 
-        border: 1px solid rgba(0, 59, 112, 0.08); 
+        gap: 8px; 
+        background: rgba(0, 59, 112, 0.04); 
+        border: 1px solid rgba(0, 59, 112, 0.06); 
         color: var(--primary-navy); 
-        padding: 8px 18px; 
+        padding: 6px 14px; 
         border-radius: 50px; 
-        font-size: 0.85rem; 
+        font-size: 0.8rem; 
         font-weight: 700; 
-        margin-bottom: 24px; 
-        letter-spacing: 0.02em;
+        margin-bottom: 20px; 
+        letter-spacing: 0.01em;
         backdrop-filter: blur(8px);
     }
     .hero-badge .dot { 
-        width: 8px; 
-        height: 8px; 
+        width: 7px; 
+        height: 7px; 
         background-color: #22c55e; 
         border-radius: 50%; 
-        box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+        box-shadow: 0 0 10px rgba(34, 197, 94, 0.5);
         display: inline-block;
     }
     
     .hero-title { 
-        font-size: clamp(3.2rem, 5vw, 4.4rem); 
+        font-size: clamp(2.8rem, 4vw, 3.8rem); /* Slightly more compact and robust */
         font-weight: 900; 
-        line-height: 1.1; 
-        margin-bottom: 24px; 
+        line-height: 1.12; 
+        margin-bottom: 20px; 
         color: var(--text-dark); 
         letter-spacing: -0.03em; 
     }
     .hero-title span { 
-        background: linear-gradient(135deg, var(--primary-navy) 0%, #2563eb 60%, #38bdf8 100%); 
+        background: linear-gradient(135deg, var(--primary-navy) 0%, #1e40af 60%, #2563eb 100%); 
         -webkit-background-clip: text; 
         -webkit-text-fill-color: transparent; 
         font-weight: 900;
     }
     
     .hero-subtitle { 
-        font-size: 1.18rem; 
+        font-size: 1.1rem; 
         color: var(--text-light); 
-        line-height: 1.75; 
-        margin-bottom: 40px; 
+        line-height: 1.65; 
+        margin-bottom: 32px; 
         max-width: 580px; 
-        font-weight: 400; 
-        opacity: 0.95;
+        font-weight: 500; 
+        opacity: 0.9;
     }
     
     .hero-buttons { 
         display: flex; 
-        gap: 16px; 
-        margin-bottom: 40px; 
+        gap: 14px; 
+        margin-bottom: 0; 
     }
     .btn-hero-primary { 
         background: linear-gradient(135deg, var(--primary-navy) 0%, #004d94 100%); 
         color: #ffffff !important; 
-        padding: 16px 36px; 
-        border-radius: 50px; 
-        font-weight: 700; 
-        text-decoration: none; 
-        display: flex; 
-        align-items: center; 
-        gap: 10px; 
-        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-        font-size: 1.05rem;
-        box-shadow: 0 12px 28px rgba(0, 59, 112, 0.22);
-        border: none;
-    }
-    .btn-hero-primary:hover { 
-        background: linear-gradient(135deg, #002d5a 0%, var(--primary-navy) 100%); 
-        transform: translateY(-3px); 
-        box-shadow: 0 16px 35px rgba(0, 59, 112, 0.32); 
-    }
-    
-    .btn-outline-light { 
-        background: rgba(255, 255, 255, 0.8); 
-        color: var(--text-dark) !important; 
-        border: 1px solid rgba(0, 59, 112, 0.15); 
-        padding: 16px 32px; 
+        padding: 14px 32px; 
         border-radius: 50px; 
         font-weight: 700; 
         text-decoration: none; 
@@ -208,221 +189,238 @@
         align-items: center; 
         gap: 8px; 
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-        font-size: 1.05rem;
+        font-size: 0.98rem;
+        box-shadow: 0 10px 24px rgba(0, 59, 112, 0.18);
+        border: none;
+    }
+    .btn-hero-primary:hover { 
+        background: linear-gradient(135deg, #002d5a 0%, var(--primary-navy) 100%); 
+        transform: translateY(-2px); 
+        box-shadow: 0 14px 30px rgba(0, 59, 112, 0.28); 
+    }
+    
+    .btn-outline-light { 
+        background: rgba(255, 255, 255, 0.85); 
+        color: var(--text-dark) !important; 
+        border: 1px solid rgba(0, 59, 112, 0.12); 
+        padding: 14px 28px; 
+        border-radius: 50px; 
+        font-weight: 700; 
+        text-decoration: none; 
+        display: flex; 
+        align-items: center; 
+        gap: 6px; 
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+        font-size: 0.98rem;
         backdrop-filter: blur(8px);
     }
     .btn-outline-light:hover { 
         background: #f8fafc; 
         border-color: var(--primary-navy); 
         color: var(--primary-navy) !important;
-        transform: translateY(-3px);
+        transform: translateY(-2px);
     }
 
     /* =========================================
-       COMPOSIÇÃO DO MOCKUP & CARDS FLUTUANTES
+       MOCKUP COMPOSITION (EXPANDED & BALANCED)
        ========================================= */
     .mockup-wrapper { 
         position: relative; 
-        perspective: 1200px;
         display: flex;
         justify-content: center;
         align-items: center;
         width: 100%;
+        padding: 20px 0;
     }
     .mockup-glow { 
         position: absolute; 
         top: 50%; 
         left: 50%; 
         transform: translate(-50%, -50%); 
-        width: 120%; 
-        height: 120%; 
-        background: radial-gradient(circle, rgba(0, 59, 112, 0.08) 0%, transparent 65%); 
-        filter: blur(70px); 
+        width: 110%; 
+        height: 110%; 
+        background: radial-gradient(circle, rgba(0, 59, 112, 0.05) 0%, transparent 60%); 
+        filter: blur(60px); 
         z-index: -1; 
     }
     
     .mockup-window { 
         background: #ffffff; 
-        border-radius: 24px; 
-        border: 1px solid rgba(0, 59, 112, 0.12); 
+        border-radius: 20px; 
+        border: 1px solid rgba(0, 59, 112, 0.1); 
         box-shadow: 
-            0 45px 95px -20px rgba(0, 59, 112, 0.16), 
-            0 0 0 1px rgba(0, 59, 112, 0.02),
-            0 4px 12px rgba(0, 0, 0, 0.02); 
+            0 35px 80px -15px rgba(0, 59, 112, 0.12), 
+            0 0 0 1px rgba(0, 59, 112, 0.01),
+            0 4px 10px rgba(0, 0, 0, 0.01); 
         overflow: hidden; 
         color: var(--text-light); 
-        transform: rotateY(-10deg) rotateX(7deg) rotateZ(1deg); 
-        transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); 
+        transform: rotateY(-6deg) rotateX(4deg); 
+        transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
         width: 100%;
-        max-width: 530px;
+        max-width: 580px; /* Increased mockup size to fill the column beautifully */
         z-index: 5;
     }
     .mockup-wrapper:hover .mockup-window { 
-        transform: rotateY(-2deg) rotateX(2deg) rotateZ(0deg); 
+        transform: rotateY(0deg) rotateX(0deg); 
     }
 
     .mockup-header { 
         background: #f8fafc; 
-        padding: 18px 24px; 
+        padding: 14px 20px; 
         display: flex; 
         justify-content: space-between; 
         align-items: center; 
-        border-bottom: 1px solid rgba(0, 59, 112, 0.08); 
+        border-bottom: 1px solid rgba(0, 59, 112, 0.06); 
     }
     .mockup-header-title { 
         font-weight: 700; 
         color: var(--text-dark); 
         display: flex; 
         align-items: center; 
-        gap: 8px;
-        font-size: 0.92rem;
+        gap: 6px;
+        font-size: 0.88rem;
     }
     .mockup-tabs { 
         display: flex; 
-        gap: 12px; 
-        font-size: 0.8rem; 
+        gap: 10px; 
+        font-size: 0.78rem; 
         font-weight: 700;
     }
     .mockup-tab.active { 
         background: var(--primary-navy); 
-        padding: 5px 12px; 
-        border-radius: 6px; 
+        padding: 4px 10px; 
+        border-radius: 5px; 
         color: #fff; 
-        box-shadow: 0 4px 10px rgba(0, 59, 112, 0.2);
+        box-shadow: 0 3px 8px rgba(0, 59, 112, 0.15);
     }
     .mockup-tab:not(.active) { 
-        padding: 5px 0; 
+        padding: 4px 0; 
         color: var(--text-muted); 
     }
     
     .mockup-body { 
-        padding: 24px; 
+        padding: 20px; 
     }
     .mockup-stat-card { 
         background: #f8fafc; 
-        border: 1px solid rgba(0, 59, 112, 0.06); 
-        padding: 16px; 
-        border-radius: 16px; 
+        border: 1px solid rgba(0, 59, 112, 0.05); 
+        padding: 12px 14px; 
+        border-radius: 12px; 
         display: flex; 
         flex-direction: column; 
-        gap: 6px; 
+        gap: 4px; 
         color: var(--text-dark); 
     }
     .mockup-stat-card span {
-        font-size: 0.72rem;
+        font-size: 0.68rem;
         font-weight: 800;
         color: var(--text-muted);
         letter-spacing: 0.05em;
         text-transform: uppercase;
     }
     .mockup-stat-card strong {
-        font-size: 1.6rem;
+        font-size: 1.35rem;
         font-weight: 800;
         color: var(--primary-navy);
     }
     
     .mockup-item { 
         background: #ffffff; 
-        padding: 16px; 
-        border-radius: 16px; 
-        border: 1px solid rgba(0, 59, 112, 0.08); 
-        margin-bottom: 12px;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02);
-        transition: all 0.3s;
+        padding: 14px; 
+        border-radius: 12px; 
+        border: 1px solid rgba(0, 59, 112, 0.06); 
+        margin-bottom: 10px;
+        box-shadow: 0 2px 6px rgba(15, 23, 42, 0.01);
+        transition: all 0.25s;
     }
     .mockup-item:hover {
         border-color: var(--primary-navy);
-        transform: translateX(4px);
+        transform: translateY(-1px);
     }
     .m-id { 
         color: var(--text-muted); 
         font-weight: 700;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
     }
     .m-badges span { 
-        padding: 4px 10px; 
+        padding: 3px 8px; 
         border-radius: 50px; 
-        margin-left: 6px; 
-        font-size: 0.7rem; 
+        margin-left: 4px; 
+        font-size: 0.68rem; 
         font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.02em;
     }
-    .bg-blue-subtle { background: #eff6ff; color: #2563eb;}
-    .bg-green-subtle { background: #ecfdf5; color: #059669;}
 
-    /* Cards Flutuantes de Destaque */
+    /* Integrated Floating Cards (Close to Mockup) */
     .floating-card {
         position: absolute;
         background: rgba(255, 255, 255, 0.98);
-        border: 1px solid rgba(0, 59, 112, 0.1);
-        border-radius: 18px;
-        padding: 16px 20px;
-        box-shadow: 
-            0 20px 40px -8px rgba(0, 59, 112, 0.14),
-            0 0 0 1px rgba(0, 59, 112, 0.02);
+        border: 1px solid rgba(0, 59, 112, 0.08);
+        border-radius: 16px;
+        padding: 12px 16px;
+        box-shadow: 0 15px 30px rgba(0, 59, 112, 0.08);
         z-index: 15;
-        backdrop-filter: blur(12px);
+        backdrop-filter: blur(10px);
     }
     
     .floating-card-1 {
-        top: 10%;
-        left: -15%;
-        width: 220px;
-        animation: float-gentle 6s ease-in-out infinite;
+        top: 15%;
+        left: -10%;
+        width: 190px;
+        animation: float-gentle 5s ease-in-out infinite;
     }
     
     .floating-card-2 {
-        bottom: 8%;
-        right: -10%;
-        width: 230px;
-        animation: float-opposed 6.5s ease-in-out infinite;
+        bottom: 12%;
+        right: -8%;
+        width: 200px;
+        animation: float-opposed 5.5s ease-in-out infinite;
     }
 
     .float-header {
         display: flex;
         align-items: center;
-        gap: 10px;
-        margin-bottom: 8px;
+        gap: 8px;
+        margin-bottom: 6px;
     }
     .float-icon {
-        width: 32px;
-        height: 32px;
-        border-radius: 10px;
-        background: rgba(37, 99, 235, 0.1);
+        width: 28px;
+        height: 28px;
+        border-radius: 8px;
+        background: rgba(37, 99, 235, 0.08);
         color: #2563eb;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
     }
     .float-title {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 800;
         color: var(--text-muted);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
+        letter-spacing: 0.04em;
     }
     .float-val {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
         font-weight: 800;
         color: var(--text-dark);
         margin: 0;
     }
     
-    /* Gráfico em SVG de Mini-Meta */
     .mini-chart {
-        height: 35px;
+        height: 28px;
         width: 100%;
-        margin-top: 10px;
+        margin-top: 8px;
         display: flex;
         align-items: flex-end;
-        gap: 6px;
+        gap: 5px;
     }
     .chart-bar {
         flex: 1;
-        background: rgba(0, 59, 112, 0.15);
-        border-radius: 3px;
+        background: rgba(0, 59, 112, 0.1);
+        border-radius: 2px;
         transition: height 0.5s;
     }
     .chart-bar.active {
@@ -430,13 +428,13 @@
     }
 
     /* =========================================
-       MARQUEE (SETORES ATIVOS)
+       MARQUEE
        ========================================= */
     .integration-marquee { 
         border-top: 1px solid var(--border-subtle); 
         border-bottom: 1px solid var(--border-subtle); 
         background: linear-gradient(90deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%); 
-        padding: 32px 0; 
+        padding: 26px 0; 
         overflow: hidden; 
         position: relative; 
         display: flex; 
@@ -446,7 +444,7 @@
         content: ''; 
         position: absolute; 
         top: 0; 
-        width: 180px; 
+        width: 160px; 
         height: 100%; 
         z-index: 2; 
     }
@@ -462,58 +460,58 @@
         display: flex; 
         gap: 60px; 
         align-items: center; 
-        animation: scroll-fast 32s linear infinite; 
+        animation: scroll-fast 30s linear infinite; 
         white-space: nowrap; 
         padding-left: 60px;
     }
     .marquee-item { 
         color: var(--text-dark); 
         font-weight: 700; 
-        font-size: 1.02rem; 
+        font-size: 0.98rem; 
         display: flex; 
         align-items: center; 
-        gap: 12px; 
+        gap: 10px; 
         opacity: 0.85;
     }
     .marquee-item i { 
         color: var(--primary-navy); 
-        font-size: 1.35rem; 
+        font-size: 1.25rem; 
     }
 
     /* =========================================
-       SEÇÕES COM CONTRASTE APERFEIÇOADO
+       SECTIONS & CONTRAST
        ========================================= */
     .section-padding { 
-        padding: 130px 24px; 
+        padding: 100px 24px; 
         position: relative;
     }
     .section-title { 
-        font-size: clamp(2.2rem, 3.5vw, 2.9rem); 
+        font-size: clamp(2rem, 3.2vw, 2.6rem); 
         font-weight: 800; 
         color: var(--text-dark); 
-        margin-bottom: 20px; 
+        margin-bottom: 16px; 
         text-align: center; 
         letter-spacing: -0.02em; 
     }
     .section-subtitle { 
-        font-size: 1.15rem; 
+        font-size: 1.1rem; 
         color: var(--text-muted); 
         text-align: center; 
-        max-width: 700px; 
-        margin: 0 auto 70px; 
-        line-height: 1.7; 
+        max-width: 680px; 
+        margin: 0 auto 55px; 
+        line-height: 1.65; 
     }
     
     .badge-section { 
         display: inline-block; 
-        background: rgba(37, 99, 235, 0.07); 
-        border: 1px solid rgba(37, 99, 235, 0.12); 
+        background: rgba(37, 99, 235, 0.06); 
+        border: 1px solid rgba(37, 99, 235, 0.1); 
         color: #2563eb; 
-        padding: 6px 18px; 
+        padding: 5px 16px; 
         border-radius: 50px; 
-        font-size: 0.85rem; 
+        font-size: 0.8rem; 
         font-weight: 700; 
-        margin-bottom: 20px; 
+        margin-bottom: 16px; 
         text-transform: uppercase; 
         letter-spacing: 0.05em; 
     }
@@ -521,7 +519,7 @@
     /* Recursos Grid */
     .features-section { 
         background-color: #f8fafc; 
-        background-image: radial-gradient(circle at 50% 50%, rgba(0, 59, 112, 0.02) 0%, transparent 80%);
+        background-image: radial-gradient(circle at 50% 50%, rgba(0, 59, 112, 0.015) 0%, transparent 80%);
         border-bottom: 1px solid rgba(0, 59, 112, 0.05);
     }
     
@@ -529,21 +527,21 @@
         max-width: 1300px; 
         margin: 0 auto; 
         display: grid; 
-        grid-template-columns: repeat(auto-fit, minmax(370px, 1fr)); 
-        gap: 28px; 
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); 
+        gap: 24px; 
         position: relative; 
         z-index: 2;
     }
     
     .feature-card { 
         background: #ffffff; 
-        border: 1px solid rgba(0, 59, 112, 0.06); 
-        border-radius: 24px; 
-        padding: 44px; 
-        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+        border: 1px solid rgba(0, 59, 112, 0.05); 
+        border-radius: 20px; 
+        padding: 38px; 
+        transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1); 
         position: relative; 
         overflow: hidden; 
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02);
+        box-shadow: 0 8px 24px rgba(15, 23, 42, 0.01);
     }
     .feature-card::before { 
         content: ""; 
@@ -552,18 +550,18 @@
         left: 0; 
         right: 0; 
         height: 100%; 
-        background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, -20%), rgba(37,99,235,0.04), transparent 40%); 
+        background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, -20%), rgba(37,99,235,0.03), transparent 40%); 
         opacity: 0; 
         transition: opacity 0.5s; 
         z-index: 0; 
         pointer-events: none;
     }
     .feature-card:hover { 
-        transform: translateY(-6px); 
-        border-color: rgba(37, 99, 235, 0.25); 
+        transform: translateY(-5px); 
+        border-color: rgba(37, 99, 235, 0.2); 
         box-shadow: 
-            0 30px 60px -15px rgba(0, 59, 112, 0.08), 
-            0 0 0 1px rgba(37, 99, 235, 0.03); 
+            0 24px 50px -15px rgba(0, 59, 112, 0.06), 
+            0 0 0 1px rgba(37, 99, 235, 0.02); 
     }
     .feature-card:hover::before { 
         opacity: 1; 
@@ -574,35 +572,35 @@
         z-index: 1; 
     }
     .feature-icon { 
-        width: 60px; 
-        height: 60px; 
-        background: rgba(0, 59, 112, 0.04); 
+        width: 52px; 
+        height: 52px; 
+        background: rgba(0, 59, 112, 0.03); 
         color: var(--primary-navy); 
-        border: 1px solid rgba(0, 59, 112, 0.06); 
-        border-radius: 18px; 
+        border: 1px solid rgba(0, 59, 112, 0.05); 
+        border-radius: 14px; 
         display: flex; 
         align-items: center; 
         justify-content: center; 
-        font-size: 26px; 
-        margin-bottom: 28px; 
+        font-size: 22px; 
+        margin-bottom: 24px; 
         transition: all 0.3s;
     }
     .feature-card:hover .feature-icon {
         background: var(--primary-navy);
         color: #ffffff;
-        transform: scale(1.05) rotate(-3deg);
-        box-shadow: 0 8px 20px rgba(0, 59, 112, 0.2);
+        transform: scale(1.05) rotate(-2deg);
+        box-shadow: 0 6px 15px rgba(0, 59, 112, 0.15);
     }
     .feature-title { 
-        font-size: 1.32rem; 
+        font-size: 1.25rem; 
         font-weight: 800; 
         color: var(--text-dark); 
-        margin-bottom: 14px; 
+        margin-bottom: 12px; 
     }
     .feature-desc { 
         color: var(--text-light); 
-        line-height: 1.7; 
-        font-size: 0.96rem; 
+        line-height: 1.65; 
+        font-size: 0.94rem; 
         margin: 0; 
         opacity: 0.9;
     }
@@ -613,33 +611,33 @@
         border-bottom: 1px solid rgba(0, 59, 112, 0.05);
     }
     .workflow-container { 
-        max-width: 1180px; 
+        max-width: 1140px; 
         margin: 0 auto; 
         display: grid; 
         grid-template-columns: repeat(3, 1fr); 
-        gap: 36px; 
+        gap: 30px; 
         position: relative; 
     }
     .workflow-step { 
         text-align: center; 
-        padding: 0 10px; 
+        padding: 0 5px; 
         position: relative; 
         z-index: 2; 
     }
     .step-number { 
-        width: 68px; 
-        height: 68px; 
+        width: 62px; 
+        height: 62px; 
         background: #ffffff; 
         border: 2px solid var(--primary-navy); 
         color: var(--primary-navy); 
-        font-size: 1.55rem; 
+        font-size: 1.45rem; 
         font-weight: 900; 
         border-radius: 50%; 
         display: flex; 
         align-items: center; 
         justify-content: center; 
-        margin: 0 auto 28px; 
-        box-shadow: 0 0 25px rgba(0, 59, 112, 0.08); 
+        margin: 0 auto 24px; 
+        box-shadow: 0 0 20px rgba(0, 59, 112, 0.06); 
         position: relative; 
         z-index: 2;
         transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
@@ -647,31 +645,31 @@
     .workflow-step:hover .step-number {
         background: var(--primary-navy);
         color: white;
-        transform: scale(1.1);
-        box-shadow: 0 8px 24px rgba(0, 59, 112, 0.25);
+        transform: scale(1.08);
+        box-shadow: 0 6px 20px rgba(0, 59, 112, 0.2);
     }
     .step-title { 
-        font-size: 1.25rem; 
+        font-size: 1.2rem; 
         font-weight: 800; 
         color: var(--text-dark); 
-        margin-bottom: 14px; 
+        margin-bottom: 12px; 
     }
     .step-desc { 
         color: var(--text-muted); 
-        font-size: 0.96rem; 
-        line-height: 1.7; 
+        font-size: 0.94rem; 
+        line-height: 1.65; 
     }
     
     .workflow-line-svg { 
         position: absolute; 
-        top: 34px; 
+        top: 31px; 
         left: 16%; 
         width: 68%; 
         height: 2px; 
         z-index: 1; 
     }
     .workflow-line-svg line { 
-        stroke: rgba(0, 59, 112, 0.12); 
+        stroke: rgba(0, 59, 112, 0.1); 
         stroke-width: 2; 
     }
 
@@ -680,7 +678,7 @@
        ========================================= */
     .cta-section {
         background-color: #f8fafc;
-        background-image: radial-gradient(circle at top left, rgba(56, 189, 248, 0.03) 0%, transparent 60%);
+        background-image: radial-gradient(circle at top left, rgba(56, 189, 248, 0.02) 0%, transparent 60%);
     }
     .cta-wrapper { 
         max-width: 1300px; 
@@ -688,15 +686,15 @@
     }
     .cta-banner { 
         background: #ffffff; 
-        border-radius: 32px; 
-        padding: 70px 80px; 
+        border-radius: 28px; 
+        padding: 55px 70px; 
         display: flex; 
         justify-content: space-between; 
         align-items: center; 
         box-shadow: 
-            0 35px 80px -15px rgba(0, 59, 112, 0.08),
-            0 0 0 1px rgba(0, 59, 112, 0.05); 
-        border: 1px solid rgba(0, 59, 112, 0.06); 
+            0 30px 65px -15px rgba(0, 59, 112, 0.06),
+            0 0 0 1px rgba(0, 59, 112, 0.03); 
+        border: 1px solid rgba(0, 59, 112, 0.05); 
         position: relative; 
         overflow: hidden; 
     }
@@ -705,9 +703,9 @@
         position: absolute; 
         top: -40%; 
         right: -10%; 
-        width: 700px; 
-        height: 700px; 
-        background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%); 
+        width: 600px; 
+        height: 600px; 
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.03) 0%, transparent 60%); 
         border-radius: 50%; 
         pointer-events: none; 
     }
@@ -716,18 +714,18 @@
         z-index: 2;
     }
     .cta-text h3 { 
-        font-size: 2.6rem; 
+        font-size: 2.3rem; 
         font-weight: 900; 
         color: var(--text-dark); 
-        margin: 0 0 16px 0; 
+        margin: 0 0 12px 0; 
         letter-spacing: -0.02em; 
     }
     .cta-text p { 
         color: var(--text-light); 
-        font-size: 1.15rem; 
+        font-size: 1.1rem; 
         margin: 0; 
-        max-width: 580px; 
-        line-height: 1.7; 
+        max-width: 550px; 
+        line-height: 1.65; 
         opacity: 0.95;
     }
     
@@ -736,21 +734,21 @@
         z-index: 2; 
         background: linear-gradient(135deg, var(--primary-navy) 0%, #004d94 100%); 
         color: #ffffff !important; 
-        padding: 20px 42px; 
+        padding: 16px 36px; 
         border-radius: 50px; 
-        font-size: 1.1rem; 
+        font-size: 1.02rem; 
         font-weight: 700; 
         text-decoration: none; 
         display: flex; 
         align-items: center; 
-        gap: 12px; 
+        gap: 10px; 
         transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
-        box-shadow: 0 15px 35px rgba(0, 59, 112, 0.22); 
+        box-shadow: 0 12px 28px rgba(0, 59, 112, 0.18); 
     }
     .btn-cta-huge:hover { 
         background: linear-gradient(135deg, #002d5a 0%, var(--primary-navy) 100%); 
-        transform: translateY(-4px); 
-        box-shadow: 0 20px 45px rgba(0, 59, 112, 0.32); 
+        transform: translateY(-3px); 
+        box-shadow: 0 16px 35px rgba(0, 59, 112, 0.28); 
     }
 
     /* =========================================
@@ -758,8 +756,8 @@
        ========================================= */
     .footer { 
         background-color: #ffffff; 
-        padding: 90px 24px 44px; 
-        border-top: 1px solid rgba(0, 59, 112, 0.08); 
+        padding: 80px 24px 36px; 
+        border-top: 1px solid rgba(0, 59, 112, 0.06); 
         position: relative;
     }
     .footer::before { 
@@ -770,28 +768,28 @@
         transform: translateX(-50%); 
         width: 60%; 
         height: 1px; 
-        background: linear-gradient(90deg, transparent, rgba(0, 59, 112, 0.15), transparent); 
+        background: linear-gradient(90deg, transparent, rgba(0, 59, 112, 0.1), transparent); 
     }
     .footer-grid { 
         max-width: 1300px; 
         margin: 0 auto; 
         display: grid; 
         grid-template-columns: 2fr 1fr 1fr; 
-        gap: 80px; 
-        margin-bottom: 60px; 
+        gap: 60px; 
+        margin-bottom: 50px; 
     }
     .footer-brand p { 
         color: var(--text-muted); 
-        font-size: 0.95rem; 
-        margin-top: 20px; 
+        font-size: 0.92rem; 
+        margin-top: 18px; 
         max-width: 400px; 
-        line-height: 1.7; 
+        line-height: 1.65; 
     }
     .footer-title { 
         color: var(--text-dark); 
         font-weight: 800; 
-        margin-bottom: 28px; 
-        font-size: 1.1rem; 
+        margin-bottom: 24px; 
+        font-size: 1.05rem; 
         letter-spacing: 0.02em;
     }
     .footer-links { 
@@ -800,17 +798,17 @@
         margin: 0; 
         display: flex; 
         flex-direction: column; 
-        gap: 16px; 
+        gap: 14px; 
     }
     .footer-links a { 
         color: var(--text-muted); 
         text-decoration: none; 
         transition: all 0.2s; 
-        font-size: 0.95rem; 
+        font-size: 0.92rem; 
         font-weight: 500;
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 6px;
     }
     .footer-links a:hover { 
         color: var(--primary-navy); 
@@ -819,34 +817,34 @@
     .footer-bottom { 
         max-width: 1300px; 
         margin: 0 auto; 
-        padding-top: 36px; 
-        border-top: 1px solid rgba(0, 59, 112, 0.08); 
+        padding-top: 30px; 
+        border-top: 1px solid rgba(0, 59, 112, 0.06); 
         display: flex; 
         justify-content: space-between; 
         align-items: center; 
         color: var(--text-muted); 
-        font-size: 0.85rem; 
+        font-size: 0.82rem; 
         font-weight: 500;
     }
 
     @media (max-width: 1100px) {
         .hero-container { 
             grid-template-columns: 1fr; 
-            gap: 60px; 
+            gap: 40px; 
             text-align: center;
         }
         .hero-title br { display: none; }
-        .hero-subtitle { margin: 0 auto 40px; }
+        .hero-subtitle { margin: 0 auto 32px; }
         .hero-buttons { justify-content: center; }
         .mockup-wrapper { 
             max-width: 530px; 
             margin: 0 auto;
         }
-        .floating-card-1 { left: -5%; }
-        .floating-card-2 { right: -5%; }
-        .workflow-container { grid-template-columns: 1fr; gap: 48px; }
+        /* Hide floating cards on smaller screens to prevent overlap */
+        .floating-card { display: none !important; }
+        .workflow-container { grid-template-columns: 1fr; gap: 40px; }
         .workflow-line-svg { display: none; }
-        .cta-banner { flex-direction: column; text-align: center; gap: 40px; padding: 50px 30px; }
+        .cta-banner { flex-direction: column; text-align: center; gap: 30px; padding: 40px 20px; }
         .cta-text p { margin: 0 auto; }
         .footer-grid { grid-template-columns: 1fr; gap: 40px; }
         .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
@@ -854,54 +852,66 @@
 </style>
 {% endblock %}
 
-{% block content %}
-
-<div class="top-color-line">
-    <div class="line-segment seg-blue"></div>
-    <div class="line-segment seg-green"></div>
-    <div class="line-segment seg-yellow"></div>
-    <div class="line-segment seg-red"></div>
-</div>
-
-<nav class="navbar-elite">
-    <div class="container d-flex justify-content-between align-items-center">
-        <a class="nav-brand" href="/" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
+{% block navbar %}
+<nav class="navbar navbar-expand-lg sticky-top navbar-elite">
+    <div class="container container-fluid px-lg-4">
+        <a class="navbar-brand d-flex align-items-center gap-3" href="{% url 'contratos:landing' %}" style="text-decoration: none;">
             <img src="{% static 'img/logo.png' %}" alt="Logo SJB" class="navbar-brand-logo">
-            <div class="nav-brand-text">
-                <div class="nav-brand-title" style="color: var(--primary-navy); font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1;">São João da Barra</div>
-                <div class="nav-brand-subtitle" style="font-size: 0.55rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); line-height: 1;">Monitoramento de Contratos</div>
+            <div class="d-none d-sm-block">
+                <span class="d-block fw-800 text-navy mb-0" style="color: var(--primary-navy); line-height: 1.1; font-size: 1.1rem; letter-spacing: -0.02em; font-weight: 800;">São João da Barra</span>
+                <span class="text-uppercase text-muted fw-800" style="font-size: 0.55rem; letter-spacing: 0.12em; font-weight: 800; display: block; margin-top: 2px;">Monitoramento de Contratos</span>
             </div>
         </a>
 
-        <div class="nav-links d-none d-lg-flex">
-            <a href="#recursos" class="nav-link-elite">Recursos</a>
-            <a href="#como-funciona" class="nav-link-elite">Como Funciona</a>
-            <a href="#transparencia" class="nav-link-elite">Transparência</a>
+        <div class="d-flex align-items-center gap-2 ms-auto d-lg-none">
+            {% if user.is_authenticated %}
+                <a href="{% url 'contratos:dashboard' %}" class="btn btn-primary rounded-pill px-3 fw-bold btn-sm shadow-premium">Painel</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary rounded-pill px-3 fw-bold btn-sm shadow-premium">Entrar</a>
+            {% endif %}
+            <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+                <i class="bi bi-list fs-2 text-navy"></i>
+            </button>
         </div>
 
-        <div class="nav-actions">
-            {% if user.is_authenticated %}
-                <a href="{% url 'contratos:dashboard' %}" class="btn-auth-elite">
-                    Painel Principal <i class="bi bi-grid-1x2-fill ms-1"></i>
-                </a>
-            {% else %}
-                <a href="{% url 'login' %}" class="btn-auth-elite">
-                    Acesso Restrito <i class="bi bi-shield-lock-fill ms-1"></i>
-                </a>
-            {% endif %}
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1 d-none d-lg-flex">
+                <li class="nav-item">
+                    <a class="nav-link-elite" href="#recursos">Recursos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link-elite" href="#como-funciona">Como Funciona</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link-elite" href="#transparencia">Transparência</a>
+                </li>
+            </ul>
+
+            <div class="ms-lg-auto d-none d-lg-flex align-items-center gap-3">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'contratos:dashboard' %}" class="btn btn-primary rounded-pill px-4 fw-800 shadow-premium" style="background: var(--primary-navy); border:none; font-weight: 700;">
+                        Painel Principal <i class="bi bi-grid-1x2-fill ms-2"></i>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}" class="btn btn-primary rounded-pill px-4 fw-800 shadow-premium" style="background: var(--primary-navy); border:none; font-weight: 700;">
+                        Acesso Restrito <i class="bi bi-shield-lock-fill ms-2"></i>
+                    </a>
+                {% endif %}
+            </div>
         </div>
     </div>
 </nav>
+{% endblock %}
 
+{% block content %}
 <section class="hero-section">
     <div class="hero-glow-1"></div>
-    <div class="hero-glow-2"></div>
     
     <div class="hero-container">
         
         <div class="hero-content">
             <div class="hero-badge animate-up delay-1">
-                <span class="dot"></span> Sistema de Gestão e Planejamento Municipal
+                <span class="dot"></span> Planejamento e Monitoramento Financeiro Municipal
             </div>
             
             <h1 class="hero-title animate-up delay-2">
@@ -910,17 +920,17 @@
             </h1>
             
             <p class="hero-subtitle animate-up delay-3">
-                Ferramenta institucional unificada para o planejamento econômico de São João da Barra. Acompanhe a distribuição financeira mensal de vigências e empenhos de forma segura e simplificada.
+                Ferramenta institucional integrada para o acompanhamento econômico de São João da Barra. Acompanhe a distribuição financeira mensal de vigências e empenhos de forma altamente segura e transparente.
             </p>
             
             <div class="hero-buttons animate-up delay-4">
                 {% if user.is_authenticated %}
                     <a href="{% url 'contratos:dashboard' %}" class="btn-hero-primary">
-                        Entrar no Dashboard <i class="bi bi-grid-1x2-fill"></i>
+                        Entrar no Dashboard <i class="bi bi-grid-1x2-fill ms-1"></i>
                     </a>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn-hero-primary">
-                        Acesso Restrito <i class="bi bi-arrow-right"></i>
+                        Acesso Restrito <i class="bi bi-arrow-right ms-1"></i>
                     </a>
                 {% endif %}
                 <a href="#como-funciona" class="btn-outline-light">
@@ -959,8 +969,8 @@
                     <span class="float-title">Contratos Ativos</span>
                 </div>
                 <h4 class="float-val">13 Contratos</h4>
-                <div style="font-size: 0.72rem; color: #22c55e; font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
-                    <i class="bi bi-arrow-up-short"></i> 100% monitorados e em conformidade
+                <div style="font-size: 0.68rem; color: #22c55e; font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 3px;">
+                    <i class="bi bi-arrow-up-short"></i> 100% monitorados
                 </div>
             </div>
 
@@ -977,13 +987,13 @@
                 </div>
 
                 <div class="mockup-body">
-                    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; margin-bottom: 24px;">
+                    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; margin-bottom: 20px;">
                         <div class="mockup-stat-card">
                             <span>Soma das Distribuições</span>
                             <strong>R$ 380.000,00</strong>
                         </div>
                         <div class="mockup-stat-card" style="background: rgba(56, 189, 248, 0.03);">
-                            <span>Vigência</span>
+                            <span>Vigência Ativa</span>
                             <strong style="color: #2563eb;">2026/2027</strong>
                         </div>
                     </div>
@@ -993,8 +1003,8 @@
                             <span class="m-id">Contrato nº 12/2025</span>
                             <span class="m-badges bg-blue-subtle">Vigente</span>
                         </div>
-                        <h5 style="margin: 0 0 6px; font-size: 0.88rem; font-weight: 700; color: var(--text-dark);">SJB Serviços Tecnológicos</h5>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                        <h5 style="margin: 0 0 6px; font-size: 0.85rem; font-weight: 700; color: var(--text-dark); line-height: 1.2;">SJB Serviços Tecnológicos</h5>
+                        <div style="font-size: 0.72rem; color: var(--text-muted); display: flex; justify-content: space-between;">
                             <span>Sec. de Administração</span>
                             <span style="font-weight: 700; color: var(--text-dark);">R$ 55.000,00/mês</span>
                         </div>
@@ -1005,8 +1015,8 @@
                             <span class="m-id">Contrato nº 08/2024</span>
                             <span class="m-badges bg-green-subtle">Ativo</span>
                         </div>
-                        <h5 style="margin: 0 0 6px; font-size: 0.88rem; font-weight: 700; color: var(--text-dark);">Construtora SJB Ltda.</h5>
-                        <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                        <h5 style="margin: 0 0 6px; font-size: 0.85rem; font-weight: 700; color: var(--text-dark); line-height: 1.2;">Construtora SJB Ltda.</h5>
+                        <div style="font-size: 0.72rem; color: var(--text-muted); display: flex; justify-content: space-between;">
                             <span>Sec. de Obras</span>
                             <span style="font-weight: 700; color: var(--text-dark);">R$ 120.000,00/mês</span>
                         </div>
@@ -1117,7 +1127,7 @@
     <div class="cta-wrapper">
         <div class="cta-banner">
             <div class="cta-text">
-                <div class="badge-section" style="background: rgba(0, 59, 112, 0.06); color: var(--primary-navy); margin-bottom: 16px;">Controle de Contas Públicas</div>
+                <div class="badge-section" style="background: rgba(0, 59, 112, 0.05); color: var(--primary-navy); margin-bottom: 12px;">Controle de Contas Públicas</div>
                 <h3>Transparência e Responsabilidade</h3>
                 <p>Nossa plataforma apoia o município de São João da Barra na manutenção de contas organizadas e no planejamento financeiro eficiente.</p>
             </div>
@@ -1132,10 +1142,10 @@
     <div class="footer-grid">
         <div class="footer-brand">
             <div class="nav-brand" style="display: flex; align-items: center; gap: 12px;">
-                <img src="{% static 'img/logo.png' %}" alt="Logo SJB" style="height: 44px; width: auto; border-radius: 8px;">
+                <img src="{% static 'img/logo.png' %}" alt="Logo SJB" style="height: 40px; width: auto; border-radius: 8px;">
                 <div class="nav-brand-text">
-                    <div class="nav-brand-title" style="color: var(--text-dark); font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em;">Central de Monitoramento</div>
-                    <div class="nav-brand-subtitle" style="font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">São João da Barra</div>
+                    <div class="nav-brand-title" style="color: var(--text-dark); font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em;">Central de Monitoramento</div>
+                    <div class="nav-brand-subtitle" style="font-size: 0.58rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">São João da Barra</div>
                 </div>
             </div>
             <p>Plataforma para monitoramento, análise de vigência e controle de despesas de contratos públicos. Sistema desenvolvido em estrito alinhamento com os preceitos constitucionais de eficiência, publicidade e governança fiscal.</p>
@@ -1144,10 +1154,10 @@
         <div>
             <h4 class="footer-title">Plataforma</h4>
             <ul class="footer-links">
-                <li><a href="{% url 'login' %}"><i class="bi bi-chevron-right text-primary"></i> Painel do Servidor</a></li>
-                <li><a href="#recursos"><i class="bi bi-chevron-right text-primary"></i> Recursos Disponíveis</a></li>
-                <li><a href="#como-funciona"><i class="bi bi-chevron-right text-primary"></i> Como Funciona</a></li>
-                <li><a href="#transparencia"><i class="bi bi-chevron-right text-primary"></i> Transparência Fiscal</a></li>
+                <li><a href="{% url 'login' %}"><i class="bi text-primary"></i> Painel do Servidor</a></li>
+                <li><a href="#recursos"><i class="bi text-primary"></i> Recursos Disponíveis</a></li>
+                <li><a href="#como-funciona"><i class="bi text-primary"></i> Como Funciona</a></li>
+                <li><a href="#transparencia"><i class="bi text-primary"></i> Transparência Fiscal</a></li>
             </ul>
         </div>
 
