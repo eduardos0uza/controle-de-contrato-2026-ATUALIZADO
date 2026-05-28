@@ -79,7 +79,7 @@ urlpatterns = [
     path('auth/login/', CustomLoginView.as_view(), name='login'),
     path('auth/', include('django.contrib.auth.urls')),
     path('admin-panel/', include('admin_panel.urls')),
-    path('api/debug-secretarias', debug_secretarias_view),
+    path('api/debug-secretarias/', debug_secretarias_view, name="debug_secretarias"),
     path('', include('contratos.urls')),
 ]
 
