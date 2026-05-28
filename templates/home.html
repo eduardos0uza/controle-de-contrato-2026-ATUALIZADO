@@ -1,150 +1,64 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Central de Protocolo - SJB{% endblock %}
+{% block title %}Central de Monitoramento - SJB{% endblock %}
 
 {% block extra_css %}
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
     :root {
-        --nav-bg: rgba(255, 255, 255, 0.95);
-        --hero-bg: #ffffff;
-        --section-bg-alt: #f8fafc;
+        --nav-bg: rgba(255, 255, 255, 0.96);
+        --hero-bg: #f8fafc;
+        --section-bg-alt: #f1f5f9;
         --primary-navy: #003B70;
-        --primary-blue: #0056D2;
-        --primary-glow: rgba(0, 86, 210, 0.1);
-        --light-blue: #e0f2fe;
+        --primary-blue: #0f58a3;
+        --primary-glow: rgba(0, 59, 112, 0.05);
+        --accent-blue: #38bdf8;
         --text-dark: #0f172a;
-        --text-light: #1e293b;
+        --text-light: #334155;
         --text-muted: #64748b;
-        --border-subtle: rgba(0, 0, 0, 0.05);
+        --border-subtle: rgba(0, 59, 112, 0.08);
         --glass-white: rgba(255, 255, 255, 0.95);
-        
-        /* Cores da linha superior */
-        --line-blue: #004494;
-        --line-green: #009541;
-        --line-yellow: #ffcc00;
-        --line-red: #e30613;
-    }
-
-    /* Navbar Estilo Elite */
-    .navbar-elite {
-        background: var(--glass-white);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-bottom: 1px solid rgba(0, 59, 112, 0.08);
-        padding: 0.8rem 0;
-        transition: all 0.3s ease;
-        position: fixed;
-        top: 4px;
-        left: 0;
-        right: 0;
-        z-index: 1000;
-    }
-
-    .navbar-brand-logo {
-        height: 42px;
-        width: auto;
-        border-radius: 8px;
-        padding: 4px;
-        background: white;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-
-    .nav-link-elite {
-        font-weight: 600;
-        color: #64748b;
-        padding: 0.6rem 1.25rem !important;
-        border-radius: 12px;
-        margin: 0 4px;
-        transition: all 0.2s ease;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 0.9rem;
-        text-decoration: none;
-    }
-
-    .nav-link-elite:hover {
-        color: var(--primary-navy);
-        background: rgba(0, 59, 112, 0.04);
-    }
-
-    .btn-auth-elite {
-        background: var(--primary-navy);
-        color: white;
-        padding: 10px 24px;
-        border-radius: 50px;
-        font-weight: 700;
-        text-decoration: none;
-        font-size: 0.9rem;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        transition: all 0.3s;
-        box-shadow: 0 10px 20px rgba(0, 59, 112, 0.15);
-        border: none;
-    }
-
-    .btn-auth-elite:hover {
-        background: #002d5a;
-        transform: translateY(-2px);
-        box-shadow: 0 12px 25px rgba(0, 59, 112, 0.25);
-        color: white;
     }
 
     body {
         margin: 0;
-        font-family: 'Inter', sans-serif;
-        background-color: var(--hero-bg);
+        font-family: 'Outfit', sans-serif;
+        background-color: #ffffff;
         color: var(--text-light);
         -webkit-font-smoothing: antialiased;
         overflow-x: hidden;
-        padding-top: 4px; /* Compensar a linha fixa */
     }
-
-    .top-color-line {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 4px;
-        display: flex;
-        z-index: 9999;
-    }
-    .line-segment { height: 100%; flex: 1; }
-    .seg-blue { background-color: var(--line-blue); }
-    .seg-green { background-color: var(--line-green); }
-    .seg-yellow { background-color: var(--line-yellow); }
-    .seg-red { background-color: var(--line-red); }
 
     /* =========================================
-       ANIMAÇÕES GLOBAIS (KEYFRAMES)
+       ANIMAÇÕES GLOBAIS
        ========================================= */
     @keyframes fadeInUp {
-        0% { opacity: 0; transform: translateY(30px); }
+        0% { opacity: 0; transform: translateY(40px); }
         100% { opacity: 1; transform: translateY(0); }
     }
     
-    @keyframes float { 
-        0% { transform: translateY(0px); } 
-        50% { transform: translateY(-10px); } 
-        100% { transform: translateY(0px); } 
+    @keyframes float-gentle { 
+        0% { transform: translateY(0px) rotate(0deg); } 
+        50% { transform: translateY(-8px) rotate(0.5deg); } 
+        100% { transform: translateY(0px) rotate(0deg); } 
     }
 
-    @keyframes scroll {
+    @keyframes float-opposed { 
+        0% { transform: translateY(0px) rotate(0deg); } 
+        50% { transform: translateY(8px) rotate(-0.5deg); } 
+        100% { transform: translateY(0px) rotate(0deg); } 
+    }
+
+    @keyframes scroll-fast {
         0% { transform: translateX(0); }
         100% { transform: translateX(-50%); }
     }
 
-    @keyframes dashMove {
-        to { stroke-dashoffset: -20; }
-    }
-
     .animate-up {
         opacity: 0;
-        animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
     }
     .delay-1 { animation-delay: 0.1s; }
     .delay-2 { animation-delay: 0.2s; }
@@ -153,66 +67,139 @@
     .delay-5 { animation-delay: 0.5s; }
 
     /* =========================================
-       Hero Section (Tema Claro)
+       HERO SECTION (PREMIUM & INSTITUCIONAL)
        ========================================= */
     .hero-section { 
         position: relative; 
-        padding: 160px 24px 80px; /* Aumentado padding top para compensar navbar fixa */
+        padding: 180px 24px 110px; 
         display: flex; 
         align-items: center; 
-        min-height: 90vh; 
-        background: radial-gradient(circle at top right, #f0f9ff 0%, #ffffff 50%); 
+        min-height: 95vh; 
+        background-color: #ffffff;
+        background-image: 
+            radial-gradient(circle at 80% 20%, rgba(0, 59, 112, 0.05) 0%, rgba(243, 246, 251, 0.4) 50%, #ffffff 100%),
+            linear-gradient(rgba(0, 59, 112, 0.02) 1.5px, transparent 1.5px),
+            linear-gradient(90deg, rgba(0, 59, 112, 0.02) 1.5px, transparent 1.5px);
+        background-size: auto, 50px 50px, 50px 50px;
+        background-position: center, center top, center top;
+        border-bottom: 1px solid rgba(0, 59, 112, 0.05);
     }
     
-    .hero-glow-1 { position: absolute; top: -10%; left: 0; width: 600px; height: 600px; background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, transparent 60%); filter: blur(80px); z-index: 1; pointer-events: none;}
+    .hero-glow-1 { 
+        position: absolute; 
+        top: -15%; 
+        right: -10%; 
+        width: 850px; 
+        height: 850px; 
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, rgba(0, 59, 112, 0.02) 60%, transparent 80%); 
+        filter: blur(90px); 
+        z-index: 1; 
+        pointer-events: none;
+    }
+
+    .hero-glow-2 { 
+        position: absolute; 
+        bottom: -20%; 
+        left: -10%; 
+        width: 700px; 
+        height: 700px; 
+        background: radial-gradient(circle, rgba(56, 189, 248, 0.06) 0%, transparent 70%); 
+        filter: blur(85px); 
+        z-index: 1; 
+        pointer-events: none;
+    }
     
-    .hero-container { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items: center; position: relative; z-index: 10; }
+    .hero-container { 
+        max-width: 1340px; 
+        margin: 0 auto; 
+        display: grid; 
+        grid-template-columns: 1.15fr 0.85fr; 
+        gap: 80px; 
+        align-items: center; 
+        position: relative; 
+        z-index: 10; 
+        width: 100%;
+    }
     
-    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: #f1f5f9; border: 1px solid #e2e8f0; color: #475569; padding: 8px 18px; border-radius: 50px; font-size: 0.85rem; font-weight: 600; margin-bottom: 28px; }
-    .hero-badge .dot { width: 8px; height: 8px; background-color: #10b981; border-radius: 50%; box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);}
+    .hero-badge { 
+        display: inline-flex; 
+        align-items: center; 
+        gap: 10px; 
+        background: rgba(0, 59, 112, 0.05); 
+        border: 1px solid rgba(0, 59, 112, 0.08); 
+        color: var(--primary-navy); 
+        padding: 8px 18px; 
+        border-radius: 50px; 
+        font-size: 0.85rem; 
+        font-weight: 700; 
+        margin-bottom: 24px; 
+        letter-spacing: 0.02em;
+        backdrop-filter: blur(8px);
+    }
+    .hero-badge .dot { 
+        width: 8px; 
+        height: 8px; 
+        background-color: #22c55e; 
+        border-radius: 50%; 
+        box-shadow: 0 0 12px rgba(34, 197, 94, 0.6);
+        display: inline-block;
+    }
     
     .hero-title { 
-        font-size: clamp(3rem, 5vw, 4.5rem); 
-        font-weight: 800; 
-        line-height: 1.05; 
+        font-size: clamp(3.2rem, 5vw, 4.4rem); 
+        font-weight: 900; 
+        line-height: 1.1; 
         margin-bottom: 24px; 
         color: var(--text-dark); 
         letter-spacing: -0.03em; 
     }
     .hero-title span { 
-        background: linear-gradient(to right, var(--primary-navy), #2563eb); 
+        background: linear-gradient(135deg, var(--primary-navy) 0%, #2563eb 60%, #38bdf8 100%); 
         -webkit-background-clip: text; 
         -webkit-text-fill-color: transparent; 
+        font-weight: 900;
     }
     
-    .hero-subtitle { font-size: 1.15rem; color: var(--text-muted); line-height: 1.7; margin-bottom: 40px; max-width: 520px; font-weight: 400; }
+    .hero-subtitle { 
+        font-size: 1.18rem; 
+        color: var(--text-light); 
+        line-height: 1.75; 
+        margin-bottom: 40px; 
+        max-width: 580px; 
+        font-weight: 400; 
+        opacity: 0.95;
+    }
     
-    .hero-buttons { display: flex; gap: 16px; margin-bottom: 50px; }
+    .hero-buttons { 
+        display: flex; 
+        gap: 16px; 
+        margin-bottom: 40px; 
+    }
     .btn-hero-primary { 
-        background: var(--primary-navy); 
-        color: #ffffff; 
+        background: linear-gradient(135deg, var(--primary-navy) 0%, #004d94 100%); 
+        color: #ffffff !important; 
         padding: 16px 36px; 
         border-radius: 50px; 
         font-weight: 700; 
         text-decoration: none; 
         display: flex; 
         align-items: center; 
-        gap: 8px; 
-        transition: all 0.3s; 
+        gap: 10px; 
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
         font-size: 1.05rem;
-        box-shadow: 0 10px 20px rgba(0, 59, 112, 0.2);
+        box-shadow: 0 12px 28px rgba(0, 59, 112, 0.22);
+        border: none;
     }
     .btn-hero-primary:hover { 
-        background: #002d5a;
+        background: linear-gradient(135deg, #002d5a 0%, var(--primary-navy) 100%); 
         transform: translateY(-3px); 
-        box-shadow: 0 15px 30px rgba(0, 59, 112, 0.3); 
-        color: white;
+        box-shadow: 0 16px 35px rgba(0, 59, 112, 0.32); 
     }
     
     .btn-outline-light { 
-        background: transparent; 
-        color: var(--text-dark); 
-        border: 2px solid #e2e8f0; 
+        background: rgba(255, 255, 255, 0.8); 
+        color: var(--text-dark) !important; 
+        border: 1px solid rgba(0, 59, 112, 0.15); 
         padding: 16px 32px; 
         border-radius: 50px; 
         font-weight: 700; 
@@ -220,138 +207,536 @@
         display: flex; 
         align-items: center; 
         gap: 8px; 
-        transition: all 0.3s; 
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+        font-size: 1.05rem;
+        backdrop-filter: blur(8px);
     }
     .btn-outline-light:hover { 
         background: #f8fafc; 
         border-color: var(--primary-navy); 
-        color: var(--primary-navy);
+        color: var(--primary-navy) !important;
         transform: translateY(-3px);
     }
 
-    /* Mockup Visual 3D (Ajustado) */
-    .mockup-wrapper { position: relative; perspective: 1000px; }
-    .mockup-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120%; height: 120%; background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 60%); filter: blur(60px); z-index: -1; }
+    /* =========================================
+       COMPOSIÇÃO DO MOCKUP & CARDS FLUTUANTES
+       ========================================= */
+    .mockup-wrapper { 
+        position: relative; 
+        perspective: 1200px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+    .mockup-glow { 
+        position: absolute; 
+        top: 50%; 
+        left: 50%; 
+        transform: translate(-50%, -50%); 
+        width: 120%; 
+        height: 120%; 
+        background: radial-gradient(circle, rgba(0, 59, 112, 0.08) 0%, transparent 65%); 
+        filter: blur(70px); 
+        z-index: -1; 
+    }
     
-    .mockup-window { background: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; box-shadow: 0 30px 60px -12px rgba(0,0,0,0.1), 0 0 0 1px rgba(0,0,0,0.02); overflow: hidden; color: var(--text-light); transform: rotateY(-5deg) rotateX(5deg); transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
-    .mockup-wrapper:hover .mockup-window { transform: rotateY(0deg) rotateX(0deg); }
+    .mockup-window { 
+        background: #ffffff; 
+        border-radius: 24px; 
+        border: 1px solid rgba(0, 59, 112, 0.12); 
+        box-shadow: 
+            0 45px 95px -20px rgba(0, 59, 112, 0.16), 
+            0 0 0 1px rgba(0, 59, 112, 0.02),
+            0 4px 12px rgba(0, 0, 0, 0.02); 
+        overflow: hidden; 
+        color: var(--text-light); 
+        transform: rotateY(-10deg) rotateX(7deg) rotateZ(1deg); 
+        transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); 
+        width: 100%;
+        max-width: 530px;
+        z-index: 5;
+    }
+    .mockup-wrapper:hover .mockup-window { 
+        transform: rotateY(-2deg) rotateX(2deg) rotateZ(0deg); 
+    }
 
-    .mockup-header { background: #f8fafc; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; }
-    .mockup-header-title { font-weight: 600; color: var(--text-dark); display: flex; align-items: center; gap: 8px;}
-    .mockup-tabs { display: flex; gap: 16px; font-size: 0.85rem; font-weight: 500;}
-    .mockup-tab.active { background: #2563eb; padding: 6px 14px; border-radius: 6px; color: #fff; box-shadow: 0 4px 10px rgba(37,99,235,0.2);}
-    .mockup-tab:not(.active) { padding: 6px 0; color: var(--text-muted); }
-    .mockup-body { padding: 24px; }
-    .mockup-stat-card { background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 12px; display: flex; flex-direction: column; gap: 8px; color: var(--text-dark); }
-    .mockup-item { background: #ffffff; padding: 16px; border-radius: 12px; border: 1px solid #e2e8f0; margin-bottom: 12px;}
-    .m-id { color: var(--text-muted); font-weight: 600;}
-    .m-badges span { padding: 3px 8px; border-radius: 4px; margin-left: 6px; font-size: 0.7rem; font-weight: 600;}
+    .mockup-header { 
+        background: #f8fafc; 
+        padding: 18px 24px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        border-bottom: 1px solid rgba(0, 59, 112, 0.08); 
+    }
+    .mockup-header-title { 
+        font-weight: 700; 
+        color: var(--text-dark); 
+        display: flex; 
+        align-items: center; 
+        gap: 8px;
+        font-size: 0.92rem;
+    }
+    .mockup-tabs { 
+        display: flex; 
+        gap: 12px; 
+        font-size: 0.8rem; 
+        font-weight: 700;
+    }
+    .mockup-tab.active { 
+        background: var(--primary-navy); 
+        padding: 5px 12px; 
+        border-radius: 6px; 
+        color: #fff; 
+        box-shadow: 0 4px 10px rgba(0, 59, 112, 0.2);
+    }
+    .mockup-tab:not(.active) { 
+        padding: 5px 0; 
+        color: var(--text-muted); 
+    }
+    
+    .mockup-body { 
+        padding: 24px; 
+    }
+    .mockup-stat-card { 
+        background: #f8fafc; 
+        border: 1px solid rgba(0, 59, 112, 0.06); 
+        padding: 16px; 
+        border-radius: 16px; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 6px; 
+        color: var(--text-dark); 
+    }
+    .mockup-stat-card span {
+        font-size: 0.72rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+    .mockup-stat-card strong {
+        font-size: 1.6rem;
+        font-weight: 800;
+        color: var(--primary-navy);
+    }
+    
+    .mockup-item { 
+        background: #ffffff; 
+        padding: 16px; 
+        border-radius: 16px; 
+        border: 1px solid rgba(0, 59, 112, 0.08); 
+        margin-bottom: 12px;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02);
+        transition: all 0.3s;
+    }
+    .mockup-item:hover {
+        border-color: var(--primary-navy);
+        transform: translateX(4px);
+    }
+    .m-id { 
+        color: var(--text-muted); 
+        font-weight: 700;
+        font-size: 0.8rem;
+    }
+    .m-badges span { 
+        padding: 4px 10px; 
+        border-radius: 50px; 
+        margin-left: 6px; 
+        font-size: 0.7rem; 
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+    }
     .bg-blue-subtle { background: #eff6ff; color: #2563eb;}
     .bg-green-subtle { background: #ecfdf5; color: #059669;}
 
-    /* =========================================
-       Social Proof (Carrossel Infinito)
-       ========================================= */
-    .integration-marquee { border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); background: rgba(255,255,255,0.01); padding: 30px 0; overflow: hidden; position: relative; display: flex; }
-    .integration-marquee::before, .integration-marquee::after { content: ''; position: absolute; top: 0; width: 150px; height: 100%; z-index: 2; }
-    .integration-marquee::before { left: 0; background: linear-gradient(to right, var(--hero-bg), transparent); }
-    .integration-marquee::after { right: 0; background: linear-gradient(to left, var(--hero-bg), transparent); }
-    .marquee-track { display: flex; gap: 60px; align-items: center; animation: scroll 30s linear infinite; white-space: nowrap; padding-left: 60px;}
-    .marquee-item { color: var(--text-muted); font-weight: 600; font-size: 1.1rem; display: flex; align-items: center; gap: 12px; }
-    .marquee-item i { color: #2563eb; font-size: 1.3rem; }
+    /* Cards Flutuantes de Destaque */
+    .floating-card {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.98);
+        border: 1px solid rgba(0, 59, 112, 0.1);
+        border-radius: 18px;
+        padding: 16px 20px;
+        box-shadow: 
+            0 20px 40px -8px rgba(0, 59, 112, 0.14),
+            0 0 0 1px rgba(0, 59, 112, 0.02);
+        z-index: 15;
+        backdrop-filter: blur(12px);
+    }
+    
+    .floating-card-1 {
+        top: 10%;
+        left: -15%;
+        width: 220px;
+        animation: float-gentle 6s ease-in-out infinite;
+    }
+    
+    .floating-card-2 {
+        bottom: 8%;
+        right: -10%;
+        width: 230px;
+        animation: float-opposed 6.5s ease-in-out infinite;
+    }
+
+    .float-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+    .float-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        background: rgba(37, 99, 235, 0.1);
+        color: #2563eb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+    }
+    .float-title {
+        font-size: 0.75rem;
+        font-weight: 800;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .float-val {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: var(--text-dark);
+        margin: 0;
+    }
+    
+    /* Gráfico em SVG de Mini-Meta */
+    .mini-chart {
+        height: 35px;
+        width: 100%;
+        margin-top: 10px;
+        display: flex;
+        align-items: flex-end;
+        gap: 6px;
+    }
+    .chart-bar {
+        flex: 1;
+        background: rgba(0, 59, 112, 0.15);
+        border-radius: 3px;
+        transition: height 0.5s;
+    }
+    .chart-bar.active {
+        background: linear-gradient(180deg, #38bdf8 0%, var(--primary-navy) 100%);
+    }
 
     /* =========================================
-       Benefícios (Features Grid)
+       MARQUEE (SETORES ATIVOS)
        ========================================= */
-    .section-padding { padding: 120px 24px; }
-    .section-title { font-size: clamp(2rem, 3vw, 2.8rem); font-weight: 800; color: var(--text-dark); margin-bottom: 20px; text-align: center; letter-spacing: -0.02em; }
-    .section-subtitle { font-size: 1.15rem; color: var(--text-muted); text-align: center; max-width: 650px; margin: 0 auto 64px; line-height: 1.6; }
-    .badge-section { display: inline-block; background: #eff6ff; border: 1px solid #dbeafe; color: #2563eb; padding: 6px 16px; border-radius: 50px; font-size: 0.85rem; font-weight: 700; margin-bottom: 16px; text-transform: uppercase; letter-spacing: 0.5px; }
-
-    .features-section { background-color: var(--section-bg-alt); position: relative; overflow: hidden;}
-    .features-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 24px; position: relative; z-index: 2;}
-    
-    .feature-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 24px; padding: 40px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; }
-    /* Efeito de Borda Radiante no Hover */
-    .feature-card::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 100%; background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, -20%), rgba(37,99,235,0.05), transparent 40%); opacity: 0; transition: opacity 0.5s; z-index: 0; pointer-events: none;}
-    .feature-card:hover { transform: translateY(-5px); border-color: #2563eb; box-shadow: 0 20px 40px rgba(0,0,0,0.05); }
-    .feature-card:hover::before { opacity: 1; }
-    
-    .feature-card > * { position: relative; z-index: 1; }
-    .feature-icon { 
-        width: 56px; 
-        height: 56px; 
-        background: #eff6ff; 
+    .integration-marquee { 
+        border-top: 1px solid var(--border-subtle); 
+        border-bottom: 1px solid var(--border-subtle); 
+        background: linear-gradient(90deg, #f8fafc 0%, #ffffff 50%, #f8fafc 100%); 
+        padding: 32px 0; 
+        overflow: hidden; 
+        position: relative; 
+        display: flex; 
+        z-index: 10;
+    }
+    .integration-marquee::before, .integration-marquee::after { 
+        content: ''; 
+        position: absolute; 
+        top: 0; 
+        width: 180px; 
+        height: 100%; 
+        z-index: 2; 
+    }
+    .integration-marquee::before { 
+        left: 0; 
+        background: linear-gradient(to right, #ffffff, transparent); 
+    }
+    .integration-marquee::after { 
+        right: 0; 
+        background: linear-gradient(to left, #ffffff, transparent); 
+    }
+    .marquee-track { 
+        display: flex; 
+        gap: 60px; 
+        align-items: center; 
+        animation: scroll-fast 32s linear infinite; 
+        white-space: nowrap; 
+        padding-left: 60px;
+    }
+    .marquee-item { 
+        color: var(--text-dark); 
+        font-weight: 700; 
+        font-size: 1.02rem; 
+        display: flex; 
+        align-items: center; 
+        gap: 12px; 
+        opacity: 0.85;
+    }
+    .marquee-item i { 
         color: var(--primary-navy); 
-        border: 1px solid #dbeafe; 
-        border-radius: 16px; 
+        font-size: 1.35rem; 
+    }
+
+    /* =========================================
+       SEÇÕES COM CONTRASTE APERFEIÇOADO
+       ========================================= */
+    .section-padding { 
+        padding: 130px 24px; 
+        position: relative;
+    }
+    .section-title { 
+        font-size: clamp(2.2rem, 3.5vw, 2.9rem); 
+        font-weight: 800; 
+        color: var(--text-dark); 
+        margin-bottom: 20px; 
+        text-align: center; 
+        letter-spacing: -0.02em; 
+    }
+    .section-subtitle { 
+        font-size: 1.15rem; 
+        color: var(--text-muted); 
+        text-align: center; 
+        max-width: 700px; 
+        margin: 0 auto 70px; 
+        line-height: 1.7; 
+    }
+    
+    .badge-section { 
+        display: inline-block; 
+        background: rgba(37, 99, 235, 0.07); 
+        border: 1px solid rgba(37, 99, 235, 0.12); 
+        color: #2563eb; 
+        padding: 6px 18px; 
+        border-radius: 50px; 
+        font-size: 0.85rem; 
+        font-weight: 700; 
+        margin-bottom: 20px; 
+        text-transform: uppercase; 
+        letter-spacing: 0.05em; 
+    }
+
+    /* Recursos Grid */
+    .features-section { 
+        background-color: #f8fafc; 
+        background-image: radial-gradient(circle at 50% 50%, rgba(0, 59, 112, 0.02) 0%, transparent 80%);
+        border-bottom: 1px solid rgba(0, 59, 112, 0.05);
+    }
+    
+    .features-grid { 
+        max-width: 1300px; 
+        margin: 0 auto; 
+        display: grid; 
+        grid-template-columns: repeat(auto-fit, minmax(370px, 1fr)); 
+        gap: 28px; 
+        position: relative; 
+        z-index: 2;
+    }
+    
+    .feature-card { 
+        background: #ffffff; 
+        border: 1px solid rgba(0, 59, 112, 0.06); 
+        border-radius: 24px; 
+        padding: 44px; 
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+        position: relative; 
+        overflow: hidden; 
+        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.02);
+    }
+    .feature-card::before { 
+        content: ""; 
+        position: absolute; 
+        top: 0; 
+        left: 0; 
+        right: 0; 
+        height: 100%; 
+        background: radial-gradient(800px circle at var(--mouse-x, 50%) var(--mouse-y, -20%), rgba(37,99,235,0.04), transparent 40%); 
+        opacity: 0; 
+        transition: opacity 0.5s; 
+        z-index: 0; 
+        pointer-events: none;
+    }
+    .feature-card:hover { 
+        transform: translateY(-6px); 
+        border-color: rgba(37, 99, 235, 0.25); 
+        box-shadow: 
+            0 30px 60px -15px rgba(0, 59, 112, 0.08), 
+            0 0 0 1px rgba(37, 99, 235, 0.03); 
+    }
+    .feature-card:hover::before { 
+        opacity: 1; 
+    }
+    
+    .feature-card > * { 
+        position: relative; 
+        z-index: 1; 
+    }
+    .feature-icon { 
+        width: 60px; 
+        height: 60px; 
+        background: rgba(0, 59, 112, 0.04); 
+        color: var(--primary-navy); 
+        border: 1px solid rgba(0, 59, 112, 0.06); 
+        border-radius: 18px; 
         display: flex; 
         align-items: center; 
         justify-content: center; 
-        font-size: 24px; 
-        margin-bottom: 24px; 
+        font-size: 26px; 
+        margin-bottom: 28px; 
+        transition: all 0.3s;
     }
     .feature-card:hover .feature-icon {
         background: var(--primary-navy);
-        color: white;
-        transform: rotate(-5deg) scale(1.1);
-        transition: all 0.3s ease;
+        color: #ffffff;
+        transform: scale(1.05) rotate(-3deg);
+        box-shadow: 0 8px 20px rgba(0, 59, 112, 0.2);
     }
-    .feature-title { font-size: 1.25rem; font-weight: 700; color: var(--text-dark); margin-bottom: 12px; }
-    .feature-desc { color: var(--text-muted); line-height: 1.6; font-size: 0.95rem; margin: 0; }
+    .feature-title { 
+        font-size: 1.32rem; 
+        font-weight: 800; 
+        color: var(--text-dark); 
+        margin-bottom: 14px; 
+    }
+    .feature-desc { 
+        color: var(--text-light); 
+        line-height: 1.7; 
+        font-size: 0.96rem; 
+        margin: 0; 
+        opacity: 0.9;
+    }
 
-    /* =========================================
-       Como Funciona (Workflow Animado)
-       ========================================= */
-    .workflow-container { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; position: relative; }
-    .workflow-step { text-align: center; padding: 0 20px; position: relative; z-index: 2; }
+    /* Como Funciona Section */
+    .workflow-section {
+        background-color: #ffffff;
+        border-bottom: 1px solid rgba(0, 59, 112, 0.05);
+    }
+    .workflow-container { 
+        max-width: 1180px; 
+        margin: 0 auto; 
+        display: grid; 
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 36px; 
+        position: relative; 
+    }
+    .workflow-step { 
+        text-align: center; 
+        padding: 0 10px; 
+        position: relative; 
+        z-index: 2; 
+    }
     .step-number { 
-        width: 64px; 
-        height: 64px; 
+        width: 68px; 
+        height: 68px; 
         background: #ffffff; 
         border: 2px solid var(--primary-navy); 
         color: var(--primary-navy); 
-        font-size: 1.5rem; 
-        font-weight: 800; 
+        font-size: 1.55rem; 
+        font-weight: 900; 
         border-radius: 50%; 
         display: flex; 
         align-items: center; 
         justify-content: center; 
-        margin: 0 auto 24px; 
-        box-shadow: 0 0 20px rgba(0, 59, 112, 0.1); 
+        margin: 0 auto 28px; 
+        box-shadow: 0 0 25px rgba(0, 59, 112, 0.08); 
         position: relative; 
         z-index: 2;
-        transition: all 0.3s ease;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .workflow-step:hover .step-number {
         background: var(--primary-navy);
         color: white;
         transform: scale(1.1);
+        box-shadow: 0 8px 24px rgba(0, 59, 112, 0.25);
     }
-    .step-title { font-size: 1.2rem; font-weight: 700; color: var(--text-dark); margin-bottom: 12px; }
-    .step-desc { color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; }
+    .step-title { 
+        font-size: 1.25rem; 
+        font-weight: 800; 
+        color: var(--text-dark); 
+        margin-bottom: 14px; 
+    }
+    .step-desc { 
+        color: var(--text-muted); 
+        font-size: 0.96rem; 
+        line-height: 1.7; 
+    }
     
-    /* Linha tracejada com animação */
-    .workflow-line-svg { position: absolute; top: 32px; left: 16%; width: 68%; height: 2px; z-index: 1; }
-    .workflow-line-svg line { stroke: #e2e8f0; stroke-width: 2; stroke-dasharray: 8 8; animation: dashMove 1s linear infinite; }
+    .workflow-line-svg { 
+        position: absolute; 
+        top: 34px; 
+        left: 16%; 
+        width: 68%; 
+        height: 2px; 
+        z-index: 1; 
+    }
+    .workflow-line-svg line { 
+        stroke: rgba(0, 59, 112, 0.12); 
+        stroke-width: 2; 
+    }
 
     /* =========================================
-       CTA de Transparência (Banner Luxo)
+       CTA DE TRANSPARÊNCIA (BANNER LUXO)
        ========================================= */
-    .cta-wrapper { max-width: 1300px; margin: 0 auto; }
-    .cta-banner { background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%); border-radius: 32px; padding: 80px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 30px 60px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; position: relative; overflow: hidden; }
-    .cta-banner::before { content: ''; position: absolute; top: -50%; right: -20%; width: 800px; height: 800px; background: radial-gradient(circle, rgba(37,99,235,0.03) 0%, transparent 60%); border-radius: 50%; pointer-events: none; }
-    .cta-text { position: relative; z-index: 2;}
-    .cta-text h3 { font-size: 2.8rem; font-weight: 800; color: var(--text-dark); margin: 0 0 16px 0; letter-spacing: -0.02em; }
-    .cta-text p { color: var(--text-muted); font-size: 1.15rem; margin: 0; max-width: 500px; line-height: 1.6; }
+    .cta-section {
+        background-color: #f8fafc;
+        background-image: radial-gradient(circle at top left, rgba(56, 189, 248, 0.03) 0%, transparent 60%);
+    }
+    .cta-wrapper { 
+        max-width: 1300px; 
+        margin: 0 auto; 
+    }
+    .cta-banner { 
+        background: #ffffff; 
+        border-radius: 32px; 
+        padding: 70px 80px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        box-shadow: 
+            0 35px 80px -15px rgba(0, 59, 112, 0.08),
+            0 0 0 1px rgba(0, 59, 112, 0.05); 
+        border: 1px solid rgba(0, 59, 112, 0.06); 
+        position: relative; 
+        overflow: hidden; 
+    }
+    .cta-banner::before { 
+        content: ''; 
+        position: absolute; 
+        top: -40%; 
+        right: -10%; 
+        width: 700px; 
+        height: 700px; 
+        background: radial-gradient(circle, rgba(37, 99, 235, 0.04) 0%, transparent 70%); 
+        border-radius: 50%; 
+        pointer-events: none; 
+    }
+    .cta-text { 
+        position: relative; 
+        z-index: 2;
+    }
+    .cta-text h3 { 
+        font-size: 2.6rem; 
+        font-weight: 900; 
+        color: var(--text-dark); 
+        margin: 0 0 16px 0; 
+        letter-spacing: -0.02em; 
+    }
+    .cta-text p { 
+        color: var(--text-light); 
+        font-size: 1.15rem; 
+        margin: 0; 
+        max-width: 580px; 
+        line-height: 1.7; 
+        opacity: 0.95;
+    }
     
-    /* Botão CTA Gigante */
     .btn-cta-huge { 
         position: relative; 
         z-index: 2; 
-        background: var(--primary-navy); 
-        color: #ffffff; 
-        padding: 20px 40px; 
+        background: linear-gradient(135deg, var(--primary-navy) 0%, #004d94 100%); 
+        color: #ffffff !important; 
+        padding: 20px 42px; 
         border-radius: 50px; 
         font-size: 1.1rem; 
         font-weight: 700; 
@@ -359,54 +744,109 @@
         display: flex; 
         align-items: center; 
         gap: 12px; 
-        transition: all 0.3s; 
-        box-shadow: 0 20px 40px rgba(0, 59, 112, 0.2); 
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); 
+        box-shadow: 0 15px 35px rgba(0, 59, 112, 0.22); 
     }
     .btn-cta-huge:hover { 
-        background: #002d5a;
-        transform: translateY(-5px) scale(1.02); 
-        box-shadow: 0 25px 50px rgba(0, 59, 112, 0.3); 
-        color: white;
+        background: linear-gradient(135deg, #002d5a 0%, var(--primary-navy) 100%); 
+        transform: translateY(-4px); 
+        box-shadow: 0 20px 45px rgba(0, 59, 112, 0.32); 
     }
 
     /* =========================================
-       Rodapé (Footer)
+       RODAPÉ (FOOTER)
        ========================================= */
-    .footer { background-color: #ffffff; padding: 80px 24px 32px; border-top: 1px solid #e2e8f0; position: relative;}
-    .footer::before { content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%); width: 50%; height: 1px; background: linear-gradient(90deg, transparent, rgba(37,99,235,0.2), transparent); }
-    .footer-grid { max-width: 1300px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px; margin-bottom: 60px; }
-    .footer-brand p { color: var(--text-muted); font-size: 0.95rem; margin-top: 16px; max-width: 350px; line-height: 1.6; }
-    .footer-title { color: var(--text-dark); font-weight: 700; margin-bottom: 24px; font-size: 1.1rem; }
-    .footer-links { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 16px; }
-    .footer-links a { color: var(--text-muted); text-decoration: none; transition: color 0.2s; font-size: 0.95rem; }
-    .footer-links a:hover { color: var(--primary-navy); }
-    .footer-bottom { max-width: 1300px; margin: 0 auto; padding-top: 32px; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 0.85rem; }
-
-    /* Estilo para links ativos na home */
-    .nav-link-elite.active {
-        color: var(--primary-navy) !important;
-        background: rgba(0, 59, 112, 0.08);
+    .footer { 
+        background-color: #ffffff; 
+        padding: 90px 24px 44px; 
+        border-top: 1px solid rgba(0, 59, 112, 0.08); 
+        position: relative;
+    }
+    .footer::before { 
+        content: ''; 
+        position: absolute; 
+        top: 0; 
+        left: 50%; 
+        transform: translateX(-50%); 
+        width: 60%; 
+        height: 1px; 
+        background: linear-gradient(90deg, transparent, rgba(0, 59, 112, 0.15), transparent); 
+    }
+    .footer-grid { 
+        max-width: 1300px; 
+        margin: 0 auto; 
+        display: grid; 
+        grid-template-columns: 2fr 1fr 1fr; 
+        gap: 80px; 
+        margin-bottom: 60px; 
+    }
+    .footer-brand p { 
+        color: var(--text-muted); 
+        font-size: 0.95rem; 
+        margin-top: 20px; 
+        max-width: 400px; 
+        line-height: 1.7; 
+    }
+    .footer-title { 
+        color: var(--text-dark); 
+        font-weight: 800; 
+        margin-bottom: 28px; 
+        font-size: 1.1rem; 
+        letter-spacing: 0.02em;
+    }
+    .footer-links { 
+        list-style: none; 
+        padding: 0; 
+        margin: 0; 
+        display: flex; 
+        flex-direction: column; 
+        gap: 16px; 
+    }
+    .footer-links a { 
+        color: var(--text-muted); 
+        text-decoration: none; 
+        transition: all 0.2s; 
+        font-size: 0.95rem; 
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .footer-links a:hover { 
+        color: var(--primary-navy); 
+        transform: translateX(4px);
+    }
+    .footer-bottom { 
+        max-width: 1300px; 
+        margin: 0 auto; 
+        padding-top: 36px; 
+        border-top: 1px solid rgba(0, 59, 112, 0.08); 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        color: var(--text-muted); 
+        font-size: 0.85rem; 
+        font-weight: 500;
     }
 
-    html {
-        scroll-behavior: smooth;
-    }
-
-    section {
-        scroll-margin-top: 100px;
-    }
-
-    .feature-card {
-        scroll-margin-top: 120px;
-    }
-
-    @media (max-width: 1024px) {
-        .hero-container { grid-template-columns: 1fr; }
-        .nav-links { display: none; }
-        .mockup-wrapper { margin-top: 40px; }
+    @media (max-width: 1100px) {
+        .hero-container { 
+            grid-template-columns: 1fr; 
+            gap: 60px; 
+            text-align: center;
+        }
+        .hero-title br { display: none; }
+        .hero-subtitle { margin: 0 auto 40px; }
+        .hero-buttons { justify-content: center; }
+        .mockup-wrapper { 
+            max-width: 530px; 
+            margin: 0 auto;
+        }
+        .floating-card-1 { left: -5%; }
+        .floating-card-2 { right: -5%; }
         .workflow-container { grid-template-columns: 1fr; gap: 48px; }
         .workflow-line-svg { display: none; }
-        .cta-banner { flex-direction: column; text-align: center; gap: 40px; padding: 40px 24px; }
+        .cta-banner { flex-direction: column; text-align: center; gap: 40px; padding: 50px 30px; }
         .cta-text p { margin: 0 auto; }
         .footer-grid { grid-template-columns: 1fr; gap: 40px; }
         .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
@@ -425,11 +865,11 @@
 
 <nav class="navbar-elite">
     <div class="container d-flex justify-content-between align-items-center">
-        <a class="nav-brand" href="/">
+        <a class="nav-brand" href="/" style="text-decoration: none; display: flex; align-items: center; gap: 12px;">
             <img src="{% static 'img/logo.png' %}" alt="Logo SJB" class="navbar-brand-logo">
             <div class="nav-brand-text">
-                <div class="nav-brand-title" style="color: var(--primary-navy); font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em;">São João da Barra</div>
-                <div class="nav-brand-subtitle" style="font-size: 0.55rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted);">Monitoramento de Contratos</div>
+                <div class="nav-brand-title" style="color: var(--primary-navy); font-size: 1.1rem; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1;">São João da Barra</div>
+                <div class="nav-brand-subtitle" style="font-size: 0.55rem; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); line-height: 1;">Monitoramento de Contratos</div>
             </div>
         </a>
 
@@ -442,11 +882,11 @@
         <div class="nav-actions">
             {% if user.is_authenticated %}
                 <a href="{% url 'contratos:dashboard' %}" class="btn-auth-elite">
-                    Dashboard <i class="bi bi-grid-1x2-fill"></i>
+                    Painel Principal <i class="bi bi-grid-1x2-fill ms-1"></i>
                 </a>
             {% else %}
                 <a href="{% url 'login' %}" class="btn-auth-elite">
-                    Acesso Restrito <i class="bi bi-shield-lock-fill"></i>
+                    Acesso Restrito <i class="bi bi-shield-lock-fill ms-1"></i>
                 </a>
             {% endif %}
         </div>
@@ -455,34 +895,36 @@
 
 <section class="hero-section">
     <div class="hero-glow-1"></div>
+    <div class="hero-glow-2"></div>
+    
     <div class="hero-container">
         
         <div class="hero-content">
             <div class="hero-badge animate-up delay-1">
-                <span class="dot"></span> Sistema Oficial · Prefeitura de São João da Barra
+                <span class="dot"></span> Sistema de Gestão e Planejamento Municipal
             </div>
             
             <h1 class="hero-title animate-up delay-2">
-                Gestão de Protocolos<br>
-                <span>Inteligente e Transparente</span>
+                Controle Gerencial de<br>
+                <span>Contratos e Rateios</span>
             </h1>
             
             <p class="hero-subtitle animate-up delay-3">
-                A tecnologia governamental que elimina o papel e acelera as decisões. Acompanhe processos e garanta eficiência total para o cidadão e para o servidor.
+                Ferramenta institucional unificada para o planejamento econômico de São João da Barra. Acompanhe a distribuição financeira mensal de vigências e empenhos de forma segura e simplificada.
             </p>
             
             <div class="hero-buttons animate-up delay-4">
                 {% if user.is_authenticated %}
                     <a href="{% url 'contratos:dashboard' %}" class="btn-hero-primary">
-                        Acessar Dashboard <i class="bi bi-grid-1x2-fill"></i>
+                        Entrar no Dashboard <i class="bi bi-grid-1x2-fill"></i>
                     </a>
                 {% else %}
                     <a href="{% url 'login' %}" class="btn-hero-primary">
-                        Acessar Sistema <i class="bi bi-arrow-right"></i>
+                        Acesso Restrito <i class="bi bi-arrow-right"></i>
                     </a>
                 {% endif %}
                 <a href="#como-funciona" class="btn-outline-light">
-                    Como funciona
+                    Saber Mais
                 </a>
             </div>
         </div>
@@ -490,52 +932,84 @@
         <div class="mockup-wrapper animate-up delay-5">
             <div class="mockup-glow"></div>
             
-            <div class="floating-icon icon-left">
-                <i class="bi bi-bar-chart-fill"></i>
-            </div>
-            <div class="floating-icon icon-right">
-                <i class="bi bi-shield-check"></i>
+            <!-- Card Flutuante 1 (Valor Empenhado) -->
+            <div class="floating-card floating-card-1">
+                <div class="float-header">
+                    <div class="float-icon">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                    <span class="float-title">Valor Empenhado</span>
+                </div>
+                <h4 class="float-val">R$ 42,88 M</h4>
+                <div class="mini-chart">
+                    <div class="chart-bar" style="height: 40%;"></div>
+                    <div class="chart-bar" style="height: 65%;"></div>
+                    <div class="chart-bar active" style="height: 90%;"></div>
+                    <div class="chart-bar" style="height: 50%;"></div>
+                    <div class="chart-bar" style="height: 75%;"></div>
+                </div>
             </div>
 
+            <!-- Card Flutuante 2 (Contratos Ativos) -->
+            <div class="floating-card floating-card-2">
+                <div class="float-header">
+                    <div class="float-icon" style="background: rgba(34, 197, 94, 0.1); color: #22c55e;">
+                        <i class="bi bi-file-earmark-check-fill"></i>
+                    </div>
+                    <span class="float-title">Contratos Ativos</span>
+                </div>
+                <h4 class="float-val">13 Contratos</h4>
+                <div style="font-size: 0.72rem; color: #22c55e; font-weight: 700; margin-top: 4px; display: flex; align-items: center; gap: 4px;">
+                    <i class="bi bi-arrow-up-short"></i> 100% monitorados e em conformidade
+                </div>
+            </div>
+
+            <!-- Mockup do Painel Principal -->
             <div class="mockup-window">
                 <div class="mockup-header">
                     <div class="mockup-header-title">
-                        <i class="bi bi-file-earmark-text"></i> Controle de Contratos
+                        <i class="bi bi-window-sidebar text-primary"></i> Painel de Controle · SJB
                     </div>
                     <div class="mockup-tabs">
-                        <span class="mockup-tab active">Dashboard</span>
-                        <span class="mockup-tab">Processos</span>
+                        <span class="mockup-tab active">Planilha</span>
+                        <span class="mockup-tab">Filtros</span>
                     </div>
                 </div>
 
                 <div class="mockup-body">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                    <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 16px; margin-bottom: 24px;">
                         <div class="mockup-stat-card">
-                            <span><i class="bi bi-layers text-primary"></i> EM ANDAMENTO</span>
-                            <strong>1.284</strong>
+                            <span>Soma das Distribuições</span>
+                            <strong>R$ 380.000,00</strong>
                         </div>
-                        <div class="mockup-stat-card">
-                            <span><i class="bi bi-exclamation-circle text-warning"></i> URGENTES</span>
-                            <strong>14</strong>
+                        <div class="mockup-stat-card" style="background: rgba(56, 189, 248, 0.03);">
+                            <span>Vigência</span>
+                            <strong style="color: #2563eb;">2026/2027</strong>
                         </div>
                     </div>
 
                     <div class="mockup-item">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span class="m-id">#2026000001</span>
-                            <span class="m-badges bg-blue-subtle">Aberto</span>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; align-items: center;">
+                            <span class="m-id">Contrato nº 12/2025</span>
+                            <span class="m-badges bg-blue-subtle">Vigente</span>
                         </div>
-                        <h5 style="margin: 0 0 8px; font-size: 0.9rem; color: var(--text-dark);">Licitação para Fornecimento de Escolar</h5>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Sec. de Educação · Há 2h</div>
+                        <h5 style="margin: 0 0 6px; font-size: 0.88rem; font-weight: 700; color: var(--text-dark);">SJB Serviços Tecnológicos</h5>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                            <span>Sec. de Administração</span>
+                            <span style="font-weight: 700; color: var(--text-dark);">R$ 55.000,00/mês</span>
+                        </div>
                     </div>
                     
                     <div class="mockup-item" style="margin-bottom: 0;">
-                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                            <span class="m-id">#2026000002</span>
-                            <span class="m-badges bg-green-subtle">Deferido</span>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 6px; align-items: center;">
+                            <span class="m-id">Contrato nº 08/2024</span>
+                            <span class="m-badges bg-green-subtle">Ativo</span>
                         </div>
-                        <h5 style="margin: 0 0 8px; font-size: 0.9rem; color: var(--text-dark);">Nova Unidade Hospitalar</h5>
-                        <div style="font-size: 0.75rem; color: var(--text-muted);">Sec. de Saúde · Ontem</div>
+                        <h5 style="margin: 0 0 6px; font-size: 0.88rem; font-weight: 700; color: var(--text-dark);">Construtora SJB Ltda.</h5>
+                        <div style="font-size: 0.75rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+                            <span>Sec. de Obras</span>
+                            <span style="font-weight: 700; color: var(--text-dark);">R$ 120.000,00/mês</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -546,13 +1020,13 @@
 
 <div class="integration-marquee">
     <div class="marquee-track">
-        <div class="marquee-item"><i class="bi bi-building-check"></i> Gabinete da Prefeitura</div>
+        <div class="marquee-item"><i class="bi bi-building-check"></i> Gabinete do Prefeito</div>
         <div class="marquee-item"><i class="bi bi-book-half"></i> Secretaria de Educação</div>
         <div class="marquee-item"><i class="bi bi-heart-pulse"></i> Secretaria de Saúde</div>
         <div class="marquee-item"><i class="bi bi-cone-striped"></i> Secretaria de Obras</div>
         <div class="marquee-item"><i class="bi bi-cash-coin"></i> Secretaria de Fazenda</div>
         <div class="marquee-item"><i class="bi bi-shield-shaded"></i> Procuradoria Geral</div>
-        <div class="marquee-item"><i class="bi bi-building-check"></i> Gabinete da Prefeitura</div>
+        <div class="marquee-item"><i class="bi bi-building-check"></i> Gabinete do Prefeito</div>
         <div class="marquee-item"><i class="bi bi-book-half"></i> Secretaria de Educação</div>
         <div class="marquee-item"><i class="bi bi-heart-pulse"></i> Secretaria de Saúde</div>
         <div class="marquee-item"><i class="bi bi-cone-striped"></i> Secretaria de Obras</div>
@@ -564,69 +1038,54 @@
 <section id="recursos" class="section-padding features-section">
     <div style="text-align: center;">
         <div class="badge-section">GovTech de Alto Desempenho</div>
-        <h2 class="section-title">A tecnologia ao serviço do município</h2>
-        <p class="section-subtitle">O nosso sistema elimina o papel, reduz custos operacionais e garante que absolutamente nenhum prazo se perca nos corredores da prefeitura.</p>
+        <h2 class="section-title">Controle Absoluto sob a Gestão Municipal</h2>
+        <p class="section-subtitle">A nossa plataforma organiza e monitora os contratos do município, garantindo o controle completo das despesas operacionais por secretaria e setor.</p>
     </div>
 
     <div class="features-grid">
         <div class="feature-card">
-            <div class="feature-icon"><i class="bi bi-lightning-charge-fill"></i></div>
-            <h3 class="feature-title">Tramitação Instantânea</h3>
-            <p class="feature-desc">Envie e receba despachos instantaneamente entre secretarias. Fim do transporte físico de processos de mesa em mesa.</p>
+            <div class="feature-icon"><i class="bi bi-graph-up"></i></div>
+            <h3 class="feature-title">Distribuição Mensal</h3>
+            <p class="feature-desc">Visualização completa do rateio mensal por contrato em grade gerencial intuitiva, facilitando o acompanhamento financeiro contínuo.</p>
         </div>
         
         <div class="feature-card">
-            <div class="feature-icon"><i class="bi bi-shield-lock-fill"></i></div>
-            <h3 class="feature-title">Segurança Jurídica Absoluta</h3>
-            <p class="feature-desc">Todos os acessos e alterações geram um rastro de auditoria inalterável na base de dados com assinatura eletrónica.</p>
+            <div class="feature-icon"><i class="bi bi-ui-checks"></i></div>
+            <h3 class="feature-title">Filtros Avançados</h3>
+            <p class="feature-desc">Filtre seus contratos por secretaria responsável, vigência ativa ou fornecedores específicos, e limpe todos os filtros com um único clique.</p>
         </div>
 
         <div class="feature-card">
-            <div class="feature-icon"><i class="bi bi-tree-fill"></i></div>
-            <h3 class="feature-title">Sustentabilidade (Zero Papel)</h3>
-            <p class="feature-desc">Redução drástica no custo de impressões. Documentos digitalizados com validade legal plena e armazenamento na nuvem.</p>
+            <div class="feature-icon"><i class="bi bi-printer"></i></div>
+            <h3 class="feature-title">Impressão Inteligente (PDF)</h3>
+            <p class="feature-desc">Gere PDFs e relatórios de impressão otimizados para o formato paisagem A4 que ocultam automaticamente menus e contam com tabelas ultracompactas.</p>
         </div>
 
         <div class="feature-card">
-            <div class="feature-icon"><i class="bi bi-bell-fill"></i></div>
-            <h3 class="feature-title">Motor de Notificações</h3>
-            <p class="feature-desc">Os servidores são alertados automaticamente sobre prazos de vencimento de contratos ou processos parados nas filas.</p>
+            <div class="feature-icon"><i class="bi bi-journal-text"></i></div>
+            <h3 class="feature-title">Rastro de Auditoria (SLA)</h3>
+            <p class="feature-desc">Segurança interna plena. Cada contrato possui um histórico auditável que documenta alterações, criações e atualizações em tempo real.</p>
         </div>
 
         <div class="feature-card">
-            <div class="feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
-            <h3 class="feature-title">BI & Gestão de Dados</h3>
-            <p class="feature-desc">Painéis executivos (Dashboards) que permitem aos gestores identificar em tempo real os gargalos nos setores.</p>
+            <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+            <h3 class="feature-title">Governança Corporativa</h3>
+            <p class="feature-desc">Controle de acesso rigoroso baseado em perfis (RBAC), assegurando que secretários visualizem apenas as informações do seu setor.</p>
         </div>
 
         <div class="feature-card">
-            <div class="feature-icon"><i class="bi bi-patch-check-fill"></i></div>
-            <h3 class="feature-title">Conformidade Legal</h3>
-            <p class="feature-desc">Rastreamento completo de cada etapa do processo, garantindo conformidade total com as normas vigentes.</p>
+            <div class="feature-icon"><i class="bi bi-magic"></i></div>
+            <h3 class="feature-title">Painel Lateral Dinâmico</h3>
+            <p class="feature-desc">Clique nas linhas da planilha gerencial para expandir detalhes de vigência, status, processo administrativo e soma em tempo real.</p>
         </div>
     </div>
 </section>
 
-<section id="transparencia" class="section-padding">
-    <div class="cta-wrapper">
-        <div class="cta-banner">
-            <div class="cta-text">
-                <div class="badge-section" style="background: rgba(0, 59, 112, 0.08); color: var(--primary-navy);">Transparência Municipal</div>
-                <h3>Compromisso com o Cidadão</h3>
-                <p>Nossa plataforma garante o cumprimento integral da Lei de Acesso à Informação (LAI), permitindo auditoria total e consulta pública simplificada.</p>
-            </div>
-            <a href="http://transparencia.sjb.rj.gov.br:8079/transparencia/" target="_blank" class="btn-cta-huge">
-                Portal da Transparência <i class="bi bi-box-arrow-up-right"></i>
-            </a>
-        </div>
-    </div>
-</section>
-
-<section id="como-funciona" class="section-padding" style="background-color: var(--hero-bg);">
+<section id="como-funciona" class="section-padding workflow-section">
     <div style="text-align: center;">
-        <div class="badge-section">Fluxo Digital Inteligente</div>
-        <h2 class="section-title">O fim da burocracia.</h2>
-        <p class="section-subtitle">Um fluxo desenhado por especialistas em usabilidade para ser o mais intuitivo possível. Do pedido do cidadão ao despacho final em tempo recorde.</p>
+        <div class="badge-section">Fluxo Gerencial Simplificado</div>
+        <h2 class="section-title">Como o Sistema Otimiza sua Rotina</h2>
+        <p class="section-subtitle">Do cadastro do contrato à análise de rateio no período, tudo é desenhado para economizar o tempo da sua equipe administrativa.</p>
     </div>
 
     <div class="workflow-container">
@@ -636,20 +1095,35 @@
         
         <div class="workflow-step">
             <div class="step-number">1</div>
-            <h3 class="step-title">Geração e Anexos</h3>
-            <p class="step-desc">O processo nasce digital. Documentos são anexados com metadados estruturados, nível de urgência e secretaria de destino pré-definida.</p>
+            <h3 class="step-title">Cadastro Rápido</h3>
+            <p class="step-desc">Insira as informações do contrato, selecione a secretaria responsável de forma obrigatória, defina vigências e valores.</p>
         </div>
 
         <div class="workflow-step">
             <div class="step-number">2</div>
-            <h3 class="step-title">Análise de Fila</h3>
-            <p class="step-desc">O processo cai instantaneamente na caixa do responsável. Pareceres são redigidos e assinados digitalmente dentro do próprio sistema.</p>
+            <h3 class="step-title">Distribuição e Rateio</h3>
+            <p class="step-desc">Selecione o período inicial e final de interesse na nossa planilha dinâmica de controle gerencial e calcule o rateio na hora.</p>
         </div>
 
         <div class="workflow-step">
             <div class="step-number">3</div>
-            <h3 class="step-title">Deferimento e Arquivo</h3>
-            <p class="step-desc">Processo concluído. O cidadão é notificado da decisão e o processo é arquivado em segurança, eternamente pesquisável pela matrícula.</p>
+            <h3 class="step-title">Auditoria e Emissão</h3>
+            <p class="step-desc">Verifique o histórico completo de edições de cada registro e emita relatórios compactados otimizados para reuniões e auditorias.</p>
+        </div>
+    </div>
+</section>
+
+<section id="transparencia" class="section-padding cta-section">
+    <div class="cta-wrapper">
+        <div class="cta-banner">
+            <div class="cta-text">
+                <div class="badge-section" style="background: rgba(0, 59, 112, 0.06); color: var(--primary-navy); margin-bottom: 16px;">Controle de Contas Públicas</div>
+                <h3>Transparência e Responsabilidade</h3>
+                <p>Nossa plataforma apoia o município de São João da Barra na manutenção de contas organizadas e no planejamento financeiro eficiente.</p>
+            </div>
+            <a href="http://transparencia.sjb.rj.gov.br:8079/transparencia/" target="_blank" class="btn-cta-huge">
+                Portal de Transparência <i class="bi bi-box-arrow-up-right"></i>
+            </a>
         </div>
     </div>
 </section>
@@ -657,35 +1131,40 @@
 <footer class="footer">
     <div class="footer-grid">
         <div class="footer-brand">
-            <div class="nav-brand">
-                <img src="{% static 'img/logo.png' %}" alt="Logo SJB" style="height: 40px; width: auto; border-radius: 8px;">
+            <div class="nav-brand" style="display: flex; align-items: center; gap: 12px;">
+                <img src="{% static 'img/logo.png' %}" alt="Logo SJB" style="height: 44px; width: auto; border-radius: 8px;">
                 <div class="nav-brand-text">
-                    <div class="nav-brand-title" style="color: var(--text-dark); font-size: 1rem;">Central de Protocolo</div>
-                    <div class="nav-brand-subtitle">São João da Barra</div>
+                    <div class="nav-brand-title" style="color: var(--text-dark); font-size: 1.15rem; font-weight: 800; letter-spacing: -0.02em;">Central de Monitoramento</div>
+                    <div class="nav-brand-subtitle" style="font-size: 0.6rem; font-weight: 700; text-transform: uppercase; color: var(--text-muted);">São João da Barra</div>
                 </div>
             </div>
-            <p>A plataforma definitiva de governo digital. Otimização de fluxos físicos para processos eletrónicos estruturados, garantindo conformidade e transparência cívica.</p>
+            <p>Plataforma para monitoramento, análise de vigência e controle de despesas de contratos públicos. Sistema desenvolvido em estrito alinhamento com os preceitos constitucionais de eficiência, publicidade e governança fiscal.</p>
         </div>
 
         <div>
             <h4 class="footer-title">Plataforma</h4>
             <ul class="footer-links">
-                <li><a href="#"><i class="bi bi-arrow-right-short"></i> Painel do Servidor</a></li>
-                <li><a href="#"><i class="bi bi-arrow-right-short"></i> Portal do Cidadão</a></li>
-                <li><a href="#"><i class="bi bi-arrow-right-short"></i> Validação de Documentos</a></li>
-                <li><a href="#"><i class="bi bi-arrow-right-short"></i> Termos de Uso (LGPD)</a></li>
+                <li><a href="{% url 'login' %}"><i class="bi bi-chevron-right text-primary"></i> Painel do Servidor</a></li>
+                <li><a href="#recursos"><i class="bi bi-chevron-right text-primary"></i> Recursos Disponíveis</a></li>
+                <li><a href="#como-funciona"><i class="bi bi-chevron-right text-primary"></i> Como Funciona</a></li>
+                <li><a href="#transparencia"><i class="bi bi-chevron-right text-primary"></i> Transparência Fiscal</a></li>
             </ul>
         </div>
 
         <div>
-            <h4 class="footer-title">Ligações Oficiais</h4>
+            <h4 class="footer-title">Links Oficiais</h4>
             <ul class="footer-links">
-                <li><a href="#"><i class="bi bi-box-arrow-up-right me-2"></i> Portal da Prefeitura</a></li>
-                <li><a href="#"><i class="bi bi-box-arrow-up-right me-2"></i> Diário Oficial (DO)</a></li>
-                <li><a href="#"><i class="bi bi-box-arrow-up-right me-2"></i> Portal da Transparência</a></li>
-                <li><a href="#"><i class="bi bi-box-arrow-up-right me-2"></i> Ouvidoria do Município</a></li>
+                <li><a href="https://sjb.rj.gov.br/" target="_blank"><i class="bi bi-box-arrow-up-right text-primary"></i> Prefeitura de SJB</a></li>
+                <li><a href="https://sjb.rj.gov.br/diario-oficial" target="_blank"><i class="bi bi-box-arrow-up-right text-primary"></i> Diário Oficial (DO)</a></li>
+                <li><a href="http://transparencia.sjb.rj.gov.br:8079/transparencia/" target="_blank"><i class="bi bi-box-arrow-up-right text-primary"></i> Portal da Transparência</a></li>
+                <li><a href="https://sjb.rj.gov.br/ouvidoria" target="_blank"><i class="bi bi-box-arrow-up-right text-primary"></i> Ouvidoria Geral</a></li>
             </ul>
         </div>
+    </div>
+    
+    <div class="footer-bottom">
+        <span>© 2026 Prefeitura Municipal de São João da Barra. Todos os direitos reservados.</span>
+        <span>Tecnologia GovTech Premium para Transparência de Contratos</span>
     </div>
 </footer>
 {% endblock %}
