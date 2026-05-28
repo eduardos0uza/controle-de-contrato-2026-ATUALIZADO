@@ -582,7 +582,7 @@
       <div class="calc-summary-banner">
         <div class="summary-banner-item">
           <i class="bi bi-file-earmark-check"></i>
-          <span>Contratos Ativos: <span class="item-value">{{ dados_tabela|length }}</span></span>
+          <span>Contratos encontrados: <span class="item-value">{{ dados_tabela|length }}</span></span>
         </div>
         <div class="vr text-muted d-none d-sm-block" style="opacity: 0.3;"></div>
         <div class="summary-banner-item">
@@ -621,7 +621,7 @@
                 <tr class="contrato-row"
                     data-id="{{ row.contrato.id }}"
                     data-numero="{{ row.numero }}"
-                    data-fornecedor="{{ row.contrato.empresa|default:'-' }}"
+                    data-fornecedor="{{ row.fornecedor }}"
                     data-secretaria="{{ row.secretaria }}"
                     data-valor-global="{{ row.valor_global }}"
                     data-data-inicio="{{ row.contrato.data_inicio|date:'d/m/Y' }}"
@@ -647,6 +647,8 @@
                     <td class="val-currency {% if val.is_current %}col-mes-atual{% endif %}">
                       {% if val.is_active %}
                         <span class="val-currency-active">{{ val.formatted }}</span>
+                      {% elif not row.tem_vigencia %}
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1" style="font-size: 0.65rem;">Vigência não informada</span>
                       {% else %}
                         <span class="badge-fora-vigencia">Fora da vigência</span>
                       {% endif %}
@@ -658,7 +660,7 @@
               <tr>
                 <td colspan="{{ colunas_meses|length|add:4 }}" class="text-center py-5 text-muted">
                   <i class="bi bi-folder-x fs-2 d-block mb-3" style="color: var(--cm-border);"></i>
-                  Nenhum contrato ativo encontrado com valores orçados na vigência selecionada.
+                  Nenhum contrato encontrado para os parâmetros selecionados.
                 </td>
               </tr>
             {% endif %}
@@ -717,6 +719,8 @@
                   <td style="text-align: right;">
                     {% if val.is_active %}
                       {{ val.formatted }}
+                    {% elif not row.tem_vigencia %}
+                      Vigência não informada
                     {% else %}
                       -
                     {% endif %}
@@ -1002,8 +1006,8 @@
       document.getElementById('drawer-objeto').innerText = objeto || 'Sem objeto cadastrado.';
       document.getElementById('drawer-secretaria').innerText = secretaria || 'Não informado';
       document.getElementById('drawer-valor-global').innerText = valorGlobal || 'R$ 0,00';
-      document.getElementById('drawer-data-inicio').innerText = dataInicio || '-';
-      document.getElementById('drawer-data-fim').innerText = dataFim || '-';
+      document.getElementById('drawer-data-inicio').innerText = dataInicio || 'Vigência não informada';
+      document.getElementById('drawer-data-fim').innerText = dataFim || 'Vigência não informada';
       document.getElementById('drawer-processo').innerText = processo || 'Não informado';
       document.getElementById('drawer-modalidade').innerText = modalidade || 'Não informada';
 
@@ -1040,11 +1044,12 @@
         if (index >= 4) {
           const monthLabel = monthHeaders[index - 4];
           const isOutOfVigencia = td.querySelector('.badge-fora-vigencia') !== null;
+          const isVigenciaNaoInformada = td.textContent.trim().includes('Vigência não informada');
           
           let valorFormatted = 'R$ 0,00';
           let situacaoHtml = '';
           
-          if (!isOutOfVigencia) {
+          if (!isOutOfVigencia && !isVigenciaNaoInformada) {
             const valSpan = td.querySelector('.val-currency-active');
             if (valSpan) {
               valorFormatted = valSpan.innerText;
@@ -1054,6 +1059,8 @@
               }
             }
             situacaoHtml = '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.65rem;">Vigente</span>';
+          } else if (isVigenciaNaoInformada) {
+            situacaoHtml = '<span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.65rem;">Vigência não informada</span>';
           } else {
             situacaoHtml = '<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-2 py-1 fw-semibold" style="font-size: 0.65rem;">Fora da vigência</span>';
           }

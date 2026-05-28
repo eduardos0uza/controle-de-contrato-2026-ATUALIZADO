@@ -792,14 +792,33 @@ def _format_currency_br(val):
 @login_required
 def controle_mensal_calculo(request):
     """
-    Visualização simplificada da distribuição gerencial mensal de contratos ativos.
-    Busca todos os contratos ativos, lê o valor global (soma dos itens),
+    Visualização simplificada da distribuição gerencial mensal de todos os contratos cadastrados.
+    Busca todos os contratos visíveis, lê o valor global (soma dos itens),
     permite selecionar mês/ano inicial e final, calcula a quantidade de meses do período
     e exibe uma tabela tipo planilha gerencial com colunas para cada mês.
     """
-    # 1. Buscar todos os contratos ativos
-    contratos_qs = get_user_contracts(request.user).filter(status='ativo').prefetch_related('itens')
+    # 1. Diagnóstico e logs temporários no backend
+    import logging
+    logger = logging.getLogger('django')
     
+    total_contratos_db = Contract.objects.count()
+    contratos_qs = get_user_contracts(request.user).prefetch_related('itens')
+    contratos_ids_user = set(contratos_qs.values_list('id', flat=True))
+    
+    logger.info(f"[DIAGNOSTICO] Total de contratos cadastrados no Banco de Dados: {total_contratos_db}")
+    
+    ignored_details = []
+    # Busca todos os contratos no banco de dados para listar os que este usuário não tem permissão para visualizar
+    all_contracts = Contract.objects.all()
+    for c in all_contracts:
+        if c.id not in contratos_ids_user:
+            reason = f"Ignorado por restrição de permissão: Contrato pertence à secretaria '{c.secretaria.nome}'" if c.secretaria else "Ignorado por restrição de permissão: Contrato sem secretaria atribuída (acesso restrito)"
+            ignored_details.append((c.numero_contrato, reason))
+            logger.info(f"[DIAGNOSTICO] Contrato {c.numero_contrato} ignorado. Motivo: {reason}")
+            
+    logger.info(f"[DIAGNOSTICO] Total de contratos considerados (acessíveis ao usuário {request.user.username}): {len(contratos_ids_user)}")
+    logger.info(f"[DIAGNOSTICO] Total ignorado para este usuário: {len(ignored_details)}")
+
     # 2. Obter período selecionado ou definir padrão (junho a dezembro de 2026)
     hoje = timezone.localdate()
     
@@ -862,11 +881,12 @@ def controle_mensal_calculo(request):
 
     for contrato in contratos_qs:
         valor_global = Decimal(str(contrato.valor or 0))
-        if valor_global <= 0:
-            continue  # ignorar contratos sem valor
+        # Não excluir contrato mesmo se valor_global <= 0, fornecedor/secretaria/vigência em branco, ou fora do período.
 
         # Calcular valor mensal = valor global / quantidade de meses do período
         valor_mensal = (valor_global / total_meses_periodo).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        
+        tem_vigencia = bool(contrato.data_inicio and contrato.data_vencimento)
         
         # Obter os valores distribuídos para cada coluna de mês
         valores_distribuidos = {}
@@ -877,7 +897,7 @@ def controle_mensal_calculo(request):
             
             # Verificar se o mês da coluna está dentro da vigência do contrato
             is_active = False
-            if contrato.data_inicio and contrato.data_vencimento:
+            if tem_vigencia:
                 contrato_start = contrato.data_inicio.replace(day=1)
                 contrato_end = contrato.data_vencimento.replace(day=1)
                 is_active = (contrato_start <= col_date <= contrato_end)
@@ -894,10 +914,11 @@ def controle_mensal_calculo(request):
         dados_tabela.append({
             'contrato': contrato,
             'numero': contrato.numero_contrato,
-            'fornecedor': contrato.empresa or '-',
+            'fornecedor': contrato.empresa or 'Não informado',
             'secretaria': contrato.secretaria.nome if contrato.secretaria else 'Não informado',
             'valor_global_raw': valor_global,
             'valor_global': _format_currency_br(valor_global),
+            'tem_vigencia': tem_vigencia,
             'valores_meses': [
                 {
                     'raw': valores_distribuidos[f"{c['mes']}_{c['ano']}"],
@@ -956,6 +977,8 @@ def controle_mensal_calculo(request):
             for val in row['valores_meses']:
                 if val['is_active']:
                     row_data.append(val['formatted'])
+                elif not row['tem_vigencia']:
+                    row_data.append('Vigência não informada')
                 else:
                     row_data.append('Fora da vigência')
             writer.writerow(row_data)
@@ -975,7 +998,7 @@ def controle_mensal_calculo(request):
 
         wb = openpyxl.Workbook()
         ws = wb.active
-        ws.title = "Distribuição Mensal"
+        ws.title = "Distribuição"
 
         # Enable grid lines
         ws.views.sheetView[0].showGridLines = True
@@ -1039,6 +1062,10 @@ def controle_mensal_calculo(request):
                     cell_val.number_format = 'R$ #,##0.00'
                     cell_val.font = font_data
                     cell_val.alignment = Alignment(horizontal='right')
+                elif not row['tem_vigencia']:
+                    cell_val.value = "Vigência não informada"
+                    cell_val.font = font_zero
+                    cell_val.alignment = Alignment(horizontal='center')
                 else:
                     cell_val.value = "Fora da vigência"
                     cell_val.font = font_zero
